@@ -1,0 +1,24 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended',
+    'docker:enableMajor',
+    'helpers:pinGitHubActionDigests',
+    ':disableRateLimiting',
+    ':semanticCommits',
+    ':timezone(America/New_York)',
+    'workarounds:k3sKubernetesVersioning',
+    'group:kubernetes',
+    'mergeConfidence:all-badges',
+  ],
+  argocd: {
+    managerFilePatterns: [
+      '/\\.ya?ml$/',
+    ],
+  },
+  kubernetes: {
+    managerFilePatterns: [
+      '/\\.ya?ml$/',
+    ],
+  },
+}
