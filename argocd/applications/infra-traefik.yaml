@@ -9,8 +9,8 @@ spec:
   project: default
   source:
     repoURL: https://helm.traefik.io/traefik
-    chart: crds
-    targetRevision: "v1.8.1"
+    chart: traefik-crds
+    targetRevision: "1.8.1"
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -33,7 +33,7 @@ spec:
   source:
     repoURL: https://helm.traefik.io/traefik
     chart: traefik
-    targetRevision: "v36.0.0"
+    targetRevision: "36.0.0"
     helm:
       valueFiles:
       - infrastructure/traefik/values.yaml
