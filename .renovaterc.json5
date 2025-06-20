@@ -31,7 +31,7 @@
         'github\\.com/cert-manager/cert-manager/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/cert-manager\\.yaml'
       ],
       datasourceTemplate: 'github-releases',
-      depNameTemplate: 'cert-manager',
+      depNameTemplate: 'cert-manager/cert-manager',
       versioningTemplate: 'semver',
     },
   ],
