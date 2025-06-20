@@ -33,7 +33,7 @@ spec:
   source:
     repoURL: https://helm.traefik.io/traefik
     chart: traefik
-    targetRevision: "36.0.0"
+    targetRevision: "36.1.0"
     helm:
       values: |
         securityContext:
