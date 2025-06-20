@@ -13,7 +13,7 @@
   ],
   argocd: {
     managerFilePatterns: [
-      '/\\.ya?ml$/',
+      '/argocd/.+\\.ya?ml$/',
     ],
   },
   kubernetes: {
@@ -21,4 +21,18 @@
       '/\\.ya?ml$/',
     ],
   },
+  // Regex manager to bump cert-manager version in kustomization.yaml URL
+  regexManagers: [
+    {
+      // Only run on your cert-manager kustomization file
+      fileMatch: ['^infrastructure/cert-manager/kustomization\\.yaml$'],
+      // Capture the vX.Y.Z in the download URL
+      matchStrings: [
+        'github\\.com/cert-manager/cert-manager/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/cert-manager\\.yaml'
+      ],
+      datasourceTemplate: 'github-releases',
+      depNameTemplate: 'cert-manager',
+      versioningTemplate: 'semver',
+    },
+  ],
 }
