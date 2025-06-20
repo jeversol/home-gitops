@@ -8,4 +8,14 @@ metadata:
     app.kubernetes.io/part-of: argocd
 data:
   kustomize.buildOptions: "--enable-helm"
-  accounts.joe: apiKey, login
+  application.instanceLabelKey: argocd.argoproj.io/instance
+  url: https://argocd.i.recompiled.org/
+  oidc.config: |
+    name: Auth0
+    issuer: https://auth.recompiled.org/
+    clientID: GoRUU3b4gJcG41sINldzNLPjaQ0toLUZ
+    clientSecret: d5cj8ksWzXXhehpR8vgtSYVWbNX3YGvfkhgqK46BNpZrY-RYvIdbpA13xrbGnoWs
+    requestedScopes:
+    - openid
+    - profile
+    - email
