@@ -8,8 +8,8 @@ This now-current version will be a 3 node cluster running Talos Linux for the OS
 | Node | HW Model | CPU | RAM | Storage | Network |
 | ---- | -------- | --- | --- | ------- | ------- |
 | Node 1 | GMKTek NucBox G3 Plus | Intel N150 | 16GB | 512GB SSD | 2.5Gbit |
-| Node 2 | HP EliteDesk 800 G4 Mini | Intel i5-8500t | 16GB | 256GB SSD | 1Gbit |
-| Node 3 | HP ProDesk 600 G4 Mini | Intel i5-8500t | 16GB | 256GB SSD | 1Gbit |
+| Node 2 | HP EliteDesk 800 G4 Mini | Intel Core i5-8500T | 16GB | 256GB SSD | 1Gbit |
+| Node 3 | HP ProDesk 600 G4 Mini | Intel Core i5-8500I | 16GB | 256GB SSD | 1Gbit |
 
 ## Deployed and Migrated Services:
  - ArgoCD
