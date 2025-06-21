@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: harry-botter
+  namespace: harry-botter
+spec:
+  schedule: "0 2 * * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 60
+  backoffLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: watcher
+            image: python:3.13-slim
+            command:
+            - /bin/sh
+            - -c
+            - |
+              pip install --no-cache-dir --prefix=/tmp/deps PyGithub kubernetes PyJWT requests && \
+              python /script/harry-botter.py
+            volumeMounts:
+            - name: script
+              mountPath: /script
+            - name: github-key
+              mountPath: /etc/github
+              readOnly: true
+            resources:
+              requests:
+                memory: "64Mi"
+                cpu: "50m"
+            env:
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 1000
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: [ "ALL" ]
+              seccompProfile:
+                type: RuntimeDefault
+          restartPolicy: OnFailure
+          serviceAccountName: harry-botter
+          volumes:
+          - name: script
+            configMap:
+              name: harry-botter
+              defaultMode: 0744
+          - name: github-key
+            secret:
+              secretName: github-app-key
+              items:
+              - key: private-key.pem
+                path: private-key.pem
