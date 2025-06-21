@@ -1,0 +1,100 @@
+csiDriver:
+  # should be globally unique for a given cluster
+  name: "org.democratic-csi.iscsi-synology"
+
+# add note here about volume expansion requirements
+storageClasses:
+  - name: democratic-iscsi
+    defaultClass: true
+    reclaimPolicy: Retain
+    volumeBindingMode: Immediate
+    allowVolumeExpansion: true
+    parameters:
+      fsType: btrfs
+
+    mountOptions: []
+    secrets:
+      provisioner-secret: 
+      controller-publish-secret: 
+      node-stage-secret: 
+      node-publish-secret: 
+      controller-expand-secret: 
+
+volumeSnapshotClasses:
+  - name: democratic-synology-iscsi
+    parameters:
+    secrets:
+      snapshotter-secret:
+
+controller:
+  externalResizer:
+    enabled: true
+
+  externalSnapshotter:
+    enabled: true
+
+driver:
+  existingConfigSecret: democratic-csi-creds
+  config:
+    driver: synology-iscsi
+    httpConnection:
+      protocol: https
+      host: 192.168.1.8
+      port: 5001
+      allowInsecure: true
+      session: "democratic-csi"
+      serialize: true
+
+    # Choose the DSM volume this driver operates on. The default value is /volume1.
+    synology:
+      volume: /volume2
+
+    iscsi:
+      targetPortal: "192.168.1.8:3260"
+      # for multipath
+      targetPortals: [] # [ "server[:port]", "server[:port]", ... ]
+      # leave empty to omit usage of -I with iscsiadm
+      interface: ""
+      # can be whatever you would like
+      baseiqn: "iqn.2000-01.com.synology:csi."
+
+      # MUST ensure uniqueness
+      # full iqn limit is 223 bytes, plan accordingly
+      namePrefix: "csi-"
+      nameSuffix: ""
+
+      # documented below are several blocks
+      # pick the option appropriate for you based on what your backing fs is and desired features
+      # you do not need to alter dev_attribs under normal circumstances but they may be altered in advanced use-cases
+      # These options can also be configured per storage-class:
+      # See https://github.com/democratic-csi/democratic-csi/blob/master/docs/storage-class-parameters.md
+      lunTemplate:
+        # can be static value or handlebars template
+        description: "{{ parameters.[csi.storage.k8s.io/pvc/namespace] }}-{{ parameters.[csi.storage.k8s.io/pvc/name] }}"
+
+        # btrfs thin provisioning
+        type: "BLUN"
+        # tpws = Hardware-assisted zeroing
+        # caw = Hardware-assisted locking
+        # 3pc = Hardware-assisted data transfer
+        # tpu = Space reclamation
+        # can_snapshot = Snapshot
+        dev_attribs:
+        - dev_attrib: emulate_tpws
+          enable: 1
+        - dev_attrib: emulate_caw
+          enable: 1
+        - dev_attrib: emulate_3pc
+          enable: 1
+        - dev_attrib: emulate_tpu
+          enable: 1
+        - dev_attrib: can_snapshot
+          enable: 1
+      lunSnapshotTemplate:
+        is_locked: true
+        # https://kb.synology.com/en-me/DSM/tutorial/What_is_file_system_consistent_snapshot
+        is_app_consistent: true
+
+      targetTemplate:
+        auth_type: 0
+        max_sessions: 0
