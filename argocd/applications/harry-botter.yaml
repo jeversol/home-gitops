@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: harry-botter
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/jeversol/home-argocd.git
+    targetRevision: main
+    path: infrastructure/harry-botter
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: harry-botter
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=false

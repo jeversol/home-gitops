@@ -1,0 +1,134 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: harry-botter
+  namespace: harry-botter
+data:
+  harry-botter.py: |
+    import site, sys
+    site.addsitedir(f"/tmp/deps/lib/python{sys.version_info.major}.{sys.version_info.minor}/site-packages")
+
+    import os
+    import jwt
+    import requests
+    from datetime import datetime, date, UTC
+    from kubernetes import client, config
+
+    EXPIRY_ANNOTATION = "recompiled.org/expiry-date"
+    NOTE_ANNOTATION = "recompiled.org/expiry-note"
+    DAYS_WARNING = 7
+    GITHUB_REPO = "jeversol/home-gitops"
+    APP_ID = 1360871
+    INSTALLATION_ID = 69529304
+    GITHUB_PRIVATE_KEY_PATH = "/etc/github/private-key.pem"
+
+    def load_private_key():
+        with open(GITHUB_PRIVATE_KEY_PATH, "r") as f:
+            return f.read()
+
+    def generate_jwt(app_id, private_key):
+        now = int(datetime.now(UTC).timestamp())
+        payload = {
+            "iat": now - 60,
+            "exp": now + (10 * 60),
+            "iss": app_id
+        }
+        return jwt.encode(payload, private_key, algorithm="RS256")
+
+    def get_installation_token(jwt_token, installation_id):
+        headers = {
+            "Authorization": f"Bearer {jwt_token}",
+            "Accept": "application/vnd.github+json"
+        }
+        url = f"https://api.github.com/app/installations/{installation_id}/access_tokens"
+        response = requests.post(url, headers=headers)
+        response.raise_for_status()
+        return response.json()["token"]
+
+    def parse_date(date_str):
+        try:
+            return datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return None
+
+    def should_warn(expiry_date):
+        today = date.today()
+        delta = (expiry_date - today).days
+        return 0 <= delta <= DAYS_WARNING
+
+    def find_existing_issue(session, repo, token, title):
+        url = f"https://api.github.com/repos/{repo}/issues"
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json"
+        }
+        params = {"state": "open"}
+        resp = session.get(url, headers=headers, params=params)
+        resp.raise_for_status()
+        for issue in resp.json():
+            if issue["title"] == title:
+                return issue
+        return None
+
+    def create_issue(session, repo, token, title, body):
+        url = f"https://api.github.com/repos/{repo}/issues"
+        headers = {
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json"
+        }
+        payload = {"title": title, "body": body}
+        resp = session.post(url, headers=headers, json=payload)
+        resp.raise_for_status()
+        return resp.json()
+
+    def main():
+        config.load_incluster_config()
+        v1 = client.CoreV1Api()
+
+        private_key = load_private_key()
+        jwt_token = generate_jwt(APP_ID, private_key)
+        gh_token = get_installation_token(jwt_token, INSTALLATION_ID)
+        session = requests.Session()
+
+        secrets = v1.list_secret_for_all_namespaces().items
+
+        for secret in secrets:
+            metadata = secret.metadata
+            annotations = metadata.annotations or {}
+
+            expiry_raw = annotations.get(EXPIRY_ANNOTATION)
+            note = annotations.get(NOTE_ANNOTATION)
+
+            if not expiry_raw or not note:
+                print(f"Skipping {metadata.namespace}/{metadata.name}: missing expiry or note annotation")
+                continue
+
+            expiry_date = parse_date(expiry_raw)
+            if not expiry_date:
+                print(f"Skipping {metadata.namespace}/{metadata.name}: invalid expiry date '{expiry_raw}'")
+                continue
+
+            if not should_warn(expiry_date):
+                print(f"{metadata.namespace}/{metadata.name}: expires on {expiry_date} (not within window), skipping")
+                continue
+
+            issue_title = f"chore(secrets): {metadata.namespace}/{metadata.name} expires soon"
+            existing_issue = find_existing_issue(session, GITHUB_REPO, gh_token, issue_title)
+
+            if existing_issue:
+                print(f"{metadata.namespace}/{metadata.name}: issue already exists — #{existing_issue['number']}")
+                continue
+
+            issue_body = (
+                f"The Kubernetes Secret `{metadata.name}` in namespace `{metadata.namespace}` is set to expire on {expiry_date}.\n"
+                f"\n**Note**: {note}\n\nPlease rotate the secret before it expires."
+            )
+
+            try:
+                issue = create_issue(session, GITHUB_REPO, gh_token, issue_title, issue_body)
+                print(f"{metadata.namespace}/{metadata.name}: GitHub issue created — #{issue['number']}")
+            except Exception as e:
+                print(f"{metadata.namespace}/{metadata.name}: Failed to create GitHub issue — {str(e)}")
+
+    if __name__ == "__main__":
+        main()
