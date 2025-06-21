@@ -11,7 +11,11 @@ spec:
   startingDeadlineSeconds: 60
   jobTemplate:
     spec:
+<<<<<<< HEAD
       backoffLimit: 2
+=======
+      backoffLimit: 1
+>>>>>>> 79bf16a (Move Harry's secrets to external-secrets)
       template:
         spec:
           containers:
@@ -50,7 +54,7 @@ spec:
           - name: script
             configMap:
               name: harry-botter
-              defaultMode: 0744
+              defaultMode: 484
           - name: github-key
             secret:
               secretName: github-app-key
