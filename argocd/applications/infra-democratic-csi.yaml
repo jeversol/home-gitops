@@ -13,7 +13,7 @@ spec:
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: democratic-csi-system
+    namespace: democratic-csi
 
   syncPolicy:
     automated:
