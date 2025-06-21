@@ -11,11 +11,7 @@ spec:
   startingDeadlineSeconds: 60
   jobTemplate:
     spec:
-<<<<<<< HEAD
       backoffLimit: 2
-=======
-      backoffLimit: 1
->>>>>>> 79bf16a (Move Harry's secrets to external-secrets)
       template:
         spec:
           containers:
