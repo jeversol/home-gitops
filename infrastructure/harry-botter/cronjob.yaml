@@ -9,9 +9,9 @@ spec:
   failedJobsHistoryLimit: 2
   concurrencyPolicy: Forbid
   startingDeadlineSeconds: 60
-  backoffLimit: 1
   jobTemplate:
     spec:
+      backoffLimit:1
       template:
         spec:
           containers:
