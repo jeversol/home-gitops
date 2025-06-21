@@ -9,11 +9,12 @@ helmCharts:
     repo: https://democratic-csi.github.io/charts
     version: "0.3.0"
     releaseName: democratic-csi-crds
-    namespace: democratic-csi-system
+    namespace: democratic-csi
+    includeCRDs: true
 
   - name: democratic-csi
     repo: https://democratic-csi.github.io/charts
     version: "0.15.0"
     releaseName: democratic-csi
-    namespace: democratic-csi-system
+    namespace: democratic-csi
     valuesFile: values.yaml
