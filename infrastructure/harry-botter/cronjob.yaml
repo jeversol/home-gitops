@@ -11,9 +11,9 @@ spec:
   startingDeadlineSeconds: 60
   jobTemplate:
     spec:
-      backoffLimit:1
       template:
         spec:
+          backoffLimit: 1
           containers:
           - name: watcher
             image: python:3.13-slim
