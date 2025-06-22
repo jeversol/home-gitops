@@ -17,13 +17,13 @@ This now-current version will be a 3 node cluster running Talos Linux for the OS
  - Traefik
  - external-secrets
  - cert-manager
+ - harry-botter
+  - python script in a configmap, using a github app bot to create issues.
 
 ## To migrate from cluster 1.0
-- democratic-csi
+- democratic-csi 
   - Allows mounting and creation of iSCSI volumes and SMB shares on Synology
-- tautulli (from linode)
-- expiry-watcher
-  - python script in a configmap, using a github app bot to create issues.
+- tautulli
 
 ## Up Next:
 - prom/grafana/loki/mimir/alloy
