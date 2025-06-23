@@ -34,5 +34,17 @@
       depNameTemplate: 'cert-manager/cert-manager',
       versioningTemplate: 'semver',
     },
+        {
+      customType: 'regex',
+      managerFilePatterns: [
+        '/^infrastructure/argocd/kustomization\\.yaml$/',
+      ],
+      matchStrings: [
+        'raw\\.githubusercontent\\.com/argoproj/argocd/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/manifests/install\\.yaml',
+      ],
+      datasourceTemplate: 'github-releases',
+      depNameTemplate: 'argoproj/argo-cd',
+      versioningTemplate: 'semver',
+    },
   ],
 }
