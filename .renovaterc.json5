@@ -1,55 +1,48 @@
 {
-  "extends": ["config:base"],
-
-  // Never automerge; always open PRs for manual review
-  "automerge": false,
-
-  // Assign all Renovate PRs to jeversol
-  "assignees": ["jeversol"],
-
-  // —————————————————————————————————————————
-  // 1) Enable Argocd manager on your Application CRDs
-  // —————————————————————————————————————————
-  "argocd": {
-    "enabled": true,
-    "managerFilePatterns": [
-      "argocd/applications/**/*.{yaml,yml}"
-    ]
+  extends: [
+    'config:recommended',
+  ],
+  automerge: false,
+  assignees: [
+    'jeversol',
+  ],
+  argocd: {
+    enabled: true,
+    managerFilePatterns: [
+      'argocd/applications/**/*.{yaml,yml}',
+    ],
   },
-
-  // —————————————————————————————————————————
-  // 2) Kubernetes manager for everything else
-  //    (uses glob patterns to exclude overlays & Argocd apps)
-  // —————————————————————————————————————————
-  "kubernetes": {
-    "managerFilePatterns": [
-      // 1) Exclude all kustomization overlays
-      "!**/kustomization.{yaml,yml}",
-      // 2) Exclude Argo CD Application CRDs
-      "!argocd/applications/**/*.{yaml,yml}",
-      // 3) Then match all other YAML
-      "**/*.{yaml,yml}"
-    ]
+  kubernetes: {
+    managerFilePatterns: [
+      '!**/kustomization.{yaml,yml}',
+      '!argocd/applications/**/*.{yaml,yml}',
+      '**/*.{yaml,yml}',
+    ],
   },
-
-  // —————————————————————————————————————————
-  // 3) Regex managers for Talos & Kubernetes versions
-  //    in your track-versions.yaml
-  // —————————————————————————————————————————
-  "regexManagers": [
+  customManagers: [
     {
-      "fileMatch": ["infrastructure/cluster/track-versions.{yaml,yml}"],
-      "matchStrings": ["talosVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "talos-systems/talos",
-      "versioningTemplate": "semver"
+      customType: 'regex',
+      managerFilePatterns: [
+        '/infrastructure/cluster/track-versions.{yaml,yml}/',
+      ],
+      matchStrings: [
+        'talosVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)',
+      ],
+      datasourceTemplate: 'github-releases',
+      depNameTemplate: 'talos-systems/talos',
+      versioningTemplate: 'semver',
     },
     {
-      "fileMatch": ["infrastructure/cluster/track-versions.{yaml,yml}"],
-      "matchStrings": ["kubernetesVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-tags",
-      "depNameTemplate": "kubernetes/kubernetes",
-      "versioningTemplate": "semver"
-    }
-  ]
+      customType: 'regex',
+      managerFilePatterns: [
+        '/infrastructure/cluster/track-versions.{yaml,yml}/',
+      ],
+      matchStrings: [
+        'kubernetesVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)',
+      ],
+      datasourceTemplate: 'github-tags',
+      depNameTemplate: 'kubernetes/kubernetes',
+      versioningTemplate: 'semver',
+    },
+  ],
 }
