@@ -1,37 +1,48 @@
 {
-  "extends": ["config:base"],
-  "automerge": false,
-  "assignees": ["jeversol"],
-
-  "argocd": {
-    "enabled": true,
-    "managerFilePatterns": [
-      "argocd/applications/**/*.{yaml,yml}"
-    ]
+  extends: [
+    'config:recommended',
+  ],
+  automerge: false,
+  assignees: [
+    'jeversol',
+  ],
+  argocd: {
+    enabled: true,
+    managerFilePatterns: [
+      'argocd/applications/**/*.{yaml,yml}',
+    ],
   },
-
-  "kubernetes": {
-    "managerFilePatterns": [
-      "!**/kustomization.{yaml,yml}",
-      "!argocd/applications/**/*.{yaml,yml}",
-      "**/*.{yaml,yml}"
-    ]
+  kubernetes: {
+    managerFilePatterns: [
+      '!**/kustomization.{yaml,yml}',
+      '!argocd/applications/**/*.{yaml,yml}',
+      '**/*.{yaml,yml}',
+    ],
   },
-
-  "regexManagers": [
+  customManagers: [
     {
-      "fileMatch": ["infrastructure/cluster/track-versions.{yaml,yml}"],
-      "matchStrings": ["talosVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-releases",
-      "depNameTemplate": "talos-systems/talos",
-      "versioningTemplate": "semver"
+      customType: 'regex',
+      managerFilePatterns: [
+        '/infrastructure/cluster/track-versions.{yaml,yml}/',
+      ],
+      matchStrings: [
+        'talosVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)',
+      ],
+      datasourceTemplate: 'github-releases',
+      depNameTemplate: 'talos-systems/talos',
+      versioningTemplate: 'semver',
     },
     {
-      "fileMatch": ["infrastructure/cluster/track-versions.{yaml,yml}"],
-      "matchStrings": ["kubernetesVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
-      "datasourceTemplate": "github-tags",
-      "depNameTemplate": "kubernetes/kubernetes",
-      "versioningTemplate": "semver"
-    }
-  ]
+      customType: 'regex',
+      managerFilePatterns: [
+        '/infrastructure/cluster/track-versions.{yaml,yml}/',
+      ],
+      matchStrings: [
+        'kubernetesVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)',
+      ],
+      datasourceTemplate: 'github-tags',
+      depNameTemplate: 'kubernetes/kubernetes',
+      versioningTemplate: 'semver',
+    },
+  ],
 }
