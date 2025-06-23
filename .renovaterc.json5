@@ -1,27 +1,18 @@
 {
-  // Use Renovate's base preset for sensible defaults
   "extends": ["config:base"],
-
-  // Never automerge; always open PRs for manual review
   "automerge": false,
-
-  // Assign all Renovate PRs to this GitHub user
   "assignees": ["jeversol"],
 
-  // BUILT-IN MANAGERS CONFIGURATION
-
-  // 1. Kustomize manager handles all kustomization.yaml files
-  "kustomize": {
-    "fileMatch": [
-      "^infrastructure/.*/kustomization\\.ya?ml$"
+  "argocd": {
+    "enabled": true,
+    "managerFilePatterns": [
+      "^/argocd/applications/.*\\.ya?ml$"
     ]
   },
 
-  // 2. Generic Kubernetes manager handles other YAML manifests
   "kubernetes": {
-    // Exclude kustomization files so they go to the kustomize manager
     "managerFilePatterns": [
-      "!^.*\\/kustomization\\.ya?ml$",
+      "!^/argocd/.*\\.ya?ml$",
       "\\.ya?ml$"
     ]
   },
