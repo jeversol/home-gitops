@@ -23,7 +23,7 @@
     {
       customType: 'regex',
       managerFilePatterns: [
-        '/infrastructure/cluster/track-versions.{yaml,yml}/',
+        'infrastructure/cluster/track-versions.yaml',
       ],
       matchStrings: [
         'talosVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)',
@@ -35,7 +35,7 @@
     {
       customType: 'regex',
       managerFilePatterns: [
-        '/infrastructure/cluster/track-versions.{yaml,yml}/',
+        'infrastructure/cluster/track-versions.yaml',
       ],
       matchStrings: [
         'kubernetesVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)',
