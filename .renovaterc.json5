@@ -24,9 +24,7 @@
   // Regex manager to bump cert-manager version in kustomization.yaml URL
   regexManagers: [
     {
-      // Only run on your cert-manager kustomization file
       fileMatch: ['^infrastructure/cert-manager/kustomization\\.yaml$'],
-      // Capture the vX.Y.Z in the download URL
       matchStrings: [
         'github\\.com/cert-manager/cert-manager/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/cert-manager\\.yaml'
       ],
@@ -34,5 +32,14 @@
       depNameTemplate: 'cert-manager/cert-manager',
       versioningTemplate: 'semver',
     },
+    {
+      fileMatch: ['^infrastructure/argocd/kustomization\\.yaml$'],
+      matchStrings: [
+        'raw\\.githubusercontent\\.com/argoproj/argo-cd/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/manifests/install\\.yaml'
+      ],
+      datasourceTemplate: 'github-releases',
+      depNameTemplate: 'argoproj/argo-cd',
+      versioningTemplate: 'semver', 
+    }
   ],
 }
