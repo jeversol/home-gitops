@@ -23,3 +23,4 @@ Thumbs.db
 *.swp
 
 client-info.yml
+.pre-commit-config.yaml

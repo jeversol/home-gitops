@@ -18,6 +18,7 @@
   },
   kubernetes: {
     managerFilePatterns: [
+      '!/kustomization\\.ya?ml$/',
       '/\\.ya?ml$/',
     ],
   },
