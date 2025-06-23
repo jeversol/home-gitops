@@ -1,51 +1,58 @@
 {
-  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: [
-    'config:recommended',
-    'docker:enableMajor',
-    'helpers:pinGitHubActionDigests',
-    ':disableRateLimiting',
-    ':semanticCommits',
-    ':timezone(America/New_York)',
-    'workarounds:k3sKubernetesVersioning',
-    'group:kubernetes',
-    'mergeConfidence:all-badges',
-  ],
-  argocd: {
-    managerFilePatterns: [
-      '/argocd/.+\\.ya?ml$/',
-    ],
+  // Use Renovate's base preset for sensible defaults
+  "extends": ["config:base"],
+
+  // Never automerge; always open PRs for manual review
+  "automerge": false,
+
+  // Assign all Renovate PRs to this GitHub user
+  "assignees": ["jeversol"],
+
+  // BUILT-IN MANAGERS CONFIGURATION
+
+  // 1. Kustomize manager handles all kustomization.yaml files
+  "kustomize": {
+    "fileMatch": [
+      "^infrastructure/.*/kustomization\\.ya?ml$"
+    ]
   },
-  kubernetes: {
-    managerFilePatterns: [
-      '!/kustomization\\.ya?ml$/',
-      '/\\.ya?ml$/',
-    ],
+
+  // 2. Generic Kubernetes manager handles other YAML manifests
+  "kubernetes": {
+    // Exclude kustomization files so they go to the kustomize manager
+    "managerFilePatterns": [
+      "!^.*\\/kustomization\\.ya?ml$",
+      "\\.ya?ml$"
+    ]
   },
-  customManagers: [
+
+  // REGEX MANAGERS for custom version tracking
+  "regexManagers": [
     {
-      customType: 'regex',
-      managerFilePatterns: [
-        '/^infrastructure/cert-manager/kustomization\\.yaml$/',
+      // Track Talos Linux GitHub releases in track-versions.yaml
+      "fileMatch": [
+        "^infrastructure/cluster/track-versions\\.ya?ml$"
       ],
-      matchStrings: [
-        'github\\.com/cert-manager/cert-manager/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/cert-manager\\.yaml',
+      "matchStrings": [
+        // Captures lines like talosVersion: v1.5.0
+        "talosVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"
       ],
-      datasourceTemplate: 'github-releases',
-      depNameTemplate: 'cert-manager/cert-manager',
-      versioningTemplate: 'semver',
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "siderolabs/talos",
+      "versioningTemplate": "semver"
     },
     {
-      customType: 'regex',
-      managerFilePatterns: [
-        '/^infrastructure/argocd/kustomization\\.yaml$/',
+      // Track Kubernetes version in track-versions.yaml
+      "fileMatch": [
+        "^infrastructure/cluster/track-versions\\.ya?ml$"
       ],
-      matchStrings: [
-        'raw\\.githubusercontent\\.com/argoproj/argo-cd/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/manifests/install\\.yaml',
+      "matchStrings": [
+        // Captures lines like kubernetesVersion: v1.24.3
+        "kubernetesVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"
       ],
-      datasourceTemplate: 'github-releases',
-      depNameTemplate: 'argoproj/argo-cd',
-      versioningTemplate: 'semver',
-    },
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "kubernetes/kubernetes",
+      "versioningTemplate": "semver"
+    }
   ],
 }
