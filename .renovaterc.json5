@@ -1,38 +1,37 @@
 {
-  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: [
-    'config:recommended',
-    'docker:enableMajor',
-    'helpers:pinGitHubActionDigests',
-    ':disableRateLimiting',
-    ':semanticCommits',
-    ':timezone(America/New_York)',
-    'workarounds:k3sKubernetesVersioning',
-    'group:kubernetes',
-    'mergeConfidence:all-badges',
-  ],
-  argocd: {
-    managerFilePatterns: [
-      '/argocd/.+\\.ya?ml$/',
-    ],
+  "extends": ["config:base"],
+  "automerge": false,
+  "assignees": ["jeversol"],
+
+  "argocd": {
+    "enabled": true,
+    "managerFilePatterns": [
+      "argocd/applications/**/*.{yaml,yml}"
+    ]
   },
-  kubernetes: {
-    managerFilePatterns: [
-      '/\\.ya?ml$/',
-    ],
+
+  "kubernetes": {
+    "managerFilePatterns": [
+      "!**/kustomization.{yaml,yml}",
+      "!argocd/applications/**/*.{yaml,yml}",
+      "**/*.{yaml,yml}"
+    ]
   },
-  // Regex manager to bump cert-manager version in kustomization.yaml URL
-  regexManagers: [
+
+  "regexManagers": [
     {
-      // Only run on your cert-manager kustomization file
-      fileMatch: ['^infrastructure/cert-manager/kustomization\\.yaml$'],
-      // Capture the vX.Y.Z in the download URL
-      matchStrings: [
-        'github\\.com/cert-manager/cert-manager/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/cert-manager\\.yaml'
-      ],
-      datasourceTemplate: 'github-releases',
-      depNameTemplate: 'cert-manager/cert-manager',
-      versioningTemplate: 'semver',
+      "fileMatch": ["infrastructure/cluster/track-versions.{yaml,yml}"],
+      "matchStrings": ["talosVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "talos-systems/talos",
+      "versioningTemplate": "semver"
     },
-  ],
+    {
+      "fileMatch": ["infrastructure/cluster/track-versions.{yaml,yml}"],
+      "matchStrings": ["kubernetesVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      "datasourceTemplate": "github-tags",
+      "depNameTemplate": "kubernetes/kubernetes",
+      "versioningTemplate": "semver"
+    }
+  ]
 }
