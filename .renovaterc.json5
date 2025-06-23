@@ -6,44 +6,34 @@
   "argocd": {
     "enabled": true,
     "managerFilePatterns": [
-      "^/argocd/applications/.*\\.ya?ml$"
+      "^argocd/applications/.*\\.ya?ml$"
     ]
   },
 
   "kubernetes": {
     "managerFilePatterns": [
-      "!^/argocd/.*\\.ya?ml$",
+      // Skip Argo CD apps (handled above) and kustomization files (handled by kustomize)
+      "!^argocd/applications/.*\\.ya?ml$",
+      "!/(^|/)kustomization\\.ya?ml$/",
+      // Then match everything else
       "\\.ya?ml$"
     ]
   },
 
-  // REGEX MANAGERS for custom version tracking
   "regexManagers": [
     {
-      // Track Talos Linux GitHub releases in track-versions.yaml
-      "fileMatch": [
-        "^infrastructure/cluster/track-versions\\.ya?ml$"
-      ],
-      "matchStrings": [
-        // Captures lines like talosVersion: v1.5.0
-        "talosVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"
-      ],
+      "fileMatch": ["^infrastructure/cluster/track-versions\\.ya?ml$"],
+      "matchStrings": ["talosVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
       "datasourceTemplate": "github-releases",
-      "depNameTemplate": "siderolabs/talos",
+      "depNameTemplate": "talos-systems/talos",
       "versioningTemplate": "semver"
     },
     {
-      // Track Kubernetes version in track-versions.yaml
-      "fileMatch": [
-        "^infrastructure/cluster/track-versions\\.ya?ml$"
-      ],
-      "matchStrings": [
-        // Captures lines like kubernetesVersion: v1.24.3
-        "kubernetesVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"
-      ],
+      "fileMatch": ["^infrastructure/cluster/track-versions\\.ya?ml$"],
+      "matchStrings": ["kubernetesVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
       "datasourceTemplate": "github-tags",
       "depNameTemplate": "kubernetes/kubernetes",
       "versioningTemplate": "semver"
     }
-  ],
+  ]
 }
