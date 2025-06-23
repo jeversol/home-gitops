@@ -1,0 +1,28 @@
+machine:
+  network:
+    hostname: k8s-node3
+    interfaces:
+      - deviceSelector:
+          physical: true
+        addresses:
+        - 192.168.1.223/24
+#        vip:
+#          ip: 192.168.1.235
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 192.168.1.1
+        dhcp: false
+  kubelet:
+    extraMounts:
+      - destination: /var/lib/longhorn
+        type: bind
+        source: /var/lib/longhorn
+        options:
+          - bind
+          - rshared
+          - rw
+  install:
+    disk: /dev/nvme0n1
+    wipe: true
+cluster:
+  allowSchedulingOnControlPlanes: true
