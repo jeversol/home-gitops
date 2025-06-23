@@ -21,14 +21,14 @@
       '/\\.ya?ml$/',
     ],
   },
-  // Regex manager to bump cert-manager version in kustomization.yaml URL
-  regexManagers: [
+  customManagers: [
     {
-      // Only run on your cert-manager kustomization file
-      fileMatch: ['^infrastructure/cert-manager/kustomization\\.yaml$'],
-      // Capture the vX.Y.Z in the download URL
+      customType: 'regex',
+      managerFilePatterns: [
+        '/^infrastructure/cert-manager/kustomization\\.yaml$/',
+      ],
       matchStrings: [
-        'github\\.com/cert-manager/cert-manager/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/cert-manager\\.yaml'
+        'github\\.com/cert-manager/cert-manager/releases/download/v(?<currentValue>\\d+\\.\\d+\\.\\d+)/cert-manager\\.yaml',
       ],
       datasourceTemplate: 'github-releases',
       depNameTemplate: 'cert-manager/cert-manager',
