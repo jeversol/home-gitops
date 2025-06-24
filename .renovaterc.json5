@@ -44,5 +44,17 @@
       depNameTemplate: 'kubernetes/kubernetes',
       versioningTemplate: 'semver',
     },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        'infrastructure/argocd/kustomization.yaml',
+      ],
+      matchStrings: [
+        'https://raw\\.githubusercontent\\.com/argoproj/argo-cd/(?<currentValue>v\\d+\\.\\d+\\.\\d+)/manifests/install\\.yaml',
+      ],
+      datasourceTemplate: 'github-releases',
+      depNameTemplate: 'argoproj/argo-cd',
+      versioningTemplate: 'semver',
+    },
   ],
 }
