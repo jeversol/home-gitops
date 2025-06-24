@@ -22,12 +22,6 @@ spec:
       containers:
       - name: tautulli
         image: ghcr.io/tautulli/tautulli:v2.15.2
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - ALL
         ports:
         - name: tautulli-port
           containerPort: 8181
