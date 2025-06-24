@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tautulli-tls
+  namespace: media
+spec:
+  commonName: tautulli.i.recompiled.org
+  secretName: tautulli-tls
+  dnsNames:
+    - tautulli.i.recompiled.org
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
