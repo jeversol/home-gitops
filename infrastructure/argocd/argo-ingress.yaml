@@ -13,6 +13,12 @@ spec:
     services:
     - name: argocd-server
       port: 80
+      sticky:
+        cookie:
+          name: argocd-affinity
+          secure: true
+          httpOnly: true
+          sameSite: lax
   - kind: Rule
     match: Host(`argocd.i.recompiled.org`) && Header(`Content-Type`, `application/grpc`)
     priority: 11
@@ -20,5 +26,11 @@ spec:
     - name: argocd-server
       port: 80
       scheme: h2c
+      sticky:
+        cookie:
+          name: argocd-grpc-affinity
+          secure: true
+          httpOnly: true
+          sameSite: lax
   tls:
     secretName: argocd-tls
