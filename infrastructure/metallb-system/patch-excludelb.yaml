@@ -11,5 +11,4 @@ spec:
           args:
             - --port=7472
             - --log-level=info
-            - --enable-metrics
             - --ignore-exclude-lb
