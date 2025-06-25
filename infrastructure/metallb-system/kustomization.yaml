@@ -6,3 +6,10 @@ namespace: metallb-system
 resources:
 - github.com/metallb/metallb/config/native?ref=v0.15.2
 - ip-pool.yaml
+
+patches:
+  - target:
+      kind: DaemonSet
+      name: speaker
+      namespace: metallb-system
+    path: patch-speaker-flags.yaml
