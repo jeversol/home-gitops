@@ -12,4 +12,4 @@ patches:
       kind: DaemonSet
       name: speaker
       namespace: metallb-system
-    path: patch-speaker-flags.yaml
+    path: patch-excludelb.yaml
