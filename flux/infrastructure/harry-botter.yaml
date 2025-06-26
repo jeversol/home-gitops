@@ -5,9 +5,13 @@ metadata:
   namespace: flux-system
 spec:
   interval: 10m
+  targetNamespace: harry-botter
   path: ./infrastructure/harry-botter
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
