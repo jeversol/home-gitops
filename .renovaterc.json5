@@ -6,16 +6,16 @@
   assignees: [
     'jeversol',
   ],
-  argocd: {
+  flux: {
     enabled: true,
     managerFilePatterns: [
-      'argocd/applications/**/*.{yaml,yml}',
+      '/flux/**/*.{yaml,yml}',
     ],
   },
   kubernetes: {
     managerFilePatterns: [
       '!**/kustomization.{yaml,yml}',
-      '!argocd/applications/**/*.{yaml,yml}',
+      '!flux/**/*.{yaml,yml}',
       '**/*.{yaml,yml}',
     ],
   },
@@ -42,18 +42,6 @@
       ],
       datasourceTemplate: 'github-tags',
       depNameTemplate: 'kubernetes/kubernetes',
-      versioningTemplate: 'semver',
-    },
-    {
-      customType: 'regex',
-      managerFilePatterns: [
-        'infrastructure/argocd/kustomization.yaml',
-      ],
-      matchStrings: [
-        'https://raw\\.githubusercontent\\.com/argoproj/argo-cd/(?<currentValue>v\\d+\\.\\d+\\.\\d+)/manifests/install\\.yaml',
-      ],
-      datasourceTemplate: 'github-releases',
-      depNameTemplate: 'argoproj/argo-cd',
       versioningTemplate: 'semver',
     },
   ],
