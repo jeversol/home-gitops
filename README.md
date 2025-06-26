@@ -1,10 +1,7 @@
-# home-argocd
+# home-gitops
 
-This repo manages my home kubernetes cluster using ArgoCD.
+This repo manages my home kubernetes cluster using Flux.
 
-The first revision of this was using FluxCD and k3s on a cheap Intel N150-based mini PC from Amazon. 
-
-This now-current version is a 3 node cluster running Talos Linux for the OS.
 
 | Node | HW Model | CPU | RAM | Storage | Network |
 | ---- | -------- | --- | --- | ------- | ------- |
@@ -13,14 +10,37 @@ This now-current version is a 3 node cluster running Talos Linux for the OS.
 | Node 3 | HP ProDesk 600 G4 Mini | Intel Core i5-8500T | 16GB | 256GB SSD | 1Gbit |
 
 ## Deployed and Migrated Services:
-- ArgoCD
-- MetalLB
-- Traefik
-- external-secrets
-- cert-manager
-- harry-botter
-  - homegrown script for secrets due to expire, based on annotations
-- democratic-csi
+- Infrastructure
+  - [FluxCD](https://fluxcd.io/)
+  - [SOPS with age](https://getsops.io)
+  - [MetalLB](https://metallb.io)
+  - [Traefik](https://doc.traefik.io/traefik/)
+  - [external-secrets](https://external-secrets.io/latest/)
+  - [cert-manager](https://cert-manager.io)
+  - [harry-botter](https://github.com/apps/harry-botter-lumos)
+    - homegrown script for secrets due to expire, based on annotations
+  - [democratic-csi](https://github.com/democratic-csi/democratic-csi)
+- Applications
+  - [tautulli](https://tautulli.com)
+
+### Deployed but backed out/replaced
+
+<details> 
+<summary>Replaced ArgoCD with FluxCD</summary>   
+
+I originally started out using Flux for GitOps as it had a lower learning curve. When I decided to switch from k8s on Ubuntu to a Talos Linux cluster, I decided to also use Argo, because it has broad adoption in the enterprise landscape. 
+
+Initially, it was going well. I got a good flow of being able to test my deployments before committing them, dealing with some issues, etc. However, it completely collapsed after converting to a 3 node cluster.
+
+After upgrading the cluster from 1 control-plane and 1 worker to 3 control-plane nodes, I started having permissions issues internally... logging into the webui as admin and trying to drill into an application would kick me back to the login page. 
+  
+Using ChatGPT to help drill through some diagnostic steps, it appeard to be some sort of service account and token issue. Deleting argocd from the k8s cluster and reinstalling it from scratch wouldn't fix it. A workaround involved creating a custom service account, generating a token for it, extracting the jwt token and giving it to a Secret.
+
+Honestly, this felt too painful. I had spent hours ruling out SSO, RBAC, a broken Redis cache, problems with the ArgoCD HA deployment versus non-HA. ChatGPT suggested a bootstrapping script that created the secret and all of that, but then it said "Oh, that token is only good for 1 hour. Do you want a token that lasts a year?" 
+
+That was when I decided it was too much and went back to Flux.  
+
+</details>
 
 ## Up Next:
 
