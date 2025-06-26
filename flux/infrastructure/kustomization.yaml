@@ -4,3 +4,4 @@ resources:
   - metallb-system.yaml
   - harry-botter.yaml
   - cert-manager.yaml
+  - traefik.yaml
