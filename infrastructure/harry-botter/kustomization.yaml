@@ -8,5 +8,5 @@ resources:
   - serviceaccount.yaml
   - role.yaml
   - rolebinding.yaml
-  - github-external-secret.yaml
+  - github-app-secret.yaml
   - cronjob.yaml
