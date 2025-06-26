@@ -9,12 +9,13 @@
   flux: {
     enabled: true,
     managerFilePatterns: [
-      '/flux/**/*.{yaml,yml}',
+      'flux/**/*.{yaml,yml}',
     ],
   },
   kubernetes: {
     managerFilePatterns: [
       '!**/kustomization.{yaml,yml}',
+      '!flux/**/*.{yaml,yml}',
       '**/*.{yaml,yml}',
     ],
   },
