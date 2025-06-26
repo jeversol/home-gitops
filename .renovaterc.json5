@@ -9,7 +9,7 @@
   flux: {
     enabled: true,
     managerFilePatterns: [
-      '/flux/**/*.{yaml,yml}',
+      'flux/**/*.{yaml,yml}',
     ],
   },
   kubernetes: {
