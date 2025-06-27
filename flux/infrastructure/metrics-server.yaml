@@ -21,8 +21,10 @@ spec:
       version: "3.12.1"
       sourceRef:
         kind: HelmRepository
-        name: flux-system
+        name: metrics-server
+        namespace: flux-system
       interval: 12h
   values:
     args:
       - --kubelet-insecure-tls
+      - --kubelet-preferred-address-types=InternalIP
