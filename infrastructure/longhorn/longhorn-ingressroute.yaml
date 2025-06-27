@@ -9,6 +9,9 @@ spec:
   routes:
   - match: Host(`longhorn.i.recompiled.org`)
     kind: Rule
+    middlewares:
+    - name: auth
+      namespace: traefik
     services:
     - name: longhorn-frontend
       port: 80
