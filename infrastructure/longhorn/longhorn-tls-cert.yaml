@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: longhorn-tls
+  namespace: longhorn
+spec:
+  commonName: longhorn.i.recompiled.org
+  secretName: longhorn-tls
+  dnsNames:
+    - longhorn.i.recompiled.org
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt

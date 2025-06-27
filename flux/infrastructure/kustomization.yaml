@@ -7,3 +7,5 @@ resources:
   - traefik.yaml
   - democratic-csi.yaml
   - metrics-server.yaml
+  - longhorn.yaml
+  - grafana-helm-repo.yaml

@@ -1,5 +1,0 @@
-revisionHistoryLimit: 5
-webhook:
-  create: false
-certController:
-  create: false
