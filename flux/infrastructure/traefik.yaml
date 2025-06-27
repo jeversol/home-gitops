@@ -13,7 +13,7 @@ metadata:
   name: traefik-crds
   namespace: flux-system
 spec:
-  targetNamespace: cert-manager
+  targetNamespace: traefik
   interval: 10m
   releaseName: traefik-crds
   chart:
@@ -30,7 +30,7 @@ metadata:
   name: traefik
   namespace: flux-system
 spec:
-  targetNamespace: cert-manager
+  targetNamespace: traefik
   dependsOn: 
     - name: traefik-crds
     - name: cert-manager
