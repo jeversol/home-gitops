@@ -1,0 +1,111 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: democratic-csi-config
+  namespace: flux-system
+spec:
+  interval: 5m
+  path: ./infrastructure/democratic-csi
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: democratic-csi
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: https://democratic-csi.github.io/charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: democratic-csi-snapshot-controller
+  namespace: flux-system
+spec:
+  interval: 5m
+  releaseName: democratic-csi-crds
+  targetNamespace: democratic-csi
+  chart:
+    spec:
+      chart: snapshot-controller
+      version: "0.3.0"
+      sourceRef:
+        kind: HelmRepository
+        name: democratic-csi
+        namespace: flux-system
+  install:
+    createNamespace: true
+  values:
+    installCRDs: true
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: democratic-csi
+  namespace: flux-system
+spec:
+  interval: 5m
+  releaseName: democratic-csi
+  targetNamespace: democratic-csi
+  dependsOn:
+    - name: democratic-csi-snapshot-controller
+      namespace: flux-system
+  chart:
+    spec:
+      chart: democratic-csi
+      version: "0.15.0"
+      sourceRef:
+        kind: HelmRepository
+        name: democratic-csi
+        namespace: flux-system
+  values:
+    csiDriver:
+      name: "org.democratic-csi.iscsi-synology"
+    storageClasses:
+      - name: democratic-iscsi
+        defaultClass: true
+        reclaimPolicy: Retain
+        volumeBindingMode: Immediate
+        allowVolumeExpansion: true
+        parameters:
+          fsType: btrfs
+        mountOptions: []
+        secrets:
+          provisioner-secret: 
+          controller-publish-secret: 
+          node-stage-secret: 
+          node-publish-secret: 
+          controller-expand-secret: 
+    volumeSnapshotClasses:
+      - name: democratic-synology-iscsi
+        parameters:
+        secrets:
+          snapshotter-secret:
+    controller:
+      externalResizer:
+        enabled: true
+      externalSnapshotter:
+        enabled: true
+    driver:
+      existingConfigSecret: democratic-csi-driver-config
+      config:
+        driver: synology-iscsi
+    node:
+      hostPID: true
+      driver:
+        extraEnv:
+          - name: ISCSIADM_HOST_STRATEGY
+            value: nsenter
+          - name: ISCSIADM_HOST_PATH
+            value: /usr/local/sbin/iscsiadm
+        iscsiDirHostPath: /var/iscsi
+        iscsiDirHostPathType: ""

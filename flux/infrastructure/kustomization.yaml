@@ -5,3 +5,4 @@ resources:
   - harry-botter.yaml
   - cert-manager.yaml
   - traefik.yaml
+  - democratic-csi.yaml
