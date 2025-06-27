@@ -23,6 +23,6 @@ machine:
           - rw
   install:
     disk: /dev/nvme0n1
-    wipe: true
+    wipe: false
 cluster:
   allowSchedulingOnControlPlanes: true
