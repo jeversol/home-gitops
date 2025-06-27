@@ -6,3 +6,4 @@ resources:
   - cert-manager.yaml
   - traefik.yaml
   - democratic-csi.yaml
+  - metrics-server.yaml
