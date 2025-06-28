@@ -1,0 +1,179 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mimir
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: mimir
+  targetNamespace: o11y
+  chart:
+    spec:
+      chart: mimir-distributed
+      version: "5.7.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # Mimir configuration
+    # Use environment variables for S3 credentials
+    global:
+      extraEnvFrom:
+        - secretRef:
+            name: mimir-minio-secret
+    
+    mimir:
+      structuredConfig:
+        common:
+          storage:
+            backend: s3
+            s3:
+              endpoint: nas.i.recompiled.org:9000
+              access_key_id: "${AWS_ACCESS_KEY_ID}"
+              secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
+              insecure: false
+        
+        # Separate S3 buckets for different components
+        blocks_storage:
+          s3:
+            bucket_name: mimir-blocks
+        
+        alertmanager_storage:
+          s3:
+            bucket_name: mimir-alertmanager
+        
+        ruler_storage:
+          s3:
+            bucket_name: mimir-ruler
+        
+        # Retention configuration (1 year)
+        limits:
+          compactor_blocks_retention_period: 8760h  # 1 year
+        
+        # Ingester configuration
+        ingester:
+          ring:
+            final_sleep: 0s
+            num_tokens: 512
+            unregister_on_shutdown: false
+    
+    
+    # Disable built-in MinIO since we're using external S3
+    minio:
+      enabled: false
+    
+    # Component resource configuration for your cluster
+    ingester:
+      replicas: 2
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+      persistentVolume:
+        size: 10Gi
+        storageClass: "longhorn"
+    
+    store_gateway:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
+      persistentVolume:
+        size: 5Gi
+        storageClass: "longhorn"
+    
+    compactor:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
+      persistentVolume:
+        size: 5Gi
+        storageClass: "longhorn"
+    
+    querier:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+    
+    query_frontend:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+    
+    query_scheduler:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+    
+    distributor:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+    
+    ruler:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+    
+    alertmanager:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+      persistentVolume:
+        size: 2Gi
+        storageClass: "longhorn"
+    
+    # Nginx gateway for internal load balancing
+    nginx:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+      service:
+        type: ClusterIP
+        port: 80
