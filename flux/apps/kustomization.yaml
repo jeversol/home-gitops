@@ -4,4 +4,4 @@ resources:
   - tautulli.yaml
   - mimir-helmrelease.yaml
   - grafana-helmrelease.yaml
-  - ../../apps/o11y/
+  - o11y.yaml

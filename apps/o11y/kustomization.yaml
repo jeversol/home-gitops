@@ -1,6 +1,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - shared
-  - mimir
-  - grafana
+  # Namespace and secrets at root level for SOPS decryption
+  - namespace.yaml
+  - mimir-minio-secret.yaml
+  - grafana-admin-secret.yaml
+  - grafana-auth0-secret.yaml
+  # Component subdirectories
+  - grafana/
+  - mimir/
