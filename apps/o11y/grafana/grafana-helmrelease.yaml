@@ -1,0 +1,116 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: grafana
+  targetNamespace: o11y
+  chart:
+    spec:
+      chart: grafana
+      version: "9.2.8"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # Admin credentials
+    admin:
+      existingSecret: "grafana-admin-secret"
+      userKey: admin-user
+      passwordKey: admin-password
+    
+    # Environment variables for Auth0 integration
+    envFromSecret: grafana-auth0-secret
+    
+    # Configure Mimir as default data source
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Mimir
+            type: prometheus
+            url: http://mimir-nginx.o11y.svc:80/prometheus
+            access: proxy
+            isDefault: true
+            editable: true
+    
+    # Enable dashboards from configmaps
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: 'default'
+            orgId: 1
+            folder: ''
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/default
+    
+    # Resource configuration for your cluster
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
+    
+    # Persistence using Longhorn
+    persistence:
+      enabled: true
+      storageClassName: "longhorn"
+      size: 5Gi
+    
+    # Service configuration
+    service:
+      type: ClusterIP
+      port: 80
+    
+    # Security context
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 472
+      fsGroup: 472
+    
+    # Grafana configuration
+    grafana.ini:
+      server:
+        root_url: https://grafana.i.recompiled.org
+        serve_from_sub_path: false
+      security:
+        disable_initial_admin_creation: false
+      auth:
+        disable_login_form: false
+        oauth_auto_login: false
+      auth.generic_oauth:
+        enabled: true
+        name: Auth0
+        allow_sign_up: true
+        client_id: $__env{AUTH0_CLIENT_ID}
+        client_secret: $__env{AUTH0_CLIENT_SECRET}
+        scopes: openid profile email
+        auth_url: https://auth.recompiled.org/authorize
+        token_url: https://auth.recompiled.org/oauth/token
+        api_url: https://auth.recompiled.org/userinfo
+        name_attribute_path: name
+        login_attribute_path: email
+        role_attribute_path: contains("https://recompiled.org/roles"[*], 'Global Admin') && 'Admin' || contains("https://recompiled.org/roles"[*], 'grafana-admins') && 'Admin' || 'Viewer'
+        allowed_domains: recompiled.org
+      analytics:
+        reporting_enabled: false
+        check_for_updates: false
+      log:
+        mode: console
+        level: info
