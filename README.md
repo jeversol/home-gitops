@@ -20,6 +20,7 @@ This repo manages my home kubernetes cluster using Flux.
   - [harry-botter](https://github.com/apps/harry-botter-lumos)
     - homegrown script for secrets due to expire, based on annotations
   - [democratic-csi](https://github.com/democratic-csi/democratic-csi)
+  - [longhorn](https://longhorn.io)
 - Applications
   - [tautulli](https://tautulli.com)
 
