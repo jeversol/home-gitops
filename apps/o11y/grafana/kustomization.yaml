@@ -3,6 +3,5 @@ kind: Kustomization
 resources:
   - grafana-admin-secret.yaml
   - grafana-auth0-secret.yaml
-  - grafana-helmrelease.yaml
   - grafana-ingressroute.yaml
   - grafana-tls-cert.yaml
