@@ -21,7 +21,7 @@ spec:
           - --provider-display-name="Auth0"
           - --oidc-issuer-url=https://auth.recompiled.org/
           - --redirect-url=https://longhorn.i.recompiled.org/oauth2/callback
-          - --upstream=static://200
+          - --upstream=http://longhorn-frontend.longhorn.svc.cluster.local:80
           - --http-address=0.0.0.0:4180
           - --email-domain=*
           - --cookie-domain=.recompiled.org
@@ -33,6 +33,8 @@ spec:
           - --pass-access-token=true
           - --pass-authorization-header=true
           - --skip-provider-button=true
+          - --reverse-proxy=true
+          - --set-authorization-header=true
         env:
         - name: OAUTH2_PROXY_CLIENT_ID
           valueFrom:
