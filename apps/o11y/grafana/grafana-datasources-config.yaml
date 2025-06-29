@@ -1,0 +1,25 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources-config
+  namespace: o11y
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+      - name: Mimir
+        type: prometheus
+        url: http://mimir-nginx.o11y.svc:80/prometheus
+        access: proxy
+        isDefault: true
+        editable: true
+      - name: Loki
+        type: loki
+        url: http://loki.o11y.svc:3100
+        access: proxy
+        editable: true
+        jsonData:
+          httpHeaderName1: "X-Scope-OrgID"
+        secureJsonData:
+          httpHeaderValue1: "1"

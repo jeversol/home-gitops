@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - grafana-ingressroute.yaml
   - grafana-tls-cert.yaml
+  - grafana-datasources-config.yaml
