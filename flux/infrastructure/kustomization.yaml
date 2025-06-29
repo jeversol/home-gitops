@@ -9,4 +9,5 @@ resources:
   - metrics-server.yaml
   - longhorn.yaml
   - grafana-helm-repo.yaml
+  - prometheus-community-helm-repo.yaml
   - oauth2-proxy.yaml

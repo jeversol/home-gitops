@@ -5,4 +5,5 @@ resources:
   - mimir-helmrelease.yaml
   - grafana-helmrelease.yaml
   - alloy-helmrelease.yaml
+  - kube-state-metrics-helmrelease.yaml
   - o11y.yaml
