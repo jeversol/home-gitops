@@ -6,6 +6,7 @@ resources:
   - mimir-minio-secret.yaml
   - grafana-admin-secret.yaml
   - grafana-auth0-secret.yaml
+  - loki-minio-secret.yaml
   # Alloy configuration
   - alloy-config.yaml
   # Component subdirectories
