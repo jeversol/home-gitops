@@ -21,6 +21,10 @@ This repo manages my home kubernetes cluster using Flux.
     - homegrown script for secrets due to expire, based on annotations
   - [democratic-csi](https://github.com/democratic-csi/democratic-csi)
   - [longhorn](https://longhorn.io)
+- Observability
+  - Mimir
+  - Alloy
+  - Grafana
 - Applications
   - [tautulli](https://tautulli.com)
 
@@ -45,8 +49,6 @@ That was when I decided it was too much and went back to Flux.
 
 ## Up Next:
 
-- longhorn
-- tautulli migration to new cluster
 - o11y: prom/grafana/loki/mimir/alloy
 
 ## To Migrate:

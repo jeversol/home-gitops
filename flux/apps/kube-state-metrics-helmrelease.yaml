@@ -31,74 +31,8 @@ spec:
         memory: 128Mi
       limits:
         memory: 256Mi
-
-    # RBAC permissions for reading Kubernetes objects
-    rbac:
-      create: true
-
-    # ServiceAccount
-    serviceAccount:
-      create: true
-      name: kube-state-metrics
-
-    # Service configuration
+    
+    # Service annotations for Prometheus discovery
     service:
-      type: ClusterIP
-      port: 8080
-      targetPort: 8080
       annotations:
-        prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
-        prometheus.io/path: "/metrics"
-
-    # Pod annotations for Prometheus discovery
-    podAnnotations:
-      prometheus.io/scrape: "true"
-      prometheus.io/port: "8080"
-      prometheus.io/path: "/metrics"
-
-    # Security context
-    securityContext:
-      runAsNonRoot: true
-      runAsUser: 65534
-      fsGroup: 65534
-
-    # Collect metrics from all Kubernetes objects
-    collectors:
-      - certificatesigningrequests
-      - configmaps
-      - cronjobs
-      - daemonsets
-      - deployments
-      - endpoints
-      - horizontalpodautoscalers
-      - ingresses
-      - jobs
-      - limitranges
-      - mutatingwebhookconfigurations
-      - namespaces
-      - networkpolicies
-      - nodes
-      - persistentvolumeclaims
-      - persistentvolumes
-      - poddisruptionbudgets
-      - pods
-      - replicasets
-      - replicationcontrollers
-      - resourcequotas
-      - secrets
-      - services
-      - statefulsets
-      - storageclasses
-      - validatingwebhookconfigurations
-      - volumeattachments
-
-    # Metrics configuration
-    metricLabelsAllowlist:
-      - pods=[*]
-      - deployments=[*]
-      - nodes=[*]
-
-    # Self-monitoring
-    selfMonitor:
-      enabled: false
