@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: loki-tls
+  namespace: o11y
+spec:
+  commonName: loki.i.recompiled.org
+  secretName: loki-tls
+  dnsNames:
+    - loki.i.recompiled.org
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
