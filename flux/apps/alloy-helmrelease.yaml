@@ -1,0 +1,165 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: alloy
+  targetNamespace: o11y
+  chart:
+    spec:
+      chart: alloy
+      version: "1.1.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # Alloy configuration
+    alloy:
+      configMap:
+        create: true
+        content: |
+          // Discover Kubernetes API server
+          discovery.kubernetes "api_server" {
+            role = "endpoints"
+            namespaces {
+              own_namespace = false
+              names = ["default"]
+            }
+            selectors {
+              role = "endpoints"
+              label = "component=apiserver"
+            }
+          }
+
+          // Discover kubelet metrics
+          discovery.kubernetes "kubelet" {
+            role = "node"
+          }
+
+          // Discover pods for container metrics
+          discovery.kubernetes "pods" {
+            role = "pod"
+          }
+
+          // Discover services for service discovery
+          discovery.kubernetes "services" {
+            role = "service"
+          }
+
+          // Scrape kubelet metrics
+          prometheus.scrape "kubelet" {
+            targets = discovery.kubernetes.kubelet.targets
+            forward_to = [prometheus.remote_write.mimir.receiver]
+            
+            job_name = "kubelet"
+            scheme = "https"
+            bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            tls_config {
+              insecure_skip_verify = true
+            }
+            
+            scrape_interval = "30s"
+            metrics_path = "/metrics"
+          }
+
+          // Scrape kubelet cadvisor metrics (container metrics)
+          prometheus.scrape "kubelet_cadvisor" {
+            targets = discovery.kubernetes.kubelet.targets
+            forward_to = [prometheus.remote_write.mimir.receiver]
+            
+            job_name = "kubelet-cadvisor"
+            scheme = "https"
+            bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            tls_config {
+              insecure_skip_verify = true
+            }
+            
+            scrape_interval = "30s"
+            metrics_path = "/metrics/cadvisor"
+          }
+
+          // Scrape API server metrics
+          prometheus.scrape "api_server" {
+            targets = discovery.kubernetes.api_server.targets
+            forward_to = [prometheus.remote_write.mimir.receiver]
+            
+            job_name = "apiserver"
+            scheme = "https"
+            bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            tls_config {
+              insecure_skip_verify = true
+            }
+            
+            scrape_interval = "30s"
+          }
+
+          // Scrape kube-state-metrics if available
+          discovery.kubernetes "kube_state_metrics" {
+            role = "pod"
+            selectors {
+              role = "pod"
+              label = "app.kubernetes.io/name=kube-state-metrics"
+            }
+          }
+
+          prometheus.scrape "kube_state_metrics" {
+            targets = discovery.kubernetes.kube_state_metrics.targets
+            forward_to = [prometheus.remote_write.mimir.receiver]
+            
+            job_name = "kube-state-metrics"
+            scrape_interval = "30s"
+          }
+
+          // Remote write to Mimir
+          prometheus.remote_write "mimir" {
+            endpoint {
+              url = "http://mimir-nginx.o11y.svc:80/api/v1/push"
+            }
+            
+            // Add cluster label to all metrics
+            external_labels = {
+              cluster = "home-cluster",
+            }
+          }
+
+    # Controller configuration
+    controller:
+      type: "deployment"
+      replicas: 1
+
+    # ServiceAccount with proper RBAC for metrics collection
+    serviceAccount:
+      create: true
+      name: alloy
+
+    # RBAC permissions for discovering and scraping metrics
+    rbac:
+      create: true
+
+    # Resource configuration
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
+
+    # Service configuration
+    service:
+      type: ClusterIP
+      port: 12345
+
+    # ServiceMonitor for self-monitoring (optional)
+    serviceMonitor:
+      enabled: false
