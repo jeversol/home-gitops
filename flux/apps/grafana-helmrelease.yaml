@@ -106,7 +106,7 @@ spec:
         api_url: https://auth.recompiled.org/userinfo
         name_attribute_path: name
         login_attribute_path: email
-        role_attribute_path: contains("https://recompiled.org/roles"[*], 'Global Admin') && 'Admin' || contains("https://recompiled.org/roles"[*], 'grafana-admins') && 'Admin' || 'Viewer'
+        role_attribute_path: contains("https://recompiled.org/roles"[*], 'Global Admin') && 'GrafanaAdmin' || contains("https://recompiled.org/roles"[*], 'grafana-admins') && 'GrafanaAdmin' || 'Viewer'
         allowed_domains: recompiled.org
       analytics:
         reporting_enabled: false
