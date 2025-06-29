@@ -27,21 +27,10 @@ spec:
     # Deployment configuration
     deploymentMode: SingleBinary
     
-    # Core Loki settings
+    # Use external ConfigMap for Loki configuration
     loki:
-      commonConfig:
-        replication_factor: 1
-      storage:
-        type: 'filesystem'
-      schemaConfig:
-        configs:
-          - from: "2024-04-01"
-            store: tsdb
-            object_store: filesystem
-            schema: v13
-            index:
-              prefix: loki_index_
-              period: 24h
+      existingSecretForConfig: ""
+      configmap: loki-config
     
     # Single binary deployment
     singleBinary:
