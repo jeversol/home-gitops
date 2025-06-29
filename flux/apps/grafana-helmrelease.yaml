@@ -33,17 +33,18 @@ spec:
     # Environment variables for Auth0 integration
     envFromSecret: grafana-auth0-secret
     
-    # Configure Mimir as default data source
-    datasources:
-      datasources.yaml:
-        apiVersion: 1
-        datasources:
-          - name: Mimir
-            type: prometheus
-            url: http://mimir-nginx.o11y.svc:80/prometheus
-            access: proxy
-            isDefault: true
-            editable: true
+    # Disable inline datasources - use external ConfigMaps via sidecar
+    datasources: {}
+    
+    # Enable sidecar to detect external ConfigMaps
+    sidecar:
+      datasources:
+        enabled: true
+        label: grafana_datasource
+        labelValue: ""
+        searchNamespace: null
+        resource: configmap
+        watchMethod: WATCH
     
     # Enable dashboards from configmaps
     dashboardProviders:
