@@ -218,3 +218,26 @@ data:
         cluster = "home-cluster",
       }
     }
+
+    // Log collection - discover pods for log scraping
+    discovery.kubernetes "pod_logs" {
+      role = "pod"
+    }
+
+    // Scrape container logs
+    loki.source.kubernetes "pod_logs" {
+      targets    = discovery.kubernetes.pod_logs.targets
+      forward_to = [loki.write.loki.receiver]
+    }
+
+    // Remote write to Loki
+    loki.write "loki" {
+      endpoint {
+        url = "http://loki.o11y.svc:3100/loki/api/v1/push"
+      }
+      
+      // Add cluster label to all logs
+      external_labels = {
+        cluster = "home-cluster",
+      }
+    }
