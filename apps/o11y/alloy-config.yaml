@@ -34,6 +34,11 @@ data:
       role = "service"
     }
 
+    // Discover services with Prometheus annotations
+    discovery.kubernetes "annotated_services" {
+      role = "service"
+    }
+
     // Scrape kubelet metrics
     prometheus.scrape "kubelet" {
       targets = discovery.kubernetes.kubelet.targets
@@ -89,6 +94,13 @@ data:
     // Scrape pods that have prometheus.io/scrape=true annotation
     prometheus.scrape "annotated_pods" {
       targets = discovery.relabel.annotated_pods.output
+      forward_to = [prometheus.remote_write.mimir.receiver]
+      scrape_interval = "30s"
+    }
+
+    // Scrape services that have prometheus.io/scrape=true annotation
+    prometheus.scrape "annotated_services" {
+      targets = discovery.relabel.annotated_services.output
       forward_to = [prometheus.remote_write.mimir.receiver]
       scrape_interval = "30s"
     }
@@ -149,6 +161,49 @@ data:
         source_labels = ["__meta_kubernetes_pod_name"]
         action = "replace"
         target_label = "pod"
+      }
+    }
+
+    // Relabel to only scrape annotated services and use their annotations
+    discovery.relabel "annotated_services" {
+      targets = discovery.kubernetes.annotated_services.targets
+
+      // Only scrape services with prometheus.io/scrape=true
+      rule {
+        source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_scrape"]
+        action = "keep"
+        regex = "true"
+      }
+
+      // Use custom metrics path if specified
+      rule {
+        source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_path"]
+        action = "replace"
+        target_label = "__metrics_path__"
+        regex = "(.+)"
+      }
+
+      // Use custom port if specified
+      rule {
+        source_labels = ["__address__", "__meta_kubernetes_service_annotation_prometheus_io_port"]
+        action = "replace"
+        regex = "([^:]+)(?::\\d+)?;(\\d+)"
+        replacement = "$1:$2"
+        target_label = "__address__"
+      }
+
+      // Add job name based on service name
+      rule {
+        source_labels = ["__meta_kubernetes_service_name"]
+        action = "replace"
+        target_label = "job"
+      }
+
+      // Add namespace label
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        action = "replace"
+        target_label = "namespace"
       }
     }
 
