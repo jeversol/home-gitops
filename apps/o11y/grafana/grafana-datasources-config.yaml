@@ -4,6 +4,8 @@ kind: ConfigMap
 metadata:
   name: grafana-datasources-config
   namespace: o11y
+  labels:
+    grafana_datasource: "1"
 data:
   datasources.yaml: |
     apiVersion: 1
