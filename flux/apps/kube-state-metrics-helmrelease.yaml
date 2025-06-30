@@ -32,8 +32,7 @@ spec:
       limits:
         memory: 256Mi
     
-    # Service annotations for Prometheus discovery
+    # Service annotations for Prometheus discovery (scrape annotation is enabled by default)
     service:
       annotations:
-        prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
