@@ -73,3 +73,19 @@ spec:
     # Disable ingress - we'll use Traefik IngressRoute if needed
     ingress:
       enabled: false
+    
+    # Enable Prometheus metrics
+    metrics:
+      serviceMonitor:
+        enabled: false
+    
+    # Service annotations for Prometheus discovery
+    service:
+      manager:
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "9500"
+      ui:
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "9500"

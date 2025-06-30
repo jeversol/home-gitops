@@ -93,6 +93,10 @@ spec:
           memory: 256Mi
         limits:
           memory: 512Mi
+      service:
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "3100"
     
     # Disable other deployment modes
     backend:

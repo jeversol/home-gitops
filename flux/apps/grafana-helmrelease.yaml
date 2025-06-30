@@ -78,6 +78,10 @@ spec:
     service:
       type: ClusterIP
       port: 80
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+        prometheus.io/path: "/metrics"
     
     # Security context
     securityContext:

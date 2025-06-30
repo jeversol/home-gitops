@@ -29,6 +29,15 @@ spec:
     crds:
       enabled: true
       keep: true
+    prometheus:
+      enabled: true
+      servicemonitor:
+        enabled: false
+    # Service annotations for Prometheus discovery
+    serviceAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9402"
+      prometheus.io/path: "/metrics"
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
