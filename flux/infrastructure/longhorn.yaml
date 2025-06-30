@@ -74,18 +74,13 @@ spec:
     ingress:
       enabled: false
     
-    # Enable Prometheus metrics
-    metrics:
-      serviceMonitor:
-        enabled: false
+    # Enable Prometheus metrics - Longhorn manager service annotations
+    annotations:
+      service.beta.kubernetes.io/prometheus-scrape: "true"
+      service.beta.kubernetes.io/prometheus-port: "9500"
     
-    # Service annotations for Prometheus discovery
-    service:
-      manager:
-        annotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "9500"
-      ui:
-        annotations:
-          prometheus.io/scrape: "true"
-          prometheus.io/port: "9500"
+    # Or use standard Prometheus annotations
+    longhornManager:
+      serviceAnnotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9500"
