@@ -9,9 +9,8 @@ data:
     // Discover Kubernetes API server
     discovery.kubernetes "api_server" {
       role = "endpoints"
-      selectors {
-        role = "endpoints"
-        label = "component=apiserver"
+      namespaces {
+        names = ["default"]
       }
     }
 
