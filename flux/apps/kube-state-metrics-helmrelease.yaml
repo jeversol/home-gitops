@@ -24,15 +24,9 @@ spec:
     remediation:
       retries: 3
   values:
-    # Resource configuration for home lab
     resources:
       requests:
         cpu: 50m
         memory: 128Mi
       limits:
         memory: 256Mi
-    
-    # Service annotations for Prometheus discovery (scrape annotation is enabled by default)
-    service:
-      annotations:
-        prometheus.io/port: "8080"
