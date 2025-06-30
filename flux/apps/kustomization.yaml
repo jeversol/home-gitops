@@ -7,4 +7,5 @@ resources:
   - alloy-helmrelease.yaml
   - kube-state-metrics-helmrelease.yaml
   - loki-helmrelease.yaml
+  - prometheus-node-exporter-helmrelease.yaml
   - o11y.yaml
