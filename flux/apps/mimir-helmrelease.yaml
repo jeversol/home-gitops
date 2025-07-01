@@ -153,9 +153,9 @@ spec:
       resources:
         requests:
           cpu: 100m
-          memory: 128Mi
-        limits:
           memory: 256Mi
+        limits:
+          memory: 1024Mi
       service:
         annotations:
           prometheus.io/scrape: "true"
@@ -168,7 +168,7 @@ spec:
           cpu: 50m
           memory: 128Mi
         limits:
-          memory: 256Mi
+          memory: 512Mi
     
     alertmanager:
       replicas: 1
@@ -177,7 +177,7 @@ spec:
           cpu: 50m
           memory: 128Mi
         limits:
-          memory: 256Mi
+          memory: 512Mi
       persistentVolume:
         size: 2Gi
         storageClass: "longhorn"
