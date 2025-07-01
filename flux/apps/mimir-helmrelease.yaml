@@ -117,9 +117,9 @@ spec:
       resources:
         requests:
           cpu: 100m
-          memory: 128Mi
-        limits:
           memory: 256Mi
+        limits:
+          memory: 1024Mi
       service:
         annotations:
           prometheus.io/scrape: "true"
