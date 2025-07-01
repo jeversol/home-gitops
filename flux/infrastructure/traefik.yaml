@@ -55,7 +55,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: traefik
-      version: "36.2.0"
+      version: "36.3.0"
   values:
     securityContext:
       seccompProfile:
