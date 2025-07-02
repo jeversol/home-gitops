@@ -49,9 +49,15 @@ spec:
       targetPort: 9100
       portName: http-metrics
       annotations:
-        prometheus.io/scrape: "true"
+        prometheus.io/scrape: "false"  # Disable service scraping
         prometheus.io/port: "9100"
         prometheus.io/path: "/metrics"
+    
+    # Pod annotations for individual pod scraping
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9100"
+      prometheus.io/path: "/metrics"
     
     # Security context
     securityContext:
