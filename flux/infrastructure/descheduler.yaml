@@ -1,0 +1,77 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: descheduler
+  namespace: flux-system
+spec:
+  interval: 24h
+  url: https://kubernetes-sigs.github.io/descheduler/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: descheduler
+  namespace: flux-system
+spec:
+  interval: 30m
+  targetNamespace: kube-system
+  chart:
+    spec:
+      chart: descheduler
+      version: ">=0.30.0"
+      sourceRef:
+        kind: HelmRepository
+        name: descheduler
+        namespace: flux-system
+      interval: 12h
+  values:
+    # Run every 6 hours
+    schedule: "0 */6 * * *"
+    
+    # Descheduling strategies
+    deschedulerPolicy:
+      strategies:
+        # Move pods from overloaded nodes to underutilized ones
+        LowNodeUtilization:
+          enabled: true
+          params:
+            nodeResourceUtilizationThresholds:
+              # Nodes below these thresholds are underutilized
+              thresholds:
+                cpu: 20
+                memory: 20
+              # Nodes above these thresholds are overutilized  
+              targetThresholds:
+                cpu: 70
+                memory: 70
+        
+        # Spread duplicate pods across nodes
+        RemoveDuplicates:
+          enabled: true
+          
+        # Remove pods that violate topology spread constraints
+        RemovePodsViolatingTopologySpreadConstraint:
+          enabled: true
+          
+        # Remove pods with too many restarts
+        RemovePodsHavingTooManyRestarts:
+          enabled: true
+          params:
+            podsHavingTooManyRestarts:
+              podRestartThreshold: 100
+              includingInitContainers: true
+    
+    # Resource limits for the descheduler pod
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 256Mi
+        
+    # Pod disruption budget
+    podDisruptionBudget:
+      enabled: true
+      maxUnavailable: 1
