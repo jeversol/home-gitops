@@ -157,6 +157,13 @@ data:
         action = "replace"
         target_label = "pod"
       }
+
+      // Add node name label for node-exporter pods
+      rule {
+        source_labels = ["__meta_kubernetes_pod_node_name"]
+        action = "replace"
+        target_label = "node"
+      }
     }
 
     // Relabel to only scrape annotated services and use their annotations
