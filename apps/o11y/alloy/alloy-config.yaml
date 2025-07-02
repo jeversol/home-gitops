@@ -209,6 +209,71 @@ data:
       }
     }
 
+    // Discover Longhorn manager pods directly for per-node metrics
+    discovery.kubernetes "longhorn_pods" {
+      role = "pod"
+      namespaces {
+        names = ["longhorn"]
+      }
+    }
+
+    // Scrape Longhorn manager pods individually for accurate per-node data
+    prometheus.scrape "longhorn_managers" {
+      targets = discovery.relabel.longhorn_managers.output
+      forward_to = [prometheus.remote_write.mimir.receiver]
+      
+      job_name = "longhorn-manager"
+      scrape_interval = "30s"
+      metrics_path = "/metrics"
+    }
+
+    // Relabel to only scrape longhorn-manager pods
+    discovery.relabel "longhorn_managers" {
+      targets = discovery.kubernetes.longhorn_pods.targets
+
+      // Only scrape longhorn-manager pods
+      rule {
+        source_labels = ["__meta_kubernetes_pod_name"]
+        action = "keep"
+        regex = "longhorn-manager-.*"
+      }
+
+      // Set address to pod IP + port 9500
+      rule {
+        source_labels = ["__meta_kubernetes_pod_ip"]
+        action = "replace"
+        target_label = "__address__"
+        replacement = "$1:9500"
+      }
+
+      // Add cluster label
+      rule {
+        target_label = "cluster"
+        replacement = "home-cluster"
+      }
+
+      // Add namespace label
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        action = "replace"
+        target_label = "namespace"
+      }
+
+      // Add node label
+      rule {
+        source_labels = ["__meta_kubernetes_pod_node_name"]
+        action = "replace"
+        target_label = "node"
+      }
+
+      // Add pod label
+      rule {
+        source_labels = ["__meta_kubernetes_pod_name"]
+        action = "replace"
+        target_label = "pod"
+      }
+    }
+
     // Remote write to Mimir
     prometheus.remote_write "mimir" {
       endpoint {
