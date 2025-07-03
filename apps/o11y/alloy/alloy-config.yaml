@@ -34,6 +34,14 @@ data:
       role = "service"
     }
 
+    // Discover kube-state-metrics service
+    discovery.kubernetes "kube_state_metrics" {
+      role = "service"
+      namespaces {
+        names = ["o11y"]
+      }
+    }
+
     // Scrape kubelet metrics
     prometheus.scrape "kubelet" {
       targets = discovery.kubernetes.kubelet.targets
@@ -79,6 +87,16 @@ data:
       }
       
       scrape_interval = "30s"
+    }
+
+    // Scrape kube-state-metrics
+    prometheus.scrape "kube_state_metrics" {
+      targets = discovery.relabel.kube_state_metrics.output
+      forward_to = [prometheus.remote_write.mimir.receiver]
+      
+      job_name = "kube-state-metrics"
+      scrape_interval = "30s"
+      metrics_path = "/metrics"
     }
 
     // Discover pods with Prometheus annotations
@@ -199,6 +217,40 @@ data:
         source_labels = ["__meta_kubernetes_service_name"]
         action = "replace"
         target_label = "job"
+      }
+
+      // Add namespace label
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        action = "replace"
+        target_label = "namespace"
+      }
+    }
+
+    // Relabel kube-state-metrics service
+    discovery.relabel "kube_state_metrics" {
+      targets = discovery.kubernetes.kube_state_metrics.targets
+
+      // Only scrape kube-state-metrics service
+      rule {
+        source_labels = ["__meta_kubernetes_service_name"]
+        action = "keep"
+        regex = "kube-state-metrics"
+      }
+
+      // Set address to service endpoint (port 8080)
+      rule {
+        source_labels = ["__address__"]
+        action = "replace"
+        target_label = "__address__"
+        regex = "([^:]+)(?::\\d+)?"
+        replacement = "$1:8080"
+      }
+
+      // Add cluster label
+      rule {
+        target_label = "cluster"
+        replacement = "home-cluster"
       }
 
       // Add namespace label
