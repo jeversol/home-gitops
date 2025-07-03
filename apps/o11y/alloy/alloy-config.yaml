@@ -72,6 +72,15 @@ data:
       
       scrape_interval = "30s"
       metrics_path = "/metrics/cadvisor"
+      
+      // Drop high-cardinality container histogram buckets
+      metric_relabel_configs = [
+        {
+          source_labels = ["__name__"]
+          regex = "container_.*_bucket|container_fs_.*_bucket|container_memory_.*_bucket|container_cpu_.*_bucket"
+          action = "drop"
+        }
+      ]
     }
 
     // Scrape API server metrics
@@ -87,6 +96,15 @@ data:
       }
       
       scrape_interval = "30s"
+      
+      // Drop high-cardinality API server histogram buckets
+      metric_relabel_configs = [
+        {
+          source_labels = ["__name__"]
+          regex = "apiserver_request_duration_seconds_bucket|apiserver_request_size_bytes_bucket|apiserver_response_size_bytes_bucket|apiserver_.*_bucket"
+          action = "drop"
+        }
+      ]
     }
 
     // Scrape kube-state-metrics
@@ -109,6 +127,15 @@ data:
       targets = discovery.relabel.annotated_pods.output
       forward_to = [prometheus.remote_write.mimir.receiver]
       scrape_interval = "30s"
+      
+      // Drop common histogram buckets from all pods
+      metric_relabel_configs = [
+        {
+          source_labels = ["__name__"]
+          regex = ".*_duration_seconds_bucket|.*_request_size_bytes_bucket|.*_response_size_bytes_bucket|.*_bucket"
+          action = "drop"
+        }
+      ]
     }
 
     // Scrape services that have prometheus.io/scrape=true annotation
@@ -116,6 +143,15 @@ data:
       targets = discovery.relabel.annotated_services.output
       forward_to = [prometheus.remote_write.mimir.receiver]
       scrape_interval = "30s"
+      
+      // Drop common histogram buckets from all services
+      metric_relabel_configs = [
+        {
+          source_labels = ["__name__"]
+          regex = ".*_duration_seconds_bucket|.*_request_size_bytes_bucket|.*_response_size_bytes_bucket|.*_bucket"
+          action = "drop"
+        }
+      ]
     }
 
     // Relabel to only scrape annotated pods and use their annotations
@@ -277,6 +313,15 @@ data:
       job_name = "longhorn-manager"
       scrape_interval = "30s"
       metrics_path = "/metrics"
+      
+      // Drop Longhorn histogram buckets
+      metric_relabel_configs = [
+        {
+          source_labels = ["__name__"]
+          regex = "longhorn_.*_bucket|longhorn_.*_duration_seconds_bucket"
+          action = "drop"
+        }
+      ]
     }
 
     // Relabel to only scrape longhorn-manager pods
