@@ -22,9 +22,10 @@ This repo manages my home kubernetes cluster using Flux.
   - [democratic-csi](https://github.com/democratic-csi/democratic-csi)
   - [longhorn](https://longhorn.io)
 - Observability
-  - Mimir
-  - Alloy
   - Grafana
+  - Alloy
+  - Mimir
+  - Loki
 - Applications
   - [tautulli](https://tautulli.com)
 
@@ -47,12 +48,7 @@ That was when I decided it was too much and went back to Flux.
 
 </details>
 
-## Up Next:
-
-- o11y: prom/grafana/loki/mimir/alloy
-
 ## To Migrate:
-* Grafana (from Grafana Cloud)
 * Scrutiny (from NAS to grow to a hub/spoke)
 * Homebridge (from NAS)
 ### Media Stack:
