@@ -8,6 +8,15 @@ spec:
   interval: 30m
   releaseName: loki
   targetNamespace: o11y
+  driftDetection:
+    mode: warn
+    ignore:
+      - paths: ["/spec/replicas"]
+        target:
+          kind: Deployment
+      - paths: ["/spec/replicas"]
+        target:
+          kind: StatefulSet
   chart:
     spec:
       chart: loki
