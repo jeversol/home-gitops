@@ -3,7 +3,7 @@ machine:
     hostname: k8s-node2
     interfaces:
       - deviceSelector:
-          physical: true
+          driver: r8152
         addresses:
         - 192.168.1.222/24
         vip:
