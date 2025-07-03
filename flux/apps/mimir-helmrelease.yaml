@@ -58,7 +58,7 @@ spec:
         # Retention configuration (1 year)
         limits:
           compactor_blocks_retention_period: 8760h  # 1 year
-          max_global_series_per_user: 300000
+          max_global_series_per_user: 0  # Disabled
         
         # Ingester configuration
         ingester:
