@@ -1,7 +1,0 @@
-securityContext:
-  seccompProfile:
-    type: RuntimeDefault
-
-# Enable cross-namespace middleware references
-additionalArguments:
-  - --providers.kubernetescrd.allowcrossnamespace=true

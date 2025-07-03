@@ -6,6 +6,19 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
+  targetNamespace: o11y
+  driftDetection:
+    mode: warn
+    ignore:
+      - paths: ["/spec/replicas"]
+        target:
+          kind: Deployment
+      - paths: ["/spec/replicas"]
+        target:
+          kind: StatefulSet
+      - paths: ["/spec/replicas"]
+        target:
+          kind: DaemonSet
   chart:
     spec:
       chart: prometheus-node-exporter
