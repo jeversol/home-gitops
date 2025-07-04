@@ -76,7 +76,6 @@ spec:
       - paths: ["/spec/replicas"]
         target:
           kind: StatefulSet
-      namespace: flux-system
   chart:
     spec:
       chart: democratic-csi
@@ -98,16 +97,16 @@ spec:
           fsType: btrfs
         mountOptions: []
         secrets:
-          provisioner-secret: 
-          controller-publish-secret: 
-          node-stage-secret: 
-          node-publish-secret: 
-          controller-expand-secret: 
+          provisioner-secret: {}
+          controller-publish-secret: {}
+          node-stage-secret: {}
+          node-publish-secret: {}
+          controller-expand-secret: {}
     volumeSnapshotClasses:
       - name: democratic-synology-iscsi
-        parameters:
+        parameters: {}
         secrets:
-          snapshotter-secret:
+          snapshotter-secret: {}
     controller:
       externalResizer:
         enabled: true
