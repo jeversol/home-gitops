@@ -288,6 +288,13 @@ data:
         target_label = "cluster"
         replacement = "home-cluster"
       }
+
+      // Preserve service namespace as service_namespace to avoid conflicts
+      rule {
+        source_labels = ["__meta_kubernetes_namespace"]
+        action = "replace"
+        target_label = "service_namespace"
+      }
     }
 
     // Discover Longhorn manager pods directly for per-node metrics
