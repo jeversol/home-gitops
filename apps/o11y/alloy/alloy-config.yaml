@@ -115,6 +115,15 @@ data:
       job_name = "kube-state-metrics"
       scrape_interval = "30s"
       metrics_path = "/metrics"
+      
+      // Preserve original namespace from metrics, don't override with service namespace
+      metric_relabel_configs = [
+        {
+          source_labels = ["exported_namespace"]
+          target_label = "namespace"
+          regex = "(.+)"
+        }
+      ]
     }
 
     // Discover pods with Prometheus annotations

@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mimir-config
+  namespace: o11y
+data:
+  mimir.yaml: |
+    common:
+      storage:
+        backend: s3
+        s3:
+          endpoint: nas.i.recompiled.org:9000
+          access_key_id: "${AWS_ACCESS_KEY_ID}"
+          secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
+          insecure: false
+    
+    # Separate S3 buckets for different components
+    blocks_storage:
+      s3:
+        bucket_name: mimir-blocks
+    
+    alertmanager_storage:
+      s3:
+        bucket_name: mimir-alertmanager
+    
+    ruler_storage:
+      s3:
+        bucket_name: mimir-ruler
+    
+    # Retention configuration (1 year)
+    limits:
+      compactor_blocks_retention_period: 8760h  # 1 year
+      max_global_series_per_user: 0  # Disabled
+    
+    # Query scheduler configuration
+    query_scheduler:
+      max_outstanding_requests_per_tenant: 10000
+    
+    # Ingester configuration
+    ingester:
+      ring:
+        final_sleep: 0s
+        num_tokens: 512
+        unregister_on_shutdown: false
