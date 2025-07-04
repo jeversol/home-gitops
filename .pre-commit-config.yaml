@@ -4,3 +4,8 @@ repos:
     hooks:
       - id: renovate-config-validator
         args: [--strict]
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.37.1
+    hooks:
+      - id: yamllint
+        args: [-c=.yamllint.yaml]
