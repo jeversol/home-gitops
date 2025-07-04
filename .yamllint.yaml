@@ -1,0 +1,23 @@
+extends: default
+
+rules:
+  line-length:
+    max: 120
+    level: warning
+  indentation:
+    spaces: 2
+  comments:
+    min-spaces-from-content: 1
+  document-start:
+    present: false  # Allow files without --- start
+  truthy:
+    allowed-values: ['true', 'false', 'on', 'off', 'yes', 'no']
+  key-duplicates: enable
+  trailing-spaces: enable
+  new-line-at-end-of-file: enable
+
+ignore: |
+  .git/
+  .github/
+  node_modules/
+  .vscode/
