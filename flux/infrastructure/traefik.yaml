@@ -1,3 +1,4 @@
+---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: HelmRepository
 metadata:
@@ -40,7 +41,7 @@ metadata:
   namespace: flux-system
 spec:
   targetNamespace: traefik
-  dependsOn: 
+  dependsOn:
     - name: traefik-crds
     - name: cert-manager
   interval: 10m
