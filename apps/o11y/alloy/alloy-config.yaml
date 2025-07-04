@@ -288,13 +288,6 @@ data:
         target_label = "cluster"
         replacement = "home-cluster"
       }
-
-      // Add namespace label
-      rule {
-        source_labels = ["__meta_kubernetes_namespace"]
-        action = "replace"
-        target_label = "namespace"
-      }
     }
 
     // Discover Longhorn manager pods directly for per-node metrics
