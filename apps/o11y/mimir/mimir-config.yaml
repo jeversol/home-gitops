@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mimir-config
+  name: mimir-custom-config
   namespace: o11y
 data:
   mimir.yaml: |
