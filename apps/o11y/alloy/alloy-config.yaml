@@ -61,7 +61,7 @@ data:
     // Scrape kubelet cadvisor metrics (container metrics)
     prometheus.scrape "kubelet_cadvisor" {
       targets = discovery.kubernetes.kubelet.targets
-      forward_to = [prometheus.remote_write.mimir.receiver]
+      forward_to = [prometheus.relabel.kubelet_cadvisor_filter.receiver]
       
       job_name = "kubelet-cadvisor"
       scheme = "https"
@@ -72,21 +72,23 @@ data:
       
       scrape_interval = "30s"
       metrics_path = "/metrics/cadvisor"
+    }
+
+    // Filter high-cardinality container histogram buckets
+    prometheus.relabel "kubelet_cadvisor_filter" {
+      forward_to = [prometheus.remote_write.mimir.receiver]
       
-      // Drop high-cardinality container histogram buckets
-      metric_relabel_configs = [
-        {
-          source_labels = ["__name__"],
-          regex = "container_.*_bucket|container_fs_.*_bucket|container_memory_.*_bucket|container_cpu_.*_bucket",
-          action = "drop",
-        }
-      ]
+      rule {
+        source_labels = ["__name__"]
+        regex = "container_.*_bucket|container_fs_.*_bucket|container_memory_.*_bucket|container_cpu_.*_bucket"
+        action = "drop"
+      }
     }
 
     // Scrape API server metrics
     prometheus.scrape "api_server" {
       targets = discovery.kubernetes.api_server.targets
-      forward_to = [prometheus.remote_write.mimir.receiver]
+      forward_to = [prometheus.relabel.api_server_filter.receiver]
       
       job_name = "apiserver"
       scheme = "https"
@@ -96,34 +98,38 @@ data:
       }
       
       scrape_interval = "30s"
+    }
+
+    // Filter high-cardinality API server histogram buckets
+    prometheus.relabel "api_server_filter" {
+      forward_to = [prometheus.remote_write.mimir.receiver]
       
-      // Drop high-cardinality API server histogram buckets
-      metric_relabel_configs = [
-        {
-          source_labels = ["__name__"],
-          regex = "apiserver_request_duration_seconds_bucket|apiserver_request_size_bytes_bucket|apiserver_response_size_bytes_bucket|apiserver_.*_bucket",
-          action = "drop",
-        }
-      ]
+      rule {
+        source_labels = ["__name__"]
+        regex = "apiserver_request_duration_seconds_bucket|apiserver_request_size_bytes_bucket|apiserver_response_size_bytes_bucket|apiserver_.*_bucket"
+        action = "drop"
+      }
     }
 
     // Scrape kube-state-metrics
     prometheus.scrape "kube_state_metrics" {
       targets = discovery.relabel.kube_state_metrics.output
-      forward_to = [prometheus.remote_write.mimir.receiver]
+      forward_to = [prometheus.relabel.kube_state_metrics_filter.receiver]
       
       job_name = "kube-state-metrics"
       scrape_interval = "30s"
       metrics_path = "/metrics"
+    }
+
+    // Preserve original namespace from metrics, don't override with service namespace
+    prometheus.relabel "kube_state_metrics_filter" {
+      forward_to = [prometheus.remote_write.mimir.receiver]
       
-      // Preserve original namespace from metrics, don't override with service namespace
-      metric_relabel_configs = [
-        {
-          source_labels = ["exported_namespace"],
-          target_label = "namespace",
-          regex = "(.+)",
-        }
-      ]
+      rule {
+        source_labels = ["exported_namespace"]
+        target_label = "namespace"
+        regex = "(.+)"
+      }
     }
 
     // Discover pods with Prometheus annotations
@@ -134,33 +140,37 @@ data:
     // Scrape pods that have prometheus.io/scrape=true annotation
     prometheus.scrape "annotated_pods" {
       targets = discovery.relabel.annotated_pods.output
-      forward_to = [prometheus.remote_write.mimir.receiver]
+      forward_to = [prometheus.relabel.annotated_pods_filter.receiver]
       scrape_interval = "30s"
+    }
+
+    // Filter common histogram buckets from all pods
+    prometheus.relabel "annotated_pods_filter" {
+      forward_to = [prometheus.remote_write.mimir.receiver]
       
-      // Drop common histogram buckets from all pods
-      metric_relabel_configs = [
-        {
-          source_labels = ["__name__"],
-          regex = ".*_duration_seconds_bucket|.*_request_size_bytes_bucket|.*_response_size_bytes_bucket|.*_bucket",
-          action = "drop",
-        }
-      ]
+      rule {
+        source_labels = ["__name__"]
+        regex = ".*_duration_seconds_bucket|.*_request_size_bytes_bucket|.*_response_size_bytes_bucket|.*_bucket"
+        action = "drop"
+      }
     }
 
     // Scrape services that have prometheus.io/scrape=true annotation
     prometheus.scrape "annotated_services" {
       targets = discovery.relabel.annotated_services.output
-      forward_to = [prometheus.remote_write.mimir.receiver]
+      forward_to = [prometheus.relabel.annotated_services_filter.receiver]
       scrape_interval = "30s"
+    }
+
+    // Filter common histogram buckets from all services
+    prometheus.relabel "annotated_services_filter" {
+      forward_to = [prometheus.remote_write.mimir.receiver]
       
-      // Drop common histogram buckets from all services
-      metric_relabel_configs = [
-        {
-          source_labels = ["__name__"],
-          regex = ".*_duration_seconds_bucket|.*_request_size_bytes_bucket|.*_response_size_bytes_bucket|.*_bucket",
-          action = "drop",
-        }
-      ]
+      rule {
+        source_labels = ["__name__"]
+        regex = ".*_duration_seconds_bucket|.*_request_size_bytes_bucket|.*_response_size_bytes_bucket|.*_bucket"
+        action = "drop"
+      }
     }
 
     // Relabel to only scrape annotated pods and use their annotations
@@ -317,20 +327,22 @@ data:
     // Scrape Longhorn manager pods individually for accurate per-node data
     prometheus.scrape "longhorn_managers" {
       targets = discovery.relabel.longhorn_managers.output
-      forward_to = [prometheus.remote_write.mimir.receiver]
+      forward_to = [prometheus.relabel.longhorn_managers_filter.receiver]
       
       job_name = "longhorn-manager"
       scrape_interval = "30s"
       metrics_path = "/metrics"
+    }
+
+    // Filter Longhorn histogram buckets
+    prometheus.relabel "longhorn_managers_filter" {
+      forward_to = [prometheus.remote_write.mimir.receiver]
       
-      // Drop Longhorn histogram buckets
-      metric_relabel_configs = [
-        {
-          source_labels = ["__name__"],
-          regex = "longhorn_.*_bucket|longhorn_.*_duration_seconds_bucket",
-          action = "drop",
-        }
-      ]
+      rule {
+        source_labels = ["__name__"]
+        regex = "longhorn_.*_bucket|longhorn_.*_duration_seconds_bucket"
+        action = "drop"
+      }
     }
 
     // Relabel to only scrape longhorn-manager pods
