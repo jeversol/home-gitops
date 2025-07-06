@@ -9,8 +9,6 @@ resources:
   - metrics-server.yaml
   - longhorn.yaml
   - descheduler.yaml
-  - grafana-helm-repo.yaml
-  - prometheus-community-helm-repo.yaml
   - oauth2-proxy.yaml
   - nfs-csi-driver.yaml
   - nfs-storage.yaml
