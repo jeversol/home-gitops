@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: metrics-server-manifests
+  name: metrics-server
   namespace: flux-system
 spec:
   interval: 5m

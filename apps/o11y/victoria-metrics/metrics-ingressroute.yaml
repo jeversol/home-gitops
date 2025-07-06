@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: metrics-ingressroute
+  namespace: o11y
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`metrics.i.recompiled.org`)
+      kind: Rule
+      services:
+        - name: victoria-metrics
+          port: 8428
+  tls:
+    secretName: metrics-tls

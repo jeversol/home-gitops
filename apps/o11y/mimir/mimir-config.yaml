@@ -52,9 +52,50 @@ data:
     query_scheduler:
       max_outstanding_requests_per_tenant: 10000
     
+    # Memberlist configuration for ring coordination
+    memberlist:
+      node_name_prefix: "mimir-"
+      randomize_node_name: true
+      stream_timeout: 2s
+      retransmit_factor: 2
+      gossip_interval: 200ms
+      gossip_nodes: 2
+      gossip_to_dead_nodes_time: 30s
+      dead_node_reclaim_time: 10m
+      compression_enabled: true
+      advertise_port: 7946
+      bind_port: 7946
+      join_members:
+        - mimir-gossip-ring.o11y.svc.cluster.local:7946
+    
     # Ingester configuration
     ingester:
       ring:
+        store: memberlist
+        replication_factor: 3
         final_sleep: 0s
         num_tokens: 512
         unregister_on_shutdown: false
+        zone_awareness_enabled: true
+
+    # Distributor configuration
+    distributor:
+      ring:
+        store: memberlist
+        
+    # Store gateway configuration
+    store_gateway:
+      sharding_ring:
+        store: memberlist
+        replication_factor: 3
+        zone_awareness_enabled: true
+        
+    # Compactor configuration  
+    compactor:
+      sharding_ring:
+        store: memberlist
+        
+    # Ruler configuration
+    ruler:
+      ring:
+        store: memberlist
