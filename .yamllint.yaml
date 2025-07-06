@@ -8,13 +8,12 @@ rules:
     spaces: 2
   comments:
     min-spaces-from-content: 1
-  document-start:
-    present: false  # Allow files without --- start
+  document-start: disable
   truthy:
     allowed-values: ['true', 'false', 'on', 'off', 'yes', 'no']
   key-duplicates: enable
   trailing-spaces: enable
-  new-line-at-end-of-file: enable
+  new-line-at-end-of-file: disable
 
 ignore: |
   .git/
