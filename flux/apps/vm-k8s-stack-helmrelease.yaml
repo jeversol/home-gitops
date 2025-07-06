@@ -91,6 +91,15 @@ spec:
           enabled: true
       ingress:
         enabled: false
+      datasources:
+        datasources.yaml:
+          apiVersion: 1
+          datasources:
+            - name: VictoriaMetrics
+              type: prometheus
+              url: http://vm-stack-victoria-metrics-single-server:8428
+              access: proxy
+              isDefault: true
     
     # Node Exporter
     nodeExporter:
