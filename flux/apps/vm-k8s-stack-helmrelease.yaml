@@ -1,0 +1,98 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vm-k8s-stack
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: vm-k8s-stack
+  targetNamespace: o11y
+  driftDetection:
+    mode: warn
+    ignore:
+      - paths: ["/spec/replicas"]
+        target:
+          kind: Deployment
+      - paths: ["/spec/replicas"]
+        target:
+          kind: StatefulSet
+  chart:
+    spec:
+      chart: victoria-metrics-k8s-stack
+      version: "0.30.0"
+      sourceRef:
+        kind: HelmRepository
+        name: victoria-metrics
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    nameOverride: vm-stack
+    fullnameOverride: vm-stack
+    
+    # Victoria Metrics Single
+    vmsingle:
+      enabled: true
+      spec:
+        retentionPeriod: "14d"
+        storage:
+          storageClassName: "longhorn"
+          size: 20Gi
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 2000m
+            memory: 4Gi
+    
+    # VM Agent
+    vmagent:
+      enabled: true
+      spec:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+    
+    # VM Operator
+    vmoperator:
+      enabled: true
+    
+    # Grafana
+    grafana:
+      enabled: true
+      admin:
+        existingSecret: grafana-admin-secret
+        userKey: admin-user
+        passwordKey: admin-password
+      sidecar:
+        dashboards:
+          enabled: true
+        datasources:
+          enabled: true
+      ingress:
+        enabled: false
+    
+    # Node Exporter
+    nodeExporter:
+      enabled: true
+    
+    # Kube State Metrics
+    kubeStateMetrics:
+      enabled: true
+    
+    # Default rules and scrapes
+    defaultRules:
+      create: true
+    
+    experimentalDashboardsEnabled: true
