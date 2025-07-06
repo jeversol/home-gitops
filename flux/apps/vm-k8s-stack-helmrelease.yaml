@@ -29,7 +29,7 @@ spec:
   chart:
     spec:
       chart: victoria-metrics-k8s-stack
-      version: "0.30.0"  # renovate: datasource=helm depName=victoria-metrics-k8s-stack registryUrl=https://victoriametrics.github.io/helm-charts/
+      version: "0.55.2"  # renovate: datasource=helm depName=victoria-metrics-k8s-stack registryUrl=https://victoriametrics.github.io/helm-charts/
       sourceRef:
         kind: HelmRepository
         name: victoria-metrics
