@@ -40,7 +40,7 @@ spec:
             name: mimir-minio-secret
     mimir:
       configStorageType: ConfigMap
-      externalConfigName: mimir-config
+      externalConfigName: mimir-custom-config
     # Disable built-in MinIO since we're using external S3
     minio:
       enabled: false
