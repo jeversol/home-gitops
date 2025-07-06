@@ -2,10 +2,3 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - tautulli.yaml
-  - grafana-helmrelease.yaml
-  - alloy-helmrelease.yaml
-  - kube-state-metrics-helmrelease.yaml
-  - loki-helmrelease.yaml
-  - prometheus-node-exporter-helmrelease.yaml
-  - o11y.yaml
-  - victoria-metrics-kustomization.yaml
