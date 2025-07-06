@@ -392,10 +392,10 @@ data:
       }
     }
 
-    // Remote write to Mimir
+    // Remote write to VictoriaMetrics
     prometheus.remote_write "mimir" {
       endpoint {
-        url = "http://mimir-nginx.o11y.svc:80/api/v1/push"
+        url = "http://victoria-metrics.o11y.svc:8428/api/v1/write"
       }
       
       // Add cluster label to all metrics
