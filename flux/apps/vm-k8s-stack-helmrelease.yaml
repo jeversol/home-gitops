@@ -120,10 +120,31 @@ spec:
     # Node Exporter
     prometheus-node-exporter:
       enabled: true
+      vmScrape:
+        enabled: true
+        spec:
+          endpoints:
+            - port: metrics
+              metricRelabelConfigs:
+                - sourceLabels: [__meta_kubernetes_node_name]
+                  targetLabel: instance
+                - action: drop
+                  regex: /var/lib/kubelet/pods.+
+                  sourceLabels: [mountpoint]
     
     # Kube State Metrics
     kube-state-metrics:
       enabled: true
+      vmScrape:
+        enabled: true
+        spec:
+          endpoints:
+            - port: http
+              metricRelabelConfigs:
+                - sourceLabels: [__meta_kubernetes_pod_node_name]
+                  targetLabel: instance
+                - action: labeldrop
+                  regex: (uid|container_id|image_id)
     
     # Default rules and scrapes
     defaultRules:
