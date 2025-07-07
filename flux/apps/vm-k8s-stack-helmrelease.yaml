@@ -112,7 +112,10 @@ spec:
             access: proxy
             isDefault: false
       alertmanager:
-        datasources: []
+        datasources:
+          - name: Alertmanager
+            access: proxy
+            isDefault: false
     
     # Node Exporter
     prometheus-node-exporter:
