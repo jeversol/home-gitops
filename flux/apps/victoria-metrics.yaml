@@ -1,0 +1,55 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: victoria-metrics
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: victoria-metrics
+  targetNamespace: o11y
+  driftDetection:
+    mode: warn
+    ignore:
+      - paths: ["/spec/replicas"]
+        target:
+          kind: Deployment
+      - paths: ["/spec/replicas"]
+        target:
+          kind: StatefulSet
+  chart:
+    spec:
+      chart: victoria-metrics-single
+      version: "0.23.0"  # renovate: datasource=helm depName=victoria-metrics-single registryUrl=https://victoriametrics.github.io/helm-charts/
+      sourceRef:
+        kind: HelmRepository
+        name: victoria-metrics
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    nameOverride: metrics
+    fullnameOverride: metrics
+    server:
+      retentionPeriod: "14d"
+      persistentVolume:
+        enabled: true
+        storageClass: "longhorn"
+        size: 30Gi
+      resources:
+        requests:
+          cpu: "250m"
+          memory: "256Mi"
+        limits:
+          cpu: "500m"
+          memory: "512Mi"
+      serviceMonitor:
+        enabled: true
+        interval: 30s
+      scrape:
+        enabled: true
