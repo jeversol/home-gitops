@@ -91,13 +91,26 @@ spec:
           enabled: true
         datasources:
           enabled: false
+          initDatasources: false
       ingress:
         enabled: false
     
-    # Disable default datasources to avoid conflict with existing ones
+    # Disable VMAlert to avoid datasource template errors
+    vmalert:
+      enabled: false
+    
+    # Disable alertmanager 
+    alertmanager:
+      enabled: false
+    
+    # Provide minimal datasources to prevent template errors
     defaultDatasources:
       victoriametrics:
-        datasources: []
+        datasources:
+          - name: VictoriaMetrics
+            type: prometheus
+            access: proxy
+            isDefault: false
       alertmanager:
         datasources: []
     
