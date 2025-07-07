@@ -11,7 +11,7 @@ spec:
     - match: Host(`metrics.i.recompiled.org`)
       kind: Rule
       services:
-        - name: vmsingle-vm-stack
+        - name: metrics-server
           port: 8428
   tls:
     secretName: metrics-tls
