@@ -1,6 +1,7 @@
 {
   extends: [
     'config:recommended',
+    ':enablePreCommit',
   ],
   automerge: false,
   assignees: [
