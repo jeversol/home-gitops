@@ -15,9 +15,9 @@
   },
   kubernetes: {
     managerFilePatterns: [
-      '!**/kustomization.{yaml,yml}',
-      '!flux/**/*.{yaml,yml}',
       '**/*.{yaml,yml}',
+      '!**/kustomization.{yaml,yml}',
+      '!flux/flux-system/gotk*.{yaml,yml}',
     ],
   },
   customManagers: [
