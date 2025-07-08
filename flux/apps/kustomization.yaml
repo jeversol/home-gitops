@@ -6,3 +6,4 @@ resources:
   - tautulli.yaml
   - o11y.yaml
   - victoria-metrics.yaml
+  - victoria-logs.yaml
