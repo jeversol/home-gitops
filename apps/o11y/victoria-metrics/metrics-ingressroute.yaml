@@ -15,3 +15,20 @@ spec:
           port: 8428
   tls:
     secretName: metrics-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: logs-ingressroute
+  namespace: o11y
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`logs.i.recompiled.org`)
+      kind: Rule
+      services:
+        - name: logs-server
+          port: 9428
+  tls:
+    secretName: logs-tls
