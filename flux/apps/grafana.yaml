@@ -1,0 +1,56 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: grafana
+  namespace: flux-system
+spec:
+  interval: 15m
+  url: https://grafana.github.io/helm-charts/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: grafana
+  targetNamespace: o11y
+  driftDetection:
+    mode: warn
+    ignore:
+      - paths: ["/spec/replicas"]
+        target:
+          kind: Deployment
+      - paths: ["/spec/replicas"]
+        target:
+          kind: StatefulSet
+  chart:
+    spec:
+      chart: grafana
+      version: "9.2.10"  # renovate: datasource=helm depName=grafana registryUrl=https://grafana.github.io/helm-charts/
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    persistence:
+      enabled: true
+      accessModes: ["ReadWriteOnce"]
+      size: 10Gi
+      storageClassName: "longhorn"
+    admin:
+      existingSecret: grafana-admin-secret
+    server:
+      root_url: https://grafana.i.recompiled.org/
+    service:
+      enabled: true
+      portName: service
