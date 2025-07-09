@@ -87,7 +87,7 @@ The repository uses Renovate for dependency updates with specific manager config
 - **Git-based workflow** - GitHub as source of truth
 - **Encrypted secrets** safely committed to git
 
-## Common pitfalls to avoid
-- We are not working on the cluster nodes directly, so kubernetes port forwarding is not viable.
+## Miscellaneous items to remember
+- We are not working on the cluster nodes directly, so `kubectl port-forward` is not viable.
 - We use traefik IngressRoutes for exposing services outside the cluster where feasible
--
+- Github Pre-commit hooks exist to run yamllint

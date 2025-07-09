@@ -7,3 +7,4 @@ resources:
   - o11y.yaml
   - victoria-metrics.yaml
   - victoria-logs.yaml
+  - grafana.yaml
