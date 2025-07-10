@@ -51,5 +51,39 @@ spec:
         limits:
           cpu: "500m"
           memory: "512Mi"
+      dashboards:
+        enabled: true
+        grafana:
+          enabled: true
+          dashboardConfigMaps:
+            - name: metrics-dashboards
+              namespace: o11y
       scrape:
         enabled: true
+      alertmanager:
+        enabled: true
+      vmalert:
+        enabled: true
+      vmagent:
+        enabled: true
+      vector:
+        enabled: true
+        customConfig:
+          sinks:
+            vlogs:
+              type: elasticsearch
+              inputs: [parser]
+              mode: bulk
+              api_version: v8
+              compression: gzip
+              healthcheck:
+                enabled: false
+              endpoints:
+                - "https://logs-server.o11y.svc:9428/insert/elasticsearch"
+              request:
+                headers:
+                  VL-Time-Field: timestamp
+                  VL-Stream-Fields: stream,kubernetes.pod_name,kubernetes.container_name,kubernetes.pod_namespace
+                  VL-Msg-Field: message,msg,_msg,log.msg,log.message,log
+                  AccountID: "0"
+                  ProjectID: "0"
