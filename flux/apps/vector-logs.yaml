@@ -37,6 +37,12 @@ spec:
     service:
       enabled: false
     
+    # Enable persistence for data directory
+    persistence:
+      hostPath:
+        enabled: true
+        path: "/var/lib/vector"
+    
     # Resource limits
     resources:
       requests:
@@ -48,6 +54,7 @@ spec:
     
     # Vector configuration - official VictoriaLogs integration
     customConfig:
+      data_dir: /vector-data
       sources:
         kubernetes_logs:
           type: kubernetes_logs
