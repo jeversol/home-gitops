@@ -6,3 +6,4 @@ resources:
   - grafana-auth0-secret.yaml
   - grafana/
   - victoria-metrics/
+  - global-vmagent.yaml

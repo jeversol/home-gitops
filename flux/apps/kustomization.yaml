@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
   - helmrepo-victoria-metrics.yaml
   - helmrepo-grafana.yaml
+  - helmrepo-prometheus-community.yaml
+  - helmrepo-vector.yaml
   - grafana-operator.yaml
   - victoria-metrics-operator.yaml
   - tautulli.yaml
@@ -10,3 +12,5 @@ resources:
   - victoria-metrics.yaml
   - victoria-logs.yaml
   - grafana.yaml
+  - kube-state-metrics.yaml
+  - vector-logs.yaml
