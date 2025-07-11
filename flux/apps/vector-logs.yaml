@@ -1,0 +1,77 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vector-logs
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: vector-logs
+  targetNamespace: o11y
+  dependsOn:
+    - name: victoria-logs
+      namespace: flux-system
+  chart:
+    spec:
+      chart: vector
+      version: "0.40.0"  # renovate: datasource=helm depName=vector registryUrl=https://helm.vector.dev
+      sourceRef:
+        kind: HelmRepository
+        name: vector
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    nameOverride: vector
+    fullnameOverride: vector
+    
+    # Deploy as DaemonSet for log collection
+    role: Agent
+    
+    # Resource limits
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "500m"
+    
+    # Vector configuration - official VictoriaLogs integration
+    customConfig:
+      sources:
+        kubernetes_logs:
+          type: kubernetes_logs
+          
+      sinks:
+        victoria_logs:
+          type: elasticsearch
+          inputs: ["kubernetes_logs"]
+          endpoints:
+            - "http://logs-server.o11y.svc:9428/insert/elasticsearch/"
+          api_version: v8
+          compression: gzip
+          healthcheck:
+            enabled: false
+          query:
+            _msg_field: message
+            _time_field: timestamp
+            _stream_fields: kubernetes.pod_namespace,kubernetes.pod_name,kubernetes.container_name
+          request:
+            headers:
+              AccountID: "0"
+              ProjectID: "0"
+    
+    # Tolerations for control plane nodes
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
