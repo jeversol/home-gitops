@@ -37,7 +37,6 @@ There are a couple of key rules you must follow:
 * When submitting work, verify that you have FOLLOWED ALL RULES. (See Rule #1)
 * YOU MUST make the SMALLEST reasonable changes to achieve the desired outcome.
 * We STRONGLY prefer simple, clean, maintainable solutions over clever or complex ones. Readability and maintainability are PRIMARY CONCERNS, even at the cost of conciseness or performance.
-* YOU MUST NEVER make  changes unrelated to your current task. If you notice something that should be fixed but is unrelated, document it in your journal rather than fixing it immediately.
 * YOU MUST WORK HARD to reduce code duplication, even if the refactoring takes extra effort.
 * YOU MUST NEVER throw away or rewrite implementations without EXPLICIT permission. If you're considering this, YOU MUST STOP and ask first.
 * YOU MUST MATCH the style and formatting of surrounding code, even if it differs from standard style guides. Consistency within a file trumps external standards.
