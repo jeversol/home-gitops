@@ -6,6 +6,8 @@ metadata:
   namespace: o11y
 spec:
   selectAllByDefault: true
+  serviceScrapeNamespaceSelector: {}
+  podScrapeNamespaceSelector: {}
   replicaCount: 1
   remoteWrite:
     - url: "http://metrics-server.o11y.svc:8428/api/v1/write"

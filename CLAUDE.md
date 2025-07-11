@@ -44,6 +44,18 @@ There are a couple of key rules you must follow:
 * YOU MUST NEVER add comments about what used to be there or how something has changed.
 * YOU MUST NEVER refer to temporal context in comments (like "recently refactored" "moved") or code. Comments should be evergreen and describe the code as it is. If you name something "new" or "enhanced" or "improved", you've probably made a mistake and MUST STOP and ask me what to do.
 
+## Research and Problem Solving:
+* When encountering configuration errors or deployment failures, YOU MUST search for GitHub issues, bug reports,
+and real-world solutions first, not just documentation
+* YOU MUST look for specific error messages in GitHub issues (e.g. "spec.ports: Required value", "Read-only file
+system")
+* If a tool/chart isn't working as expected, YOU MUST search for known issues and workarounds before trying
+custom solutions
+* YOU MUST prefer solutions that others have tested and confirmed working over theoretical approaches
+* YOU MUST say "I need to research this properly" instead of guessing when solutions aren't working
+* When you find yourself making multiple attempts at the same problem, YOU MUST STOP and research the actual root
+  cause
+
 ## Repository Overview
 
 This is a **home Kubernetes cluster GitOps repository** managing a 3-node Talos Linux cluster using FluxCD. The architecture follows enterprise GitOps patterns with proper secret management and infrastructure automation.
