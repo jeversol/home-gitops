@@ -2,7 +2,7 @@
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
-  name: kubernetes-global
+  name: victoriametrics-vmagent
   namespace: o11y
 spec:
   instanceSelector:
@@ -32,189 +32,7 @@ spec:
           }
         ]
       },
-      "editable": true,
-      "fiscalYearStartMonth": 0,
-      "graphTooltip": 0,
-      "id": null,
-      "links": [],
-      "liveNow": false,
-      "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "VictoriaMetrics"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "vis": false
-                }
-              },
-              "mappings": []
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 0
-          },
-          "id": 1,
-          "options": {
-            "legend": {
-              "displayMode": "table",
-              "placement": "right",
-              "values": [
-                "value"
-              ]
-            },
-            "pieType": "pie",
-            "reduceOptions": {
-              "values": false,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": ""
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "expr": "count by (phase) (kube_pod_status_phase{job=\"kube-state-metrics\"})",
-              "interval": "",
-              "legendFormat": "{{phase}}",
-              "refId": "A"
-            }
-          ],
-          "title": "Pod Status",
-          "type": "piechart"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "VictoriaMetrics"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "thresholds"
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 0
-          },
-          "id": 2,
-          "options": {
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "auto",
-            "orientation": "auto",
-            "reduceOptions": {
-              "values": false,
-              "calcs": [
-                "lastNotNull"
-              ],
-              "fields": ""
-            },
-            "textMode": "auto"
-          },
-          "pluginVersion": "10.3.1",
-          "targets": [
-            {
-              "expr": "count(kube_node_info{job=\"kube-state-metrics\"})",
-              "interval": "",
-              "legendFormat": "Nodes",
-              "refId": "A"
-            }
-          ],
-          "title": "Node Count",
-          "type": "stat"
-        }
-      ],
-      "refresh": "5s",
-      "schemaVersion": 37,
-      "style": "dark",
-      "tags": [
-        "kubernetes"
-      ],
-      "templating": {
-        "list": []
-      },
-      "time": {
-        "from": "now-5m",
-        "to": "now"
-      },
-      "timepicker": {},
-      "timezone": "",
-      "title": "Kubernetes Global View",
-      "uid": "k8s-global",
-      "version": 1,
-      "weekStart": ""
-    }
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: victoriametrics-operator
-  namespace: o11y
-spec:
-  instanceSelector:
-    matchLabels:
-      dashboards: "external-grafana"
-  json: |
-    {
-      "annotations": {
-        "list": [
-          {
-            "builtIn": 1,
-            "datasource": {
-              "type": "datasource",
-              "uid": "grafana"
-            },
-            "enable": true,
-            "hide": true,
-            "iconColor": "rgba(0, 211, 255, 1)",
-            "name": "Annotations & Alerts",
-            "target": {
-              "limit": 100,
-              "matchAny": false,
-              "tags": [],
-              "type": "dashboard"
-            },
-            "type": "dashboard"
-          }
-        ]
-      },
-      "description": "Overview for operator VictoriaMetrics v0.25.0 or higher",
+      "description": "Overview for VictoriaMetrics vmagent v1.117.0 or higher",
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 0,
@@ -236,15 +54,6 @@ spec:
           },
           "id": 8,
           "panels": [],
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "VictoriaMetrics"
-              },
-              "refId": "A"
-            }
-          ],
           "title": "Overview",
           "type": "row"
         },
@@ -253,21 +62,49 @@ spec:
             "type": "prometheus",
             "uid": "VictoriaMetrics"
           },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
           "gridPos": {
-            "h": 3,
-            "w": 4,
+            "h": 4,
+            "w": 6,
             "x": 0,
             "y": 1
           },
-          "id": 24,
+          "id": 22,
           "options": {
-            "code": {
-              "language": "plaintext",
-              "showLineNumbers": false,
-              "showMiniMap": false
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
             },
-            "content": "<div style=\"text-align: center;\">Latest</div>",
-            "mode": "markdown"
+            "textMode": "auto"
           },
           "pluginVersion": "10.4.0",
           "targets": [
@@ -276,18 +113,19 @@ spec:
                 "type": "prometheus",
                 "uid": "VictoriaMetrics"
               },
+              "expr": "vm_app_uptime_seconds{job=\"vmagent-global-vmagent\"}",
+              "legendFormat": "{{instance}}",
               "refId": "A"
             }
           ],
-          "title": "Version",
-          "type": "text"
+          "title": "Uptime",
+          "type": "stat"
         },
         {
           "datasource": {
             "type": "prometheus",
             "uid": "VictoriaMetrics"
           },
-          "description": "Number of objects at kubernetes cluster per each controller",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -311,14 +149,14 @@ spec:
             "overrides": []
           },
           "gridPos": {
-            "h": 7,
-            "w": 20,
-            "x": 4,
+            "h": 4,
+            "w": 6,
+            "x": 6,
             "y": 1
           },
           "id": 14,
           "options": {
-            "colorMode": "none",
+            "colorMode": "value",
             "graphMode": "area",
             "justifyMode": "auto",
             "orientation": "auto",
@@ -329,10 +167,7 @@ spec:
               "fields": "",
               "values": false
             },
-            "showPercentChange": false,
-            "text": {},
-            "textMode": "auto",
-            "wideLayout": true
+            "textMode": "auto"
           },
           "pluginVersion": "10.4.0",
           "targets": [
@@ -341,93 +176,14 @@ spec:
                 "type": "prometheus",
                 "uid": "VictoriaMetrics"
               },
-              "editorMode": "code",
-              "expr": "max(operator_controller_objects_count{job=~\"metrics-operator\"}) by (controller)",
-              "legendFormat": "{{controller}}",
-              "range": true,
+              "expr": "sum(up{job=\"vmagent-global-vmagent\"})",
+              "legendFormat": "Active targets",
               "refId": "A"
             }
           ],
-          "title": "CRD Objects count by controller",
+          "title": "Active Instances",
           "type": "stat"
-        }
-      ],
-      "refresh": "",
-      "schemaVersion": 39,
-      "tags": [
-        "operator",
-        "VictoriaMetrics"
-      ],
-      "templating": {
-        "list": [
-          {
-            "current": {},
-            "hide": 0,
-            "includeAll": false,
-            "multi": false,
-            "name": "ds",
-            "options": [],
-            "query": "prometheus",
-            "queryValue": "VictoriaMetrics",
-            "refresh": 1,
-            "regex": "",
-            "skipUrlSync": false,
-            "type": "datasource"
-          }
-        ]
-      },
-      "time": {
-        "from": "now-15m",
-        "to": "now"
-      },
-      "timepicker": {},
-      "timezone": "",
-      "title": "VictoriaMetrics - operator",
-      "uid": "vm-operator",
-      "version": 7,
-      "weekStart": ""
-    }
----
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-  name: kubernetes-nodes
-  namespace: o11y
-spec:
-  instanceSelector:
-    matchLabels:
-      dashboards: "external-grafana"
-  json: |
-    {
-      "annotations": {
-        "list": [
-          {
-            "builtIn": 1,
-            "datasource": {
-              "type": "datasource",
-              "uid": "grafana"
-            },
-            "enable": true,
-            "hide": true,
-            "iconColor": "rgba(0, 211, 255, 1)",
-            "name": "Annotations & Alerts",
-            "target": {
-              "limit": 100,
-              "matchAny": false,
-              "tags": [],
-              "type": "dashboard"
-            },
-            "type": "dashboard"
-          }
-        ]
-      },
-      "editable": true,
-      "fiscalYearStartMonth": 0,
-      "graphTooltip": 0,
-      "id": null,
-      "links": [],
-      "liveNow": false,
-      "panels": [
+        },
         {
           "datasource": {
             "type": "prometheus",
@@ -439,6 +195,9 @@ spec:
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -448,8 +207,9 @@ spec:
                 "hideFrom": {
                   "legend": false,
                   "tooltip": false,
-                  "vis": false
+                  "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -480,7 +240,7 @@ spec:
                   }
                 ]
               },
-              "unit": "percent"
+              "unit": "short"
             },
             "overrides": []
           },
@@ -488,29 +248,33 @@ spec:
             "h": 8,
             "w": 12,
             "x": 0,
-            "y": 0
+            "y": 5
           },
-          "id": 1,
+          "id": 12,
           "options": {
             "legend": {
               "calcs": [],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
-              "mode": "single",
+              "mode": "multi",
               "sort": "none"
             }
           },
           "targets": [
             {
-              "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{job=\"kubernetes-service-endpoints\",mode=\"idle\"}[5m])) * 100)",
-              "interval": "",
-              "legendFormat": "{{instance}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "expr": "rate(vm_promscrape_samples_scraped_total{job=\"vmagent-global-vmagent\"}[5m])",
+              "legendFormat": "{{instance}} samples/sec",
               "refId": "A"
             }
           ],
-          "title": "CPU Usage by Node",
+          "title": "Samples Scraped Rate",
           "type": "timeseries"
         },
         {
@@ -524,6 +288,9 @@ spec:
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
@@ -533,8 +300,102 @@ spec:
                 "hideFrom": {
                   "legend": false,
                   "tooltip": false,
-                  "vis": false
+                  "viz": false
                 },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 5
+          },
+          "id": 16,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "expr": "rate(vmagent_remotewrite_samples_sent_total{job=\"vmagent-global-vmagent\"}[5m])",
+              "legendFormat": "{{instance}} sent/sec",
+              "refId": "A"
+            }
+          ],
+          "title": "Remote Write Rate",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "VictoriaMetrics"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -571,52 +432,55 @@ spec:
           },
           "gridPos": {
             "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 0
+            "w": 24,
+            "x": 0,
+            "y": 13
           },
-          "id": 2,
+          "id": 28,
           "options": {
             "legend": {
               "calcs": [],
               "displayMode": "list",
-              "placement": "bottom"
+              "placement": "bottom",
+              "showLegend": true
             },
             "tooltip": {
-              "mode": "single",
+              "mode": "multi",
               "sort": "none"
             }
           },
           "targets": [
             {
-              "expr": "node_memory_MemTotal_bytes{job=\"kubernetes-service-endpoints\"} - node_memory_MemAvailable_bytes{job=\"kubernetes-service-endpoints\"}",
-              "interval": "",
-              "legendFormat": "{{instance}}",
+              "datasource": {
+                "type": "prometheus",
+                "uid": "VictoriaMetrics"
+              },
+              "expr": "process_resident_memory_bytes{job=\"vmagent-global-vmagent\"}",
+              "legendFormat": "{{instance}} memory",
               "refId": "A"
             }
           ],
-          "title": "Memory Usage by Node",
+          "title": "Memory Usage",
           "type": "timeseries"
         }
       ],
-      "refresh": "5s",
-      "schemaVersion": 37,
-      "style": "dark",
+      "refresh": "30s",
+      "schemaVersion": 39,
       "tags": [
-        "kubernetes",
-        "nodes"
+        "VictoriaMetrics",
+        "vmagent"
       ],
       "templating": {
         "list": []
       },
       "time": {
-        "from": "now-5m",
+        "from": "now-15m",
         "to": "now"
       },
       "timepicker": {},
       "timezone": "",
-      "title": "Kubernetes Nodes",
-      "uid": "k8s-nodes",
+      "title": "VictoriaMetrics - vmagent (compact)",
+      "uid": "vm-vmagent-compact",
       "version": 1,
       "weekStart": ""
     }
