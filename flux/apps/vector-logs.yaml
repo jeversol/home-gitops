@@ -14,7 +14,7 @@ spec:
   chart:
     spec:
       chart: vector
-      version: "0.40.0"  # renovate: datasource=helm depName=vector registryUrl=https://helm.vector.dev
+      version: "0.44.0"  # renovate: datasource=helm depName=vector registryUrl=https://helm.vector.dev
       sourceRef:
         kind: HelmRepository
         name: vector
