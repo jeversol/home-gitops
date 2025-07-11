@@ -1,0 +1,14 @@
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMServiceScrape
+metadata:
+  name: node-exporter
+  namespace: o11y
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus-node-exporter
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
