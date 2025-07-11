@@ -14,3 +14,4 @@ resources:
   - grafana.yaml
   - kube-state-metrics.yaml
   - vector-logs.yaml
+  - prometheus-node-exporter.yaml

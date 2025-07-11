@@ -8,3 +8,4 @@ resources:
   - victoria-metrics/
   - global-vmagent.yaml
   - kube-state-metrics-scrape.yaml
+  - node-exporter-scrape.yaml
