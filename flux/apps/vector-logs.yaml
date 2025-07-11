@@ -1,0 +1,126 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vector-logs
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: vector-logs
+  targetNamespace: o11y
+  dependsOn:
+    - name: victoria-logs
+      namespace: flux-system
+  chart:
+    spec:
+      chart: vector
+      version: "0.40.0"  # renovate: datasource=helm depName=vector registryUrl=https://helm.vector.dev
+      sourceRef:
+        kind: HelmRepository
+        name: vector
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    nameOverride: vector
+    fullnameOverride: vector
+    
+    role: Agent
+    
+    # Deploy as DaemonSet to collect logs from all nodes
+    replicas: null
+    
+    # Service configuration - disable since we're only collecting logs
+    service:
+      enabled: false
+    
+    # Resource limits
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "500m"
+    
+    # Vector configuration
+    customConfig:
+      sources:
+        kubernetes_logs:
+          type: kubernetes_logs
+          glob_minimum_cooldown_ms: 15000
+          max_read_bytes: 2048
+          max_line_bytes: 32768
+          fingerprint_lines: 1
+          ignore_older_secs: 600
+          
+      transforms:
+        parse_logs:
+          type: remap
+          inputs: ["kubernetes_logs"]
+          source: |
+            # Parse JSON logs if possible
+            if is_string(.message) {
+              parsed = parse_json(.message) ?? {}
+              if !is_empty(parsed) {
+                . = merge(., parsed)
+              }
+            }
+            
+            # Ensure timestamp field exists
+            if is_null(.timestamp) {
+              .timestamp = now()
+            }
+            
+            # Set stream fields for VictoriaLogs
+            .stream = "kubernetes"
+            
+            # Clean up message field
+            if is_null(.message) && exists(.log) {
+              .message = .log
+              del(.log)
+            }
+            
+            if is_null(.message) && exists(.msg) {
+              .message = .msg
+            }
+            
+      sinks:
+        victoria_logs:
+          type: elasticsearch
+          inputs: ["parse_logs"]
+          mode: bulk
+          api_version: v8
+          compression: gzip
+          healthcheck:
+            enabled: false
+          endpoints:
+            - "https://logs-server.o11y.svc:9428/insert/elasticsearch"
+          request:
+            headers:
+              VL-Time-Field: timestamp
+              VL-Stream-Fields: stream,kubernetes.pod_name,kubernetes.container_name,kubernetes.pod_namespace
+              VL-Msg-Field: message,msg,_msg,log.msg,log.message,log
+              AccountID: "0"
+              ProjectID: "0"
+    
+    # Security context
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    
+    # Tolerations for control plane nodes
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule

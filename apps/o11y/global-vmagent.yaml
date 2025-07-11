@@ -1,0 +1,18 @@
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAgent
+metadata:
+  name: global-vmagent
+  namespace: o11y
+spec:
+  selectAllByDefault: true
+  replicaCount: 1
+  remoteWrite:
+    - url: "http://metrics-server.o11y.svc:8428/api/v1/write"
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "200Mi"
+    limits:
+      cpu: "200m"
+      memory: "500Mi"
