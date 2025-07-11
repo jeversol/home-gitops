@@ -7,3 +7,4 @@ resources:
   - grafana/
   - victoria-metrics/
   - global-vmagent.yaml
+  - kube-state-metrics-scrape.yaml
