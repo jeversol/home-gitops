@@ -33,6 +33,10 @@ spec:
     # Deploy as DaemonSet for log collection
     role: Agent
     
+    # Disable service since we're only collecting logs
+    service:
+      enabled: false
+    
     # Resource limits
     resources:
       requests:
