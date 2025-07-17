@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: scrutiny-collector
+  namespace: scrutiny
+  labels:
+    app: scrutiny-collector
+spec:
+  selector:
+    matchLabels:
+      app: scrutiny-collector
+  template:
+    metadata:
+      labels:
+        app: scrutiny-collector
+    spec:
+      hostNetwork: true
+      hostPID: true
+      dnsPolicy: ClusterFirstWithHostNet
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: scrutiny-collector
+          image: ghcr.io/analogj/scrutiny:master-collector
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          env:
+            - name: COLLECTOR_API_ENDPOINT
+              value: "https://scrutiny.i.recompiled.org"
+            - name: COLLECTOR_HOST_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: COLLECTOR_CRON_SCHEDULE
+              value: "0 */4 * * *"  # Every 4 hours
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          volumeMounts:
+            - name: dev
+              mountPath: /dev
+            - name: udev
+              mountPath: /run/udev
+              readOnly: true
+            - name: proc
+              mountPath: /host/proc
+              readOnly: true
+            - name: sys
+              mountPath: /host/sys
+              readOnly: true
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "pgrep -f scrutiny-collector || exit 1"
+            initialDelaySeconds: 60
+            periodSeconds: 300
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - "ls /dev/sd* /dev/nvme* 2>/dev/null | wc -l | grep -v '^0$'"
+            initialDelaySeconds: 10
+            periodSeconds: 30
+      volumes:
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: udev
+          hostPath:
+            path: /run/udev
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/os: linux

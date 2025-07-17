@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scrutiny
+  namespace: scrutiny
+spec:
+  strategy:
+    type: Recreate
+  replicas: 1
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: scrutiny
+  template:
+    metadata:
+      labels:
+        app: scrutiny
+    spec:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
+      containers:
+        - name: scrutiny
+          image: ghcr.io/analogj/scrutiny:master-web
+          ports:
+            - name: scrutiny-port
+              containerPort: 8080
+          env:
+            - name: SCRUTINY_WEB_INFLUXDB_HOST
+              value: "scrutiny-influxdb.scrutiny.svc.cluster.local"
+            - name: SCRUTINY_WEB_INFLUXDB_PORT
+              value: "8086"
+            - name: SCRUTINY_WEB_INFLUXDB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-secret
+                  key: admin-token
+            - name: SCRUTINY_WEB_INFLUXDB_ORG
+              value: "scrutiny"
+            - name: SCRUTINY_WEB_INFLUXDB_BUCKET
+              value: "metrics"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 512Mi
+          volumeMounts:
+            - name: config
+              mountPath: /opt/scrutiny/config
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: scrutiny-pvc
