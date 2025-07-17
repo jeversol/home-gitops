@@ -3,7 +3,7 @@ extends: default
 rules:
   line-length: disable
   indentation:
-    spaces: 2
+    spaces: consistent
   comments:
     min-spaces-from-content: 1
   document-start: disable
