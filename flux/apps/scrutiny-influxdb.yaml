@@ -1,0 +1,56 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: scrutiny-influxdb
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: scrutiny-influxdb
+  targetNamespace: scrutiny
+  driftDetection:
+    mode: warn
+    ignore:
+      - paths: ["/spec/replicas"]
+        target:
+          kind: Deployment
+      - paths: ["/spec/replicas"]
+        target:
+          kind: StatefulSet
+  chart:
+    spec:
+      chart: influxdb2
+      version: "2.1.2"  # renovate: datasource=helm depName=influxdb2 registryUrl=https://helm.influxdata.com/ allowedVersions=<3.0.0
+      sourceRef:
+        kind: HelmRepository
+        name: influxdata
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    nameOverride: influxdb
+    fullnameOverride: influxdb
+    persistence:
+      enabled: true
+      storageClass: "longhorn"
+      size: 500Mi
+    adminUser:
+      organization: "scrutiny"
+      bucket: "metrics"
+      user: "admin"
+      existingSecret: influxdb-secret
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "500m"
+        memory: "1Gi"
+    service:
+      type: ClusterIP
+      port: 8086

@@ -1,0 +1,16 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: scrutiny-ingressroute
+  namespace: scrutiny
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`scrutiny.i.recompiled.org`)
+      kind: Rule
+      services:
+        - name: scrutiny
+          port: 8080
+  tls:
+    secretName: scrutiny-tls-cert

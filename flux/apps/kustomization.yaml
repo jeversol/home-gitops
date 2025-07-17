@@ -15,3 +15,6 @@ resources:
   - kube-state-metrics.yaml
   - vector-logs.yaml
   - prometheus-node-exporter.yaml
+  - scrutiny.yaml
+  - scrutiny-influxdb.yaml
+  - helmrepo-influxdata.yaml
