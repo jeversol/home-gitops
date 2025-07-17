@@ -38,7 +38,9 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
             - name: COLLECTOR_CRON_SCHEDULE
-              value: "0 */4 * * *"  # Every 4 hours
+              value: "0 */4 * * *"
+            - name: COLLECTOR_HOST_IGNORE
+              value: "/dev/sd[a-z]+"
           resources:
             requests:
               cpu: 10m
@@ -65,15 +67,15 @@ spec:
                 - -c
                 - "pgrep -f scrutiny-collector || exit 1"
             initialDelaySeconds: 60
-            periodSeconds: 300
+            periodSeconds: 3600
           readinessProbe:
             exec:
               command:
                 - /bin/sh
                 - -c
-                - "ls /dev/sd* /dev/nvme* 2>/dev/null | wc -l | grep -v '^0$'"
-            initialDelaySeconds: 10
-            periodSeconds: 30
+                - "ls /dev/nvme* 2>/dev/null | wc -l | grep -v '^0$'"
+            initialDelaySeconds: 30
+            periodSeconds: 3600
       volumes:
         - name: dev
           hostPath:
