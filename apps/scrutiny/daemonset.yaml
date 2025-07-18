@@ -39,8 +39,6 @@ spec:
                   fieldPath: spec.nodeName
             - name: COLLECTOR_CRON_SCHEDULE
               value: "0 */4 * * *"
-            - name: COLLECTOR_HOST_IGNORE
-              value: "/dev/sd[a-z]+"
           resources:
             requests:
               cpu: 10m
@@ -59,6 +57,9 @@ spec:
               readOnly: true
             - name: sys
               mountPath: /host/sys
+              readOnly: true
+            - name: collector-config
+              mountPath: /opt/scrutiny/config
               readOnly: true
           livenessProbe:
             exec:
@@ -89,6 +90,9 @@ spec:
         - name: sys
           hostPath:
             path: /sys
+        - name: collector-config
+          configMap:
+            name: scrutiny-collector-config
       restartPolicy: Always
       nodeSelector:
         kubernetes.io/os: linux
