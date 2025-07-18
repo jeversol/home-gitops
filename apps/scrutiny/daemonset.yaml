@@ -47,8 +47,8 @@ spec:
               cpu: 100m
               memory: 128Mi
           volumeMounts:
-            - name: dev
-              mountPath: /dev
+            - name: nvme0
+              mountPath: /dev/nvme0
             - name: udev
               mountPath: /run/udev
               readOnly: true
@@ -74,13 +74,14 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                - "ls /dev/nvme* 2>/dev/null | wc -l | grep -v '^0$'"
-            initialDelaySeconds: 30
-            periodSeconds: 3600
+                - "test -f /opt/scrutiny/config/collector.yaml"
+            initialDelaySeconds: 5
+            periodSeconds: 30
       volumes:
-        - name: dev
+        - name: nvme0
           hostPath:
-            path: /dev
+            path: /dev/nvme0
+            type: BlockDevice
         - name: udev
           hostPath:
             path: /run/udev
