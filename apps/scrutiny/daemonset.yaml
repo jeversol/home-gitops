@@ -47,8 +47,8 @@ spec:
               cpu: 100m
               memory: 128Mi
           volumeMounts:
-            - name: nvme0
-              mountPath: /dev/nvme0
+            - name: dev
+              mountPath: /dev
             - name: udev
               mountPath: /run/udev
               readOnly: true
@@ -78,10 +78,9 @@ spec:
             initialDelaySeconds: 5
             periodSeconds: 30
       volumes:
-        - name: nvme0
+        - name: dev
           hostPath:
-            path: /dev/nvme0
-            type: BlockDevice
+            path: /dev
         - name: udev
           hostPath:
             path: /run/udev
