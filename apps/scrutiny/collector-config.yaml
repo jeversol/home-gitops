@@ -8,4 +8,24 @@ data:
     version: 1
     devices:
       - device: /dev/nvme0
-        type: nvme
+        type: 'nvme'
+      - device: /dev/sda
+        ignore: true
+      - device: /dev/sdb
+        ignore: true
+      - device: /dev/sdc
+        ignore: true
+      - device: /dev/sdd
+        ignore: true
+      - device: /dev/sde
+        ignore: true
+      - device: /dev/sdf
+        ignore: true
+      - device: /dev/sdg
+        ignore: true
+      - device: /dev/sdh
+        ignore: true
+      - device: /dev/sdi
+        ignore: true
+      - device: /dev/sdj
+        ignore: true
