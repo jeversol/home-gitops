@@ -7,6 +7,7 @@ resources:
   - scrutiny-storage.yaml
   - scrutiny-deployment.yaml
   - scrutiny-service.yaml
+  - collector-config.yaml
   - daemonset.yaml
   - ingressroute.yaml
   - tls-cert.yaml
