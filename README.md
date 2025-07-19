@@ -22,11 +22,27 @@ This repo manages my home kubernetes cluster using Flux.
   - [democratic-csi](https://github.com/democratic-csi/democratic-csi)
   - [longhorn](https://longhorn.io)
 - Observability
- - VictoriaMetrics
- - VictoriaLogs
- - Grafana
+  - [VictoriaMetrics](https://github.com/VictoriaMetrics/VictoriaMetrics)
+  - [VictoriaLogs](https://github.com/VictoriaMetrics/VictoriaLogs)
+  - [Grafana](https://github.com/grafana/grafana)
 - Applications
   - [tautulli](https://tautulli.com)
+  - [scrutiny](https://github.com/AnalogJ/scrutiny)
+
+## To Migrate:
+* Homebridge (from NAS)
+### Media Stack:
+* Plex first with hardware decoding
+* Request Stack: overseerr/doplarr
+* Search Stack: flaresolverr/prowlarr
+* Management: Radarr/Sonarr
+* sabNZBd (might stay on NAS?)
+* qbittorrent (stay on NAS with sabnzbd?)
+
+## To keep where they are:
+* minio on NAS
+* public website on linode
+* airsonic on NAS (sonos is too fragile)
 
 ### Deployed but backed out/replaced
 
@@ -46,19 +62,3 @@ Honestly, this felt too painful. I had spent hours ruling out SSO, RBAC, a broke
 That was when I decided it was too much and went back to Flux.  
 
 </details>
-
-## To Migrate:
-* Scrutiny (from NAS to grow to a hub/spoke)
-* Homebridge (from NAS)
-### Media Stack:
-* Plex first with hardware decoding
-* Request Stack: overseerr/doplarr
-* Search Stack: flaresolverr/prowlarr
-* Management: Radarr/Sonarr
-* sabNZBd (might stay on NAS?)
-* qbittorrent (stay on NAS with sabnzbd?)
-
-## To keep where they are:
-* minio on NAS
-* public website on linode
-* airsonic on NAS (sonos is too fragile)
