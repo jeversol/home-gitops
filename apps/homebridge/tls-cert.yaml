@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: homebridge-tls
+  namespace: homebridge
+spec:
+  secretName: homebridge-tls
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+  privateKey:
+    rotationPolicy: Never
+  dnsNames:
+    - homebridge.i.recompiled.org
