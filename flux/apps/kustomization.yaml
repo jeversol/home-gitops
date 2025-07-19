@@ -18,3 +18,4 @@ resources:
   - scrutiny.yaml
   - scrutiny-influxdb.yaml
   - helmrepo-influxdata.yaml
+  - homebridge.yaml

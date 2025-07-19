@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homebridge
+  namespace: homebridge
+  labels:
+    app: homebridge
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: homebridge
+  template:
+    metadata:
+      labels:
+        app: homebridge
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: homebridge
+          image: homebridge/homebridge:latest
+          env:
+            - name: TZ
+              value: "America/New_York"
+            - name: PUID
+              value: "1029"
+            - name: PGID
+              value: "65537"
+            - name: HOMEBRIDGE_CONFIG_UI
+              value: "1"
+            - name: HOMEBRIDGE_CONFIG_UI_PORT
+              value: "8581"
+            - name: DSM_HOSTNAME
+              value: "nas.recompiled.org"
+            - name: HOMEBRIDGE_INSECURE
+              value: "1"
+            - name: ENABLE_AVAHI
+              value: "1"
+          ports:
+            - containerPort: 8581
+              name: config-ui
+              protocol: TCP
+          volumeMounts:
+            - name: homebridge-data
+              mountPath: /var/lib/homebridge
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8581
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8581
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      volumes:
+        - name: homebridge-data
+          persistentVolumeClaim:
+            claimName: homebridge-storage
+      nodeSelector:
+        kubernetes.io/os: linux
