@@ -6,7 +6,7 @@ spec:
   strategy:
     type: Recreate
   replicas: 1
-  revisionHistoryLimit: 5
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: tautulli
@@ -20,41 +20,41 @@ spec:
           - name: ndots
             value: "1"
       containers:
-      - name: tautulli
-        image: ghcr.io/tautulli/tautulli:v2.15.2
-        ports:
-        - name: tautulli-port
-          containerPort: 8181
-        env:
-        - name: PGID
-          value: "1000"
-        - name: PUID
-          value: "1000"
-        - name: TZ
-          value: "America/New_York"
-        resources:
-          requests:
-            cpu: 50m
-            memory: 64Mi
-          limits:
-            cpu: 500m
-            memory: 256Mi
-        volumeMounts:
-        - name: config
-          mountPath: /config
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8181
-          initialDelaySeconds: 60
-          periodSeconds: 30
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8181
-          initialDelaySeconds: 30
-          periodSeconds: 10
+        - name: tautulli
+          image: ghcr.io/tautulli/tautulli:v2.15.2
+          ports:
+            - name: tautulli-port
+              containerPort: 8181
+          env:
+            - name: PGID
+              value: "1000"
+            - name: PUID
+              value: "1000"
+            - name: TZ
+              value: "America/New_York"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8181
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8181
+            initialDelaySeconds: 30
+            periodSeconds: 10
       volumes:
-      - name: config
-        persistentVolumeClaim:
-          claimName: tautulli-pvc
+        - name: config
+          persistentVolumeClaim:
+            claimName: tautulli-pvc
