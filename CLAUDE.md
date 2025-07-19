@@ -4,6 +4,10 @@ There are a couple of key rules you must follow:
 
 1. If you want an exception to any rule, you must get explicit permission first. Breaking the letter or spirit of the rules is failure.
 2. Do not lie. 
+3. Remember to reference this file to ensure you are following the guidelines and rules.
+4. Always check existing patterns before creating new configurations
+5. Cite your sources where it makes sense.
+
 
 ## Our relationship
 
@@ -92,6 +96,8 @@ Two-tier GitOps deployment:
 - **Victoria Metrics** - Prometheus-compatible metrics
 - **Victoria Logs** - Centralized log database.
 - **Grafana** - Observability dashboards
+- **Scrutiny** - SMART monitoring of disk drives
+- **Homebridge** - Home automation for devices that aren't HomeKit compatible
 
 ## Secret Management
 
@@ -119,9 +125,10 @@ All secrets use **SOPS encryption** with age keys:
 1. Create secret YAML with proper expiration annotations
 2. Encrypt: `sops -e -i secret.yaml`
 3. Commit encrypted secret to git
-4. Harry Botter monitors and alerts on expiration
+4. Harry Botter monitors and alerts when a credential/secret is due for expiration
   1. This is accomplished by the recompiled.org/expiry-date and recompiled.org/expiry-note annotations.
   2. An example of this is infrastructure/cert-manager/cert-manager-secret.yaml
+  3. We do not create arbitrary expiration dates, they are based on enforced facts from third party tools (ie: GitHub PAT, CloudFlare API tokens)
 
 ## Renovate Configuration
 
