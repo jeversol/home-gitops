@@ -16,46 +16,46 @@ spec:
         spec:
           automountServiceAccountToken: true
           containers:
-          - name: watcher
-            image: ghcr.io/jeversol/harry-botter:latest
-            command:
-            - python
-            - /script/harry-botter.py
-            volumeMounts:
-            - name: script
-              mountPath: /script
-            - name: github-key
-              mountPath: /etc/github
-              readOnly: true
-            resources:
-              requests:
-                memory: "128Mi"
-                cpu: "50m"
-            env:
-            - name: PYTHONUNBUFFERED
-              value: "1"
-            - name: PYTHONDONTWRITEBYTECODE
-              value: "1"
-            securityContext:
-              runAsNonRoot: true
-              runAsUser: 1000
-              allowPrivilegeEscalation: false
-              capabilities:
-                drop: [ "ALL" ]
-              seccompProfile:
-                type: RuntimeDefault
+            - name: watcher
+              image: ghcr.io/jeversol/harry-botter:latest
+              command:
+                - python
+                - /script/harry-botter.py
+              volumeMounts:
+                - name: script
+                  mountPath: /script
+                - name: github-key
+                  mountPath: /etc/github
+                  readOnly: true
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "50m"
+              env:
+                - name: PYTHONUNBUFFERED
+                  value: "1"
+                - name: PYTHONDONTWRITEBYTECODE
+                  value: "1"
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ["ALL"]
+                seccompProfile:
+                  type: RuntimeDefault
           restartPolicy: OnFailure
           serviceAccountName: harry-botter
           imagePullSecrets:
-          - name: ghcr-secret
+            - name: ghcr-secret
           volumes:
-          - name: script
-            configMap:
-              name: harry-botter
-              defaultMode: 484
-          - name: github-key
-            secret:
-              secretName: github-app-key
-              items:
-              - key: private-key.pem
-                path: private-key.pem
+            - name: script
+              configMap:
+                name: harry-botter
+                defaultMode: 484
+            - name: github-key
+              secret:
+                secretName: github-app-key
+                items:
+                  - key: private-key.pem
+                    path: private-key.pem
