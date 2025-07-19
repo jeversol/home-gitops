@@ -25,18 +25,10 @@ spec:
           env:
             - name: TZ
               value: "America/New_York"
-            - name: PUID
-              value: "1029"
-            - name: PGID
-              value: "65537"
             - name: HOMEBRIDGE_CONFIG_UI
               value: "1"
             - name: HOMEBRIDGE_CONFIG_UI_PORT
               value: "8581"
-            - name: DSM_HOSTNAME
-              value: "nas.recompiled.org"
-            - name: HOMEBRIDGE_INSECURE
-              value: "1"
             - name: ENABLE_AVAHI
               value: "1"
           ports:
