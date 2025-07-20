@@ -70,3 +70,4 @@ spec:
             claimName: homebridge-storage
       nodeSelector:
         kubernetes.io/os: linux
+        kubernetes.io/hostname: k8s-node2
