@@ -7,10 +7,10 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`tautulli.i.recompiled.org`)
-    kind: Rule
-    services:
-    - name: tautulli
+    - match: Host(`tautulli.i.recompiled.org`)
+      kind: Rule
+      services:
+        - name: tautulli
       port: 8181
   tls:
     secretName: tautulli-tls

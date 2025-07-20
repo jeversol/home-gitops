@@ -1,0 +1,24 @@
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: homebridge-vpa
+  namespace: homebridge
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: homebridge
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+  resourcePolicy:
+    containerPolicies:
+      - containerName: homebridge
+        minAllowed:
+          cpu: 25m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 500m       # IoT app shouldn't need much
+          memory: 512Mi   # IoT app shouldn't need much
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits

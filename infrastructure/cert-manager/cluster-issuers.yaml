@@ -10,7 +10,7 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-issuer-staging-key
     solvers:
-    - dns01:
+      - dns01:
         cloudflare:
           email: joe@recompiled.org
           apiTokenSecretRef:
@@ -29,7 +29,7 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-issuer-account-key
     solvers:
-    - dns01:
+      - dns01:
         cloudflare:
           email: joe@recompiled.org
           apiTokenSecretRef:

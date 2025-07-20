@@ -3,9 +3,9 @@ kind: ClusterRoleBinding
 metadata:
   name: harry-botter-binding
 subjects:
-- kind: ServiceAccount
-  name: harry-botter
-  namespace: harry-botter
+  - kind: ServiceAccount
+    name: harry-botter
+    namespace: harry-botter
 roleRef:
   kind: ClusterRole
   name: read-secrets-clusterwide

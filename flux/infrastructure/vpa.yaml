@@ -1,0 +1,105 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vertical-pod-autoscaler
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: vpa
+  targetNamespace: kube-system
+  dependsOn:
+    - name: metrics-server
+      namespace: flux-system
+  driftDetection:
+    mode: warn
+    ignore:
+      - paths: ["/spec/replicas"]
+        target:
+          kind: Deployment
+  chart:
+    spec:
+      chart: vertical-pod-autoscaler
+      version: "10.2.1"  # renovate: datasource=helm depName=vertical-pod-autoscaler registryUrl=https://cowboysysop.github.io/charts/
+      sourceRef:
+        kind: HelmRepository
+        name: cowboysysop
+        namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # VPA Recommender Configuration
+    recommender:
+      enabled: true
+      replicaCount: 1
+      
+      # Resource requests for the recommender
+      resources:
+        requests:
+          cpu: 50m
+          memory: 512Mi
+        limits:
+          cpu: 100m
+          memory: 1Gi
+      
+      # Recommender flags for better operation
+      extraArgs:
+        - --v=2
+        - --pod-recommendation-min-cpu-millicores=25
+        - --pod-recommendation-min-memory-mb=100
+        - --target-cpu-percentile=0.9
+        - --recommendation-margin-fraction=0.15
+        - --storage=prometheus
+        - --prometheus-address=http://metrics.o11y.svc.cluster.local:8428
+        - --prometheus-query-timeout=5m
+        - --history-length=8d
+      
+      # Security context
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+        capabilities:
+          drop:
+            - ALL
+        readOnlyRootFilesystem: true
+        allowPrivilegeEscalation: false
+      
+      # Node affinity for stability
+      nodeSelector:
+        kubernetes.io/os: linux
+    
+    # VPA Updater - DISABLED for recommendation-only mode
+    updater:
+      enabled: false
+    
+    # VPA Admission Controller - DISABLED for recommendation-only mode
+    admissionController:
+      enabled: false
+    
+    # Global settings
+    fullnameOverride: "vpa"
+    nameOverride: "vpa"
+    
+    # Service monitor for Prometheus metrics scraping
+    serviceMonitor:
+      enabled: true
+      namespace: kube-system
+      labels:
+        app.kubernetes.io/name: vpa-recommender
+      interval: 30s
+      scrapeTimeout: 10s
+    
+    # Pod security context
+    podSecurityContext:
+      fsGroup: 65534
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
