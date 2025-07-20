@@ -12,10 +12,10 @@ spec:
     solvers:
       - dns01:
           cloudflare:
-          email: joe@recompiled.org
-          apiTokenSecretRef:
-            name: cloudflare-api-token
-            key: api-token
+            email: joe@recompiled.org
+            apiTokenSecretRef:
+              name: cloudflare-api-token
+              key: api-token
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
@@ -31,7 +31,7 @@ spec:
     solvers:
       - dns01:
           cloudflare:
-          email: joe@recompiled.org
-          apiTokenSecretRef:
-            name: cloudflare-api-token
-            key: api-token
+            email: joe@recompiled.org
+            apiTokenSecretRef:
+              name: cloudflare-api-token
+              key: api-token
