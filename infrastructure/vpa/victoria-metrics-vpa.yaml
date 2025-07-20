@@ -8,12 +8,12 @@ spec:
   targetRef:
     apiVersion: apps/v1
     kind: StatefulSet
-    name: metrics
+    name: metrics-server
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
   resourcePolicy:
     containerPolicies:
-      - containerName: victoria-metrics
+      - containerName: vmsingle
         minAllowed:
           cpu: 100m
           memory: 256Mi
@@ -32,7 +32,7 @@ spec:
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: metrics-vmagent
+    name: vmagent-global-vmagent
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
   resourcePolicy:
