@@ -30,6 +30,8 @@ spec:
               value: "1"
             - name: HOMEBRIDGE_CONFIG_UI_PORT
               value: "8581"
+            - name: UIX_BIND_HOST
+              value: "0.0.0.0"
             - name: ENABLE_AVAHI
               value: "1"
           ports:
@@ -50,16 +52,18 @@ spec:
             httpGet:
               path: /
               port: 8581
-              host: 127.0.0.1
-            initialDelaySeconds: 60
-            periodSeconds: 30
+              host: localhost
+            initialDelaySeconds: 180
+            periodSeconds: 60
+            timeoutSeconds: 10
           readinessProbe:
             httpGet:
               path: /
               port: 8581
-              host: 127.0.0.1
-            initialDelaySeconds: 30
-            periodSeconds: 10
+              host: localhost
+            initialDelaySeconds: 120
+            periodSeconds: 15
+            timeoutSeconds: 10
       volumes:
         - name: homebridge-data
           persistentVolumeClaim:

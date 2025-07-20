@@ -7,6 +7,11 @@ spec:
   entryPoints:
     - websecure
   routes:
+    - match: Host(`homebridge.i.recompiled.org`) && PathPrefix(`/alexa`)
+      kind: Rule
+      services:
+        - name: homebridge
+          port: 9047
     - match: Host(`homebridge.i.recompiled.org`)
       kind: Rule
       services:
