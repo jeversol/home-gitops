@@ -11,6 +11,6 @@ spec:
       kind: Rule
       services:
         - name: tautulli
-      port: 8181
+          port: 8181
   tls:
     secretName: tautulli-tls
