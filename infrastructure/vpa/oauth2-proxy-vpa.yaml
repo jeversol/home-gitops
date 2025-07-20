@@ -1,0 +1,24 @@
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: oauth2-proxy-vpa
+  namespace: auth
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: oauth2-proxy
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+  resourcePolicy:
+    containerPolicies:
+      - containerName: oauth2-proxy
+        minAllowed:
+          cpu: 25m
+          memory: 32Mi
+        maxAllowed:
+          cpu: 200m       # Authentication proxy
+          memory: 128Mi   # Authentication proxy
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits

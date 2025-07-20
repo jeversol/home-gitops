@@ -1,0 +1,24 @@
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: victoria-logs-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: logs-server
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+  resourcePolicy:
+    containerPolicies:
+      - containerName: vlogs
+        minAllowed:
+          cpu: 100m
+          memory: 128Mi
+        maxAllowed:
+          cpu: 1000m      # Log aggregation database
+          memory: 2Gi     # Log aggregation database
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
