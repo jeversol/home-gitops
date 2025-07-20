@@ -5,7 +5,7 @@ metadata:
   name: traefik
   namespace: flux-system
 spec:
-  interval: 5m
+  interval: 30m
   url: https://helm.traefik.io/traefik
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
@@ -15,7 +15,7 @@ metadata:
   namespace: flux-system
 spec:
   targetNamespace: traefik
-  interval: 10m
+  interval: 30m
   releaseName: traefik-crds
   driftDetection:
     mode: warn
@@ -44,7 +44,7 @@ spec:
   dependsOn:
     - name: traefik-crds
     - name: cert-manager
-  interval: 10m
+  interval: 30m
   releaseName: traefik
   driftDetection:
     mode: warn
