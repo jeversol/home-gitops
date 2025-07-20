@@ -13,3 +13,10 @@ resources:
   - vector-vpa.yaml
   - metallb-vpa.yaml
   - node-exporter-vpa.yaml
+  - democratic-csi-vpa.yaml
+  - flux-vpa.yaml
+  - cert-manager-vpa.yaml
+  - system-daemonsets-vpa.yaml
+  - longhorn-vpa.yaml
+  - system-deployments-vpa.yaml
+  - operators-vpa.yaml

@@ -1,0 +1,73 @@
+# Operator deployments that manage custom resources
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: grafana-operator-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: grafana-operator
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: manager
+        minAllowed:
+          cpu: 25m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 200m      # Operator workload
+          memory: 256Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: metrics-operator-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: metrics-operator
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: manager
+        minAllowed:
+          cpu: 25m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 200m      # Victoria Metrics operator
+          memory: 256Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: democratic-csi-snapshot-controller-vpa
+  namespace: democratic-csi
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: snapshot-controller
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: snapshot-controller
+        minAllowed:
+          cpu: 25m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 200m      # Volume snapshot operations
+          memory: 256Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits

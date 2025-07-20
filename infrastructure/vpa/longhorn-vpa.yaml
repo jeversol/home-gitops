@@ -1,0 +1,121 @@
+# Longhorn storage system components
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: longhorn-manager-vpa
+  namespace: longhorn
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: longhorn-manager
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: longhorn-manager
+        minAllowed:
+          cpu: 50m
+          memory: 128Mi
+        maxAllowed:
+          cpu: 500m      # Storage operations can be intensive
+          memory: 1Gi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: longhorn-ui-vpa
+  namespace: longhorn
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: longhorn-ui
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: longhorn-ui
+        minAllowed:
+          cpu: 25m
+          memory: 32Mi
+        maxAllowed:
+          cpu: 200m      # Web UI
+          memory: 128Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: longhorn-csi-plugin-vpa
+  namespace: longhorn
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: longhorn-csi-plugin
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: csi-driver
+        minAllowed:
+          cpu: 25m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 300m      # Volume mount operations
+          memory: 256Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: longhorn-csi-attacher-vpa
+  namespace: longhorn
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: csi-attacher
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: csi-attacher
+        minAllowed:
+          cpu: 25m
+          memory: 32Mi
+        maxAllowed:
+          cpu: 200m
+          memory: 128Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: longhorn-csi-provisioner-vpa
+  namespace: longhorn
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: csi-provisioner
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: csi-provisioner
+        minAllowed:
+          cpu: 25m
+          memory: 32Mi
+        maxAllowed:
+          cpu: 200m
+          memory: 128Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
