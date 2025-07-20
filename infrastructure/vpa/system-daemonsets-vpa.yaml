@@ -1,0 +1,130 @@
+# System DaemonSets that consume resources across all nodes
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: kube-flannel-vpa
+  namespace: kube-system
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: kube-flannel
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: kube-flannel
+        minAllowed:
+          cpu: 25m
+          memory: 32Mi
+        maxAllowed:
+          cpu: 200m
+          memory: 128Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: kube-proxy-vpa
+  namespace: kube-system
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: kube-proxy
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: kube-proxy
+        minAllowed:
+          cpu: 25m
+          memory: 32Mi
+        maxAllowed:
+          cpu: 200m
+          memory: 128Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: metallb-speaker-vpa
+  namespace: metallb-system
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: speaker
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: speaker
+        minAllowed:
+          cpu: 25m
+          memory: 32Mi
+        maxAllowed:
+          cpu: 200m
+          memory: 128Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: csi-nfs-node-vpa
+  namespace: kube-system
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: csi-nfs-node
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: node-driver-registrar
+        minAllowed:
+          cpu: 10m
+          memory: 16Mi
+        maxAllowed:
+          cpu: 100m
+          memory: 64Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+      - containerName: nfs
+        minAllowed:
+          cpu: 10m
+          memory: 16Mi
+        maxAllowed:
+          cpu: 100m
+          memory: 64Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: democratic-csi-node-vpa
+  namespace: democratic-csi
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: democratic-csi-node
+  updatePolicy:
+    updateMode: "Off"
+  resourcePolicy:
+    containerPolicies:
+      - containerName: csi-driver
+        minAllowed:
+          cpu: 25m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 300m
+          memory: 512Mi
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
