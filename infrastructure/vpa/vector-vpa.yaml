@@ -1,0 +1,24 @@
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: vector-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: vector
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+  resourcePolicy:
+    containerPolicies:
+      - containerName: vector
+        minAllowed:
+          cpu: 50m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 500m       # Log collection agent
+          memory: 256Mi   # Log collection agent
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits

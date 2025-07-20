@@ -3,6 +3,11 @@ kind: Kustomization
 resources:
   - grafana-vpa.yaml
   - victoria-metrics-vpa.yaml
+  - victoria-logs-vpa.yaml
   - homebridge-vpa.yaml
   - traefik-vpa.yaml
   - kube-state-metrics-vpa.yaml
+  - tautulli-vpa.yaml
+  - scrutiny-vpa.yaml
+  - oauth2-proxy-vpa.yaml
+  - vector-vpa.yaml
