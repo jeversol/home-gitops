@@ -46,15 +46,15 @@ spec:
       
       # Recommender flags for better operation
       extraArgs:
-        - --v=2
-        - --pod-recommendation-min-cpu-millicores=25
-        - --pod-recommendation-min-memory-mb=100
-        - --target-cpu-percentile=0.9
-        - --recommendation-margin-fraction=0.15
-        - --storage=prometheus
-        - --prometheus-address=http://metrics.o11y.svc.cluster.local:8428
-        - --prometheus-query-timeout=5m
-        - --history-length=8d
+        v: "2"
+        pod-recommendation-min-cpu-millicores: "25"
+        pod-recommendation-min-memory-mb: "100"
+        target-cpu-percentile: "0.9"
+        recommendation-margin-fraction: "0.15"
+        storage: "prometheus"
+        prometheus-address: "http://metrics.o11y.svc.cluster.local:8428"
+        prometheus-query-timeout: "5m"
+        history-length: "8d"
       
       # Security context
       securityContext:
