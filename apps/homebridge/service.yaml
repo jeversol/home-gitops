@@ -14,3 +14,7 @@ spec:
       port: 8581
       targetPort: 8581
       protocol: TCP
+    - name: alexa-proxy
+      port: 9047
+      targetPort: 9047
+      protocol: TCP
