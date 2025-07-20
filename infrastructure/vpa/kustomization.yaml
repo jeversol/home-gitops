@@ -11,3 +11,5 @@ resources:
   - scrutiny-vpa.yaml
   - oauth2-proxy-vpa.yaml
   - vector-vpa.yaml
+  - metallb-vpa.yaml
+  - node-exporter-vpa.yaml

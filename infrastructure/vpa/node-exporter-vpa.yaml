@@ -1,0 +1,24 @@
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: node-exporter-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: node-exporter
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+  resourcePolicy:
+    containerPolicies:
+      - containerName: node-exporter
+        minAllowed:
+          cpu: 25m
+          memory: 16Mi
+        maxAllowed:
+          cpu: 100m       # Node metrics exporter
+          memory: 64Mi    # Node metrics exporter
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
