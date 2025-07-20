@@ -14,3 +14,4 @@ resources:
   - nfs-storage.yaml
   - helmrepo-cowboysysop.yaml
   - vpa.yaml
+  - vpa-resources.yaml
