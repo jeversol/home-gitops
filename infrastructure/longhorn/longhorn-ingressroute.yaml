@@ -11,7 +11,7 @@ spec:
       kind: Rule
       services:
         - name: oauth2-proxy
-      namespace: auth
-      port: 4180
+          namespace: auth
+          port: 4180
   tls:
     secretName: longhorn-tls
