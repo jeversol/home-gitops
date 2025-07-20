@@ -7,10 +7,10 @@ spec:
   entryPoints:
     - websecure
   routes:
-  - match: Host(`longhorn.i.recompiled.org`)
-    kind: Rule
-    services:
-    - name: oauth2-proxy
+    - match: Host(`longhorn.i.recompiled.org`)
+      kind: Rule
+      services:
+        - name: oauth2-proxy
       namespace: auth
       port: 4180
   tls:

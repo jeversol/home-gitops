@@ -1,0 +1,48 @@
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: victoria-metrics-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: metrics
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+  resourcePolicy:
+    containerPolicies:
+      - containerName: victoria-metrics
+        minAllowed:
+          cpu: 100m
+          memory: 256Mi
+        maxAllowed:
+          cpu: 3000m      # Higher for metrics database
+          memory: 4Gi     # Higher for metrics database
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: vmagent-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: metrics-vmagent
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+  resourcePolicy:
+    containerPolicies:
+      - containerName: vmagent
+        minAllowed:
+          cpu: 50m
+          memory: 128Mi
+        maxAllowed:
+          cpu: 1000m      
+          memory: 1Gi     
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsAndLimits

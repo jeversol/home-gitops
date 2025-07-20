@@ -12,3 +12,5 @@ resources:
   - oauth2-proxy.yaml
   - nfs-csi-driver.yaml
   - nfs-storage.yaml
+  - helmrepo-cowboysysop.yaml
+  - vpa.yaml

@@ -33,14 +33,14 @@ spec:
     nameOverride: kube-state-metrics
     fullnameOverride: kube-state-metrics
     
-    # Resource limits
+    # Resource limits - increased for VPA metrics
     resources:
       limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
         cpu: 100m
         memory: 128Mi
-      requests:
-        cpu: 50m
-        memory: 64Mi
     
     # Security context
     securityContext:
@@ -55,3 +55,95 @@ spec:
     # Node affinity for stability
     nodeSelector:
       kubernetes.io/os: linux
+    
+    # Enable custom resource state for VPA metrics
+    customResourceState:
+      enabled: true
+      config:
+        spec:
+          resources:
+            - groupVersionKind:
+                group: autoscaling.k8s.io
+                version: v1
+                kind: VerticalPodAutoscaler
+              metricNamePrefix: kube_verticalpodautoscaler
+              labelsFromPath:
+                verticalpodautoscaler: [metadata, name]
+                namespace: [metadata, namespace]
+                target_api_version: [spec, targetRef, apiVersion]
+                target_kind: [spec, targetRef, kind]
+                target_name: [spec, targetRef, name]
+              metrics:
+                - name: "status_recommendation_containerrecommendations_lowerbound"
+                  help: "VPA container recommendation lower bound"
+                  each:
+                    type: Gauge
+                    gauge:
+                      path: [status, recommendation, containerRecommendations]
+                      valueFrom: [lowerBound, cpu]
+                      labelsFromPath:
+                        container: [containerName]
+                        resource: ["cpu"]
+                        unit: ["m"]
+                - name: "status_recommendation_containerrecommendations_target"
+                  help: "VPA container recommendation target"
+                  each:
+                    type: Gauge
+                    gauge:
+                      path: [status, recommendation, containerRecommendations]
+                      valueFrom: [target, cpu]
+                      labelsFromPath:
+                        container: [containerName]
+                        resource: ["cpu"]
+                        unit: ["m"]
+                - name: "status_recommendation_containerrecommendations_upperbound"
+                  help: "VPA container recommendation upper bound"
+                  each:
+                    type: Gauge
+                    gauge:
+                      path: [status, recommendation, containerRecommendations]
+                      valueFrom: [upperBound, cpu]
+                      labelsFromPath:
+                        container: [containerName]
+                        resource: ["cpu"]
+                        unit: ["m"]
+                - name: "status_recommendation_containerrecommendations_target_memory"
+                  help: "VPA container recommendation target memory"
+                  each:
+                    type: Gauge
+                    gauge:
+                      path: [status, recommendation, containerRecommendations]
+                      valueFrom: [target, memory]
+                      labelsFromPath:
+                        container: [containerName]
+                        resource: ["memory"]
+                        unit: ["bytes"]
+                - name: "status_recommendation_containerrecommendations_lowerbound_memory"
+                  help: "VPA container recommendation lower bound memory"
+                  each:
+                    type: Gauge
+                    gauge:
+                      path: [status, recommendation, containerRecommendations]
+                      valueFrom: [lowerBound, memory]
+                      labelsFromPath:
+                        container: [containerName]
+                        resource: ["memory"]
+                        unit: ["bytes"]
+                - name: "status_recommendation_containerrecommendations_upperbound_memory"
+                  help: "VPA container recommendation upper bound memory"
+                  each:
+                    type: Gauge
+                    gauge:
+                      path: [status, recommendation, containerRecommendations]
+                      valueFrom: [upperBound, memory]
+                      labelsFromPath:
+                        container: [containerName]
+                        resource: ["memory"]
+                        unit: ["bytes"]
+    
+    # Additional RBAC permissions for VPA resources
+    rbac:
+      extraRules:
+        - apiGroups: ["autoscaling.k8s.io"]
+          resources: ["verticalpodautoscalers"]
+          verbs: ["list", "watch"]

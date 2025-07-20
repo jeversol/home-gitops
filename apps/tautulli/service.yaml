@@ -6,5 +6,5 @@ spec:
   selector:
     app: tautulli
   ports:
-  - port: 8181
-    targetPort: tautulli-port
+    - port: 8181
+      targetPort: tautulli-port
