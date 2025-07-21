@@ -11,14 +11,3 @@ spec:
     name: controller
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: controller
-        minAllowed:
-          cpu: 25m
-          memory: 32Mi
-        maxAllowed:
-          cpu: 200m       # Load balancer controller
-          memory: 128Mi   # Load balancer controller
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

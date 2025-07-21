@@ -11,14 +11,3 @@ spec:
     name: node-exporter
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: node-exporter
-        minAllowed:
-          cpu: 25m
-          memory: 16Mi
-        maxAllowed:
-          cpu: 100m       # Node metrics exporter
-          memory: 64Mi    # Node metrics exporter
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

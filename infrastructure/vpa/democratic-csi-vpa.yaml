@@ -11,32 +11,3 @@ spec:
     name: democratic-csi-controller
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: csi-provisioner
-        minAllowed:
-          cpu: 25m
-          memory: 32Mi
-        maxAllowed:
-          cpu: 200m
-          memory: 256Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
-      - containerName: csi-attacher
-        minAllowed:
-          cpu: 25m
-          memory: 32Mi
-        maxAllowed:
-          cpu: 200m
-          memory: 256Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
-      - containerName: csi-resizer
-        minAllowed:
-          cpu: 25m
-          memory: 32Mi
-        maxAllowed:
-          cpu: 200m
-          memory: 256Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
