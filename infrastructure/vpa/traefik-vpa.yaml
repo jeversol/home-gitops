@@ -11,14 +11,3 @@ spec:
     name: traefik
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: traefik
-        minAllowed:
-          cpu: 50m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 1000m      # Ingress controller needs decent resources
-          memory: 1Gi     # Ingress controller needs decent resources
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

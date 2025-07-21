@@ -11,17 +11,6 @@ spec:
     name: cert-manager
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: cert-manager-controller
-        minAllowed:
-          cpu: 25m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 200m       # Certificate operations
-          memory: 256Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -35,14 +24,3 @@ spec:
     name: cert-manager-cainjector
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: cert-manager-cainjector
-        minAllowed:
-          cpu: 25m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 200m       # CA injection operations
-          memory: 256Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

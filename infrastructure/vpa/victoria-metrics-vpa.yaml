@@ -11,14 +11,3 @@ spec:
     name: metrics-server
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: vmsingle
-        minAllowed:
-          cpu: 100m
-          memory: 256Mi
-        maxAllowed:
-          cpu: 3000m      # Higher for metrics database
-          memory: 4Gi     # Higher for metrics database
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

@@ -12,17 +12,6 @@ spec:
     name: kube-flannel
   updatePolicy:
     updateMode: "Off"
-  resourcePolicy:
-    containerPolicies:
-      - containerName: kube-flannel
-        minAllowed:
-          cpu: 25m
-          memory: 32Mi
-        maxAllowed:
-          cpu: 200m
-          memory: 128Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -36,17 +25,6 @@ spec:
     name: kube-proxy
   updatePolicy:
     updateMode: "Off"
-  resourcePolicy:
-    containerPolicies:
-      - containerName: kube-proxy
-        minAllowed:
-          cpu: 25m
-          memory: 32Mi
-        maxAllowed:
-          cpu: 200m
-          memory: 128Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -60,17 +38,6 @@ spec:
     name: speaker
   updatePolicy:
     updateMode: "Off"
-  resourcePolicy:
-    containerPolicies:
-      - containerName: speaker
-        minAllowed:
-          cpu: 25m
-          memory: 32Mi
-        maxAllowed:
-          cpu: 200m
-          memory: 128Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -84,26 +51,6 @@ spec:
     name: csi-nfs-node
   updatePolicy:
     updateMode: "Off"
-  resourcePolicy:
-    containerPolicies:
-      - containerName: node-driver-registrar
-        minAllowed:
-          cpu: 10m
-          memory: 16Mi
-        maxAllowed:
-          cpu: 100m
-          memory: 64Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
-      - containerName: nfs
-        minAllowed:
-          cpu: 10m
-          memory: 16Mi
-        maxAllowed:
-          cpu: 100m
-          memory: 64Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -117,14 +64,3 @@ spec:
     name: democratic-csi-node
   updatePolicy:
     updateMode: "Off"
-  resourcePolicy:
-    containerPolicies:
-      - containerName: csi-driver
-        minAllowed:
-          cpu: 25m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 300m
-          memory: 512Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

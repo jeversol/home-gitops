@@ -11,17 +11,6 @@ spec:
     name: helm-controller
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: manager
-        minAllowed:
-          cpu: 50m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 500m       # Can be busy during deployments
-          memory: 512Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -35,17 +24,6 @@ spec:
     name: source-controller
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: manager
-        minAllowed:
-          cpu: 50m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 500m       # Git operations can be CPU intensive
-          memory: 512Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -59,14 +37,3 @@ spec:
     name: kustomize-controller
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: manager
-        minAllowed:
-          cpu: 50m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 500m       # Can spike during reconciliation
-          memory: 512Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

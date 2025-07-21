@@ -11,14 +11,3 @@ spec:
     name: grafana
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: grafana
-        minAllowed:
-          cpu: 50m
-          memory: 128Mi
-        maxAllowed:
-          cpu: 2000m      # Reasonable upper limit for 3-node cluster
-          memory: 2Gi     # Reasonable upper limit for 3-node cluster
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

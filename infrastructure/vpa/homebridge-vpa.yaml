@@ -11,14 +11,3 @@ spec:
     name: homebridge
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: homebridge
-        minAllowed:
-          cpu: 25m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 500m       # IoT app shouldn't need much
-          memory: 512Mi   # IoT app shouldn't need much
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

@@ -11,14 +11,3 @@ spec:
     name: tautulli
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: tautulli
-        minAllowed:
-          cpu: 25m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 500m       # Media monitoring shouldn't need much
-          memory: 512Mi   # Media monitoring shouldn't need much
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

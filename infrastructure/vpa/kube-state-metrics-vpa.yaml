@@ -11,14 +11,3 @@ spec:
     name: kube-state-metrics
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: kube-state-metrics
-        minAllowed:
-          cpu: 50m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 500m       # Metrics exporter
-          memory: 512Mi   # Metrics exporter with VPA metrics
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

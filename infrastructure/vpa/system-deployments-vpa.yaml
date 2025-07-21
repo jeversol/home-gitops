@@ -12,17 +12,6 @@ spec:
     name: coredns
   updatePolicy:
     updateMode: "Off"
-  resourcePolicy:
-    containerPolicies:
-      - containerName: coredns
-        minAllowed:
-          cpu: 50m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 500m      # DNS can spike with heavy queries
-          memory: 256Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -36,17 +25,6 @@ spec:
     name: metrics-server
   updatePolicy:
     updateMode: "Off"
-  resourcePolicy:
-    containerPolicies:
-      - containerName: metrics-server
-        minAllowed:
-          cpu: 50m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 300m      # Metrics aggregation
-          memory: 256Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -60,26 +38,6 @@ spec:
     name: csi-nfs-controller
   updatePolicy:
     updateMode: "Off"
-  resourcePolicy:
-    containerPolicies:
-      - containerName: csi-provisioner
-        minAllowed:
-          cpu: 25m
-          memory: 32Mi
-        maxAllowed:
-          cpu: 200m
-          memory: 128Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
-      - containerName: nfs
-        minAllowed:
-          cpu: 25m
-          memory: 32Mi
-        maxAllowed:
-          cpu: 200m
-          memory: 128Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -93,14 +51,3 @@ spec:
     name: notification-controller
   updatePolicy:
     updateMode: "Off"
-  resourcePolicy:
-    containerPolicies:
-      - containerName: manager
-        minAllowed:
-          cpu: 25m
-          memory: 32Mi
-        maxAllowed:
-          cpu: 200m      # Notification processing
-          memory: 128Mi
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

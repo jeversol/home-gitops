@@ -11,14 +11,3 @@ spec:
     name: logs-server
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: vlogs
-        minAllowed:
-          cpu: 100m
-          memory: 128Mi
-        maxAllowed:
-          cpu: 1000m      # Log aggregation database
-          memory: 2Gi     # Log aggregation database
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits

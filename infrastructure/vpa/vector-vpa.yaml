@@ -11,14 +11,3 @@ spec:
     name: vector
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
-  resourcePolicy:
-    containerPolicies:
-      - containerName: vector
-        minAllowed:
-          cpu: 50m
-          memory: 64Mi
-        maxAllowed:
-          cpu: 500m       # Log collection agent
-          memory: 256Mi   # Log collection agent
-        controlledResources: ["cpu", "memory"]
-        controlledValues: RequestsAndLimits
