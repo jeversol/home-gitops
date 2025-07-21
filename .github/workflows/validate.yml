@@ -1,0 +1,57 @@
+name: Validate GitOps Manifests
+on:
+  pull_request:
+    paths:
+      - '**.yaml'
+      - '**.yml'
+      - '.github/workflows/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5  # Keep it quick for free tier
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          # Lightweight installs to minimize time
+          pip install --user yamllint
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          curl -s https://raw.githubusercontent.com/kubernetes/helm/main/scripts/get-helm-3 | bash
+
+      - name: Lint YAML
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          yamllint .
+
+      - name: Validate Kubernetes manifests
+        run: |
+          # Basic validation - check that K8s manifests have required fields
+          echo "Checking Kubernetes manifest structure..."
+          find . -name '*.yaml' -o -name '*.yml' | \
+          grep -v kustomization.yaml | \
+          grep -v '.github/workflows' | \
+          xargs grep -l 'apiVersion:' | \
+          while read file; do
+            echo "Validating $file"
+            # Check for required K8s fields
+            if ! grep -q 'kind:' "$file"; then
+              echo "Error: $file missing 'kind:' field"
+              exit 1
+            fi
+            if ! grep -q 'metadata:' "$file"; then
+              echo "Error: $file missing 'metadata:' field"
+              exit 1
+            fi
+            echo "✓ $file"
+          done
+
+      - name: Validate Helm templates
+        run: |
+          # Quick helm template validation for any charts
+          if find . -name 'Chart.yaml' -o -name 'values.yaml' | grep -q .; then
+            find . -name 'Chart.yaml' -exec dirname {} \; | \
+            xargs -I {} helm template test {} --dry-run
+          fi
