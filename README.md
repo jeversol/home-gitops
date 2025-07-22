@@ -28,9 +28,9 @@ This repo manages my home kubernetes cluster using Flux.
 - Applications
   - [tautulli](https://tautulli.com)
   - [scrutiny](https://github.com/AnalogJ/scrutiny)
+  - [homebridge](http://homebridge.io)
 
 ## To Migrate:
-* Homebridge (from NAS)
 ### Media Stack:
 * Plex first with hardware decoding
 * Request Stack: overseerr/doplarr
