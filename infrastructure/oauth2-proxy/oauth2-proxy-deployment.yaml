@@ -65,11 +65,13 @@ spec:
             httpGet:
               path: /ping
               port: 4180
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             timeoutSeconds: 5
+            periodSeconds: 60
           readinessProbe:
             httpGet:
               path: /ping
               port: 4180
-            initialDelaySeconds: 5
+            initialDelaySeconds: 60
             timeoutSeconds: 5
+            periodSeconds: 60
