@@ -11,7 +11,7 @@ resources:
   - descheduler.yaml
   - oauth2-proxy.yaml
   - nfs-csi-driver.yaml
-  - nfs-storage.yaml
+  - nfs-csi.yaml
   - helmrepo-cowboysysop.yaml
   - vpa.yaml
   - vpa-resources.yaml

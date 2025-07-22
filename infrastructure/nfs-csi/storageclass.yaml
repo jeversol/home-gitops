@@ -1,0 +1,19 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nfs-media
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: nas.recompiled.org
+  share: /volume2/Media
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+allowVolumeExpansion: false
+mountOptions:
+  - nfsvers=4.1
+  - hard
+  - intr
+  - rsize=1048576
+  - wsize=1048576
+  - timeo=600
+  - retrans=2
