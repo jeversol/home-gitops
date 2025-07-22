@@ -23,7 +23,7 @@ spec:
   chart:
     spec:
       chart: victoria-metrics-single
-      version: "0.24.0"  # renovate: datasource=helm depName=victoria-metrics-single registryUrl=https://victoriametrics.github.io/helm-charts/
+      version: "0.24.1"  # renovate: datasource=helm depName=victoria-metrics-single registryUrl=https://victoriametrics.github.io/helm-charts/
       sourceRef:
         kind: HelmRepository
         name: victoria-metrics
