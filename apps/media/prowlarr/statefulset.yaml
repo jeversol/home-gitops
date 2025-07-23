@@ -17,9 +17,6 @@ spec:
         app: prowlarr
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1029
-        runAsGroup: 65537
         fsGroup: 65537
         seccompProfile:
           type: RuntimeDefault
@@ -55,6 +52,7 @@ spec:
             capabilities:
               drop:
                 - ALL
+            readOnlyRootFilesystem: false
           livenessProbe:
             httpGet:
               path: /
