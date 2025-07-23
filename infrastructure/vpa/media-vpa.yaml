@@ -37,3 +37,29 @@ spec:
     name: prowlarr
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: overseerr-vpa
+  namespace: media
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: overseerr
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: radarr-vpa
+  namespace: media
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: radarr
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
