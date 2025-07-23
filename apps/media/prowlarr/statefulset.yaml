@@ -8,6 +8,7 @@ metadata:
 spec:
   serviceName: prowlarr
   replicas: 1
+  revisionHistoryLimit: 3
   selector:
     matchLabels:
       app: prowlarr
@@ -52,6 +53,10 @@ spec:
             capabilities:
               drop:
                 - ALL
+              add:
+                - SETUID
+                - SETGID
+                - CHOWN
             readOnlyRootFilesystem: false
           livenessProbe:
             httpGet:

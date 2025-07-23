@@ -11,3 +11,29 @@ spec:
     name: tautulli
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: flaresolverr-vpa
+  namespace: media
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: flaresolverr
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: prowlarr-vpa
+  namespace: media
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: prowlarr
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
