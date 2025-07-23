@@ -1,32 +1,32 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: prowlarr
+  name: radarr
   namespace: media
   labels:
-    app: prowlarr
+    app: radarr
 spec:
-  serviceName: prowlarr
+  serviceName: radarr
   replicas: 1
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: prowlarr
+      app: radarr
   template:
     metadata:
       labels:
-        app: prowlarr
+        app: radarr
     spec:
       securityContext:
         fsGroup: 65537
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: prowlarr
-          image: lscr.io/linuxserver/prowlarr:1.37.0.5076-ls123
+        - name: radarr
+          image: lscr.io/linuxserver/radarr:v3.6.3-ls119
           imagePullPolicy: Always
           ports:
-            - containerPort: 9696
+            - containerPort: 7878
               name: http
               protocol: TCP
           env:
