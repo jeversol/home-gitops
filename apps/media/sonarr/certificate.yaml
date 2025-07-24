@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: sonarr-tls
+  namespace: media
+spec:
+  secretName: sonarr-tls
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+  dnsNames:
+    - sonarr.i.recompiled.org
