@@ -18,6 +18,7 @@ spec:
       labels:
         app: flaresolverr
     spec:
+      automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000

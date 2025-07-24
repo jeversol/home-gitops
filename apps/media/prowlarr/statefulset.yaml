@@ -17,6 +17,7 @@ spec:
       labels:
         app: prowlarr
     spec:
+      automountServiceAccountToken: false
       securityContext:
         fsGroup: 65537
         seccompProfile:
