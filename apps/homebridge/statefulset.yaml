@@ -1,15 +1,14 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: homebridge
   namespace: homebridge
   labels:
     app: homebridge
 spec:
+  serviceName: homebridge
   replicas: 1
   revisionHistoryLimit: 3
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       app: homebridge
@@ -39,7 +38,7 @@ spec:
               name: config-ui
               protocol: TCP
           volumeMounts:
-            - name: homebridge-data
+            - name: storage
               mountPath: /homebridge
           resources:
             requests:
@@ -64,10 +63,15 @@ spec:
             initialDelaySeconds: 120
             periodSeconds: 15
             timeoutSeconds: 10
-      volumes:
-        - name: homebridge-data
-          persistentVolumeClaim:
-            claimName: homebridge-storage
       nodeSelector:
         kubernetes.io/os: linux
         kubernetes.io/hostname: k8s-node2
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 10Gi
