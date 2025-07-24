@@ -7,7 +7,6 @@ resources:
   - helmrepo-vector.yaml
   - grafana-operator.yaml
   - victoria-metrics-operator.yaml
-  - tautulli.yaml
   - o11y.yaml
   - victoria-metrics.yaml
   - victoria-logs.yaml
