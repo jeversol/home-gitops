@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - storage.yaml
-  - deployment.yaml
+  - statefulset.yaml
   - service.yaml
   - ingressroute.yaml
   - tls-cert.yaml
