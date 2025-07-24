@@ -7,7 +7,7 @@ metadata:
 spec:
   targetRef:
     apiVersion: apps/v1
-    kind: Deployment
+    kind: StatefulSet
     name: tautulli
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
@@ -61,5 +61,18 @@ spec:
     apiVersion: apps/v1
     kind: StatefulSet
     name: radarr
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: sonarr-vpa
+  namespace: media
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: sonarr
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
