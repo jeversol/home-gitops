@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflare-tunnel-config
+  namespace: cloudflare
+data:
+  config.yaml: |
+    ingress:
+      - hostname: media-requests.recompiled.org
+        service: http://overseerr.media.svc.cluster.local:5055
+      - service: http_status:404
