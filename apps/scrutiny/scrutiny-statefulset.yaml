@@ -60,7 +60,7 @@ spec:
               path: /api/health
               port: 8080
             initialDelaySeconds: 30
-            periodSeconds: 10
+            periodSeconds: 30
   volumeClaimTemplates:
     - metadata:
         name: config
