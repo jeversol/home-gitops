@@ -23,7 +23,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: radarr
-          image: lscr.io/linuxserver/radarr:v3.6.3-ls119
+          image: lscr.io/linuxserver/radarr:5.26.2.10099-ls279
           imagePullPolicy: Always
           ports:
             - containerPort: 7878
