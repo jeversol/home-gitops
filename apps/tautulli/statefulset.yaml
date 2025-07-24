@@ -1,10 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: tautulli
 spec:
-  strategy:
-    type: Recreate
+  serviceName: tautulli
   replicas: 1
   revisionHistoryLimit: 3
   selector:
@@ -54,7 +53,12 @@ spec:
               port: 8181
             initialDelaySeconds: 30
             periodSeconds: 10
-      volumes:
-        - name: config
-          persistentVolumeClaim:
-            claimName: tautulli-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: config
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: democratic-iscsi
+        resources:
+          requests:
+            storage: 10Gi

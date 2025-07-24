@@ -5,7 +5,7 @@ namespace: media
 
 resources:
   - storage.yaml
-  - deployment.yaml
+  - statefulset.yaml
   - tls-cert.yaml
   - service.yaml
   - ingress.yaml
