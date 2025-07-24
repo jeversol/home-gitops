@@ -1,11 +1,10 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: scrutiny
   namespace: scrutiny
 spec:
-  strategy:
-    type: Recreate
+  serviceName: scrutiny
   replicas: 1
   revisionHistoryLimit: 3
   selector:
@@ -62,7 +61,12 @@ spec:
               port: 8080
             initialDelaySeconds: 30
             periodSeconds: 10
-      volumes:
-        - name: config
-          persistentVolumeClaim:
-            claimName: scrutiny-pvc
+  volumeClaimTemplates:
+    - metadata:
+        name: config
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 500Mi

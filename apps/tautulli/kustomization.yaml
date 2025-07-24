@@ -4,7 +4,6 @@ kind: Kustomization
 namespace: media
 
 resources:
-  - storage.yaml
   - statefulset.yaml
   - tls-cert.yaml
   - service.yaml

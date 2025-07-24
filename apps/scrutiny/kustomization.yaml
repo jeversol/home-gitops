@@ -4,8 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - influxdb-secret.yaml
-  - scrutiny-storage.yaml
-  - scrutiny-deployment.yaml
+  - scrutiny-statefulset.yaml
   - scrutiny-service.yaml
   - collector-config.yaml
   - daemonset.yaml
