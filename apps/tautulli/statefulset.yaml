@@ -46,13 +46,15 @@ spec:
               path: /
               port: 8181
             initialDelaySeconds: 60
-            periodSeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 10
           readinessProbe:
             httpGet:
               path: /
               port: 8181
             initialDelaySeconds: 30
-            periodSeconds: 10
+            periodSeconds: 60
+            timeoutSeconds: 10
   volumeClaimTemplates:
     - metadata:
         name: config
