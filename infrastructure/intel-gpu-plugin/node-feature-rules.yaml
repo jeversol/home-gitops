@@ -10,9 +10,9 @@ spec:
       matchFeatures:
         - feature: pci.device
           matchExpressions:
-            - key: vendor
+            vendor:
               op: In
               value: ["8086"]
-            - key: class
+            class:
               op: In
               value: ["0300", "0380"]
