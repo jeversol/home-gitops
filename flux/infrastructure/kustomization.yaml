@@ -15,4 +15,5 @@ resources:
   - helmrepo-cowboysysop.yaml
   - vpa.yaml
   - vpa-resources.yaml
+  - node-feature-discovery.yaml
   - intel-gpu-plugin.yaml
