@@ -7,6 +7,9 @@ configMapGenerator:
   - name: grafana-dashboards
     files:
       - pod-resources.json
+    options:
+      labels:
+        grafana_dashboard: "1"
 
 generatorOptions:
   disableNameSuffixHash: true
