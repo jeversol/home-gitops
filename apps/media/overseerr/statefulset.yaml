@@ -38,11 +38,11 @@ spec:
               mountPath: /app/config
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 49m
+              memory: 410Mi
             limits:
-              cpu: 1000m
-              memory: 1Gi
+              cpu: 88m
+              memory: 580Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

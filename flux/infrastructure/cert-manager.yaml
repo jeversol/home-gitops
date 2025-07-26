@@ -47,6 +47,13 @@ spec:
       prometheus.io/scrape: "true"
       prometheus.io/port: "9402"
       prometheus.io/path: "/metrics"
+    resources:
+      requests:
+        cpu: 25m
+        memory: 121Mi
+      limits:
+        cpu: 25m
+        memory: 151Mi
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization

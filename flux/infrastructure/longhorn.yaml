@@ -97,3 +97,18 @@ spec:
         prometheus.io/scrape: "false"
         prometheus.io/port: "9500"
         prometheus.io/path: "/metrics"
+      resources:
+        requests:
+          cpu: 35m
+          memory: 248Mi
+        limits:
+          cpu: 41m
+          memory: 296Mi
+      preUpgradeChecker:
+        resources:
+          requests:
+            cpu: 12m
+            memory: 50Mi
+          limits:
+            cpu: 13m
+            memory: 50Mi

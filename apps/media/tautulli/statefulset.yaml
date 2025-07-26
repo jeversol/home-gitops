@@ -34,11 +34,11 @@ spec:
               value: "America/New_York"
           resources:
             requests:
-              cpu: 50m
-              memory: 64Mi
+              cpu: 25m
+              memory: 225Mi
             limits:
-              cpu: 500m
-              memory: 256Mi
+              cpu: 25m
+              memory: 296Mi
           volumeMounts:
             - name: config
               mountPath: /config
