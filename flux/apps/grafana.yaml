@@ -51,6 +51,8 @@ spec:
       limits:
         cpu: 200m
         memory: 296Mi
+    deploymentStrategy:
+      type: Recreate
     dashboardProviders:
       dashboardproviders.yaml:
         apiVersion: 1
