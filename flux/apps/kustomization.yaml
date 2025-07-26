@@ -5,7 +5,6 @@ resources:
   - helmrepo-grafana.yaml
   - helmrepo-prometheus-community.yaml
   - helmrepo-vector.yaml
-  - grafana-operator.yaml
   - victoria-metrics-operator.yaml
   - o11y.yaml
   - victoria-metrics.yaml

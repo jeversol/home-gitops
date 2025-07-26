@@ -3,8 +3,4 @@ kind: Kustomization
 resources:
   - grafana-ingressroute.yaml
   - grafana-tls-cert.yaml
-  - grafana-dashboards.yaml
-  - external-grafana.yaml
-  - vm-single-dashboard.yaml
-  - vm-vmagent-dashboard-compact.yaml
-  - victorialogs-dashboard.yaml
+  - dashboards/
