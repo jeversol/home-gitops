@@ -44,10 +44,10 @@ spec:
               mountPath: /media
           resources:
             requests:
-              cpu: 25m
+              cpu: 50m
               memory: 442Mi
             limits:
-              cpu: 25m
+              cpu: 100m
               memory: 670Mi
           securityContext:
             allowPrivilegeEscalation: false
