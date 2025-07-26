@@ -7,6 +7,7 @@ configMapGenerator:
   - name: grafana-dashboards
     files:
       - pod-resources.json
+      - node-resources.json
     options:
       labels:
         grafana_dashboard: "1"
