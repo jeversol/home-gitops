@@ -83,8 +83,8 @@ spec:
         prometheus.io/path: "/metrics"
     resources:
       requests:
-        cpu: 25m
+        cpu: 100m
         memory: 248Mi
       limits:
-        cpu: 25m
+        cpu: 200m
         memory: 296Mi
