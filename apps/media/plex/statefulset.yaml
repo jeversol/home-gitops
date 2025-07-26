@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: plex
+  namespace: media
+  labels:
+    app: plex
+spec:
+  serviceName: plex
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: plex
+  template:
+    metadata:
+      labels:
+        app: plex
+    spec:
+      automountServiceAccountToken: false
+      nodeSelector:
+        kubernetes.io/hostname: k8s-node1
+      securityContext:
+        fsGroup: 65537
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: plex
+          image: lscr.io/linuxserver/plex:1.41.3.9314-a0bfb8370-ls278
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 32400
+              name: http
+              protocol: TCP
+          env:
+            - name: PUID
+              value: "1029"
+            - name: PGID
+              value: "65537"
+            - name: TZ
+              value: "America/New_York"
+            - name: VERSION
+              value: "docker"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: media-storage
+              mountPath: /media
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+              gpu.intel.com/i915: 1
+            limits:
+              cpu: 4000m
+              memory: 4Gi
+              gpu.intel.com/i915: 1
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - SETUID
+                - SETGID
+                - CHOWN
+            readOnlyRootFilesystem: false
+          livenessProbe:
+            httpGet:
+              path: /web/index.html
+              port: http
+            initialDelaySeconds: 180
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /web/index.html
+              port: http
+            initialDelaySeconds: 120
+            periodSeconds: 60
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: media-storage
+          persistentVolumeClaim:
+            claimName: media-storage
+  volumeClaimTemplates:
+    - metadata:
+        name: config
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 20Gi
