@@ -13,3 +13,8 @@ patches:
       name: speaker
       namespace: metallb-system
     path: patch-excludelb.yaml
+  - target:
+      kind: Deployment
+      name: controller
+      namespace: metallb-system
+    path: patch-controller-resources.yaml

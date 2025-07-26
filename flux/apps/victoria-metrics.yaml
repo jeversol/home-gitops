@@ -46,11 +46,11 @@ spec:
         size: 30Gi
       resources:
         requests:
-          cpu: "250m"
-          memory: "256Mi"
+          cpu: "203m"
+          memory: "587Mi"
         limits:
-          cpu: "500m"
-          memory: "512Mi"
+          cpu: "267m"
+          memory: "702Mi"
       dashboards:
         enabled: true
         grafana:

@@ -81,3 +81,10 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9100"
         prometheus.io/path: "/metrics"
+    resources:
+      requests:
+        cpu: 25m
+        memory: 248Mi
+      limits:
+        cpu: 25m
+        memory: 296Mi

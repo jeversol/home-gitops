@@ -57,10 +57,11 @@ spec:
               name: http
           resources:
             requests:
-              cpu: 50m
-              memory: 64Mi
+              cpu: 25m
+              memory: 104Mi
             limits:
-              memory: 128Mi
+              cpu: 25m
+              memory: 104Mi
           livenessProbe:
             httpGet:
               path: /ping

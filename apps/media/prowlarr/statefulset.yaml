@@ -44,11 +44,11 @@ spec:
               mountPath: /media
           resources:
             requests:
-              cpu: 100m
-              memory: 256Mi
+              cpu: 25m
+              memory: 163Mi
             limits:
-              cpu: 1000m
-              memory: 1Gi
+              cpu: 1014m
+              memory: 271Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

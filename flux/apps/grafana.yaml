@@ -44,3 +44,10 @@ spec:
     service:
       enabled: true
       portName: service
+    resources:
+      requests:
+        cpu: 25m
+        memory: 248Mi
+      limits:
+        cpu: 27m
+        memory: 296Mi
