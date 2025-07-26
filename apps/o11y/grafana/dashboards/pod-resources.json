@@ -1,13 +1,12 @@
 {
-  "dashboard": {
-    "id": null,
-    "title": "Pod Resource Overview",
-    "uid": "pod-resources",
-    "version": 1,
-    "schemaVersion": 39,
-    "tags": ["kubernetes", "resources"],
-    "timezone": "",
-    "panels": [
+  "id": null,
+  "title": "Pod Resource Overview",
+  "uid": "pod-resources",
+  "version": 1,
+  "schemaVersion": 39,
+  "tags": ["kubernetes", "resources"],
+  "timezone": "",
+  "panels": [
       {
         "id": 1,
         "title": "Top CPU Usage by Pod",
@@ -66,5 +65,4 @@
       "to": "now"
     },
     "refresh": "5s"
-  }
 }
