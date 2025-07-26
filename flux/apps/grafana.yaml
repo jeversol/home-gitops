@@ -46,8 +46,8 @@ spec:
       portName: service
     resources:
       requests:
-        cpu: 25m
+        cpu: 100m
         memory: 248Mi
       limits:
-        cpu: 27m
+        cpu: 200m
         memory: 296Mi
