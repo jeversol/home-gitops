@@ -631,7 +631,7 @@
         {
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(\n  (node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", mountpoint=\"/\", fstype!=\"rootfs\"}\n   - node_filesystem_avail_bytes{instance=\"$node\", job=\"$job\", mountpoint=\"/\", fstype!=\"rootfs\"})\n  / node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", mountpoint=\"/\", fstype!=\"rootfs\"}\n) * 100\n",
+          "expr": "(\n  (node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", mountpoint=~\"/|/.extra\", fstype!=\"rootfs\"}\n   - node_filesystem_avail_bytes{instance=\"$node\", job=\"$job\", mountpoint=~\"/|/.extra\", fstype!=\"rootfs\"})\n  / node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", mountpoint=~\"/|/.extra\", fstype!=\"rootfs\"}\n) * 100\n",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -1663,7 +1663,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "rate(node_network_receive_bytes_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])*8",
+          "expr": "rate(node_network_receive_bytes_total{instance=\"$node\",job=\"$job\",device!~\"veth.*|cni.*|flannel.*|cali.*|tunl.*|wireguard.*|wg.*|docker.*|br-.*|lo\"}[$__rate_interval])*8",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Rx {{device}}",
@@ -1673,7 +1673,7 @@
         },
         {
           "editorMode": "code",
-          "expr": "rate(node_network_transmit_bytes_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])*8",
+          "expr": "rate(node_network_transmit_bytes_total{instance=\"$node\",job=\"$job\",device!~\"veth.*|cni.*|flannel.*|cali.*|tunl.*|wireguard.*|wg.*|docker.*|br-.*|lo\"}[$__rate_interval])*8",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "Tx {{device}} ",
@@ -1769,7 +1769,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "((node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", device!~\"rootfs\"} - node_filesystem_avail_bytes{instance=\"$node\", job=\"$job\", device!~\"rootfs\"}) / node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", device!~\"rootfs\"}) * 100",
+          "expr": "((node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", device!~\"rootfs\", fstype!~\"tmpfs|overlay|fuse.lxcfs\", mountpoint!~\"/run/containerd.*|/var/lib/containerd.*|/var/lib/docker.*\"} - node_filesystem_avail_bytes{instance=\"$node\", job=\"$job\", device!~\"rootfs\", fstype!~\"tmpfs|overlay|fuse.lxcfs\", mountpoint!~\"/run/containerd.*|/var/lib/containerd.*|/var/lib/docker.*\"}) / node_filesystem_size_bytes{instance=\"$node\", job=\"$job\", device!~\"rootfs\", fstype!~\"tmpfs|overlay|fuse.lxcfs\", mountpoint!~\"/run/containerd.*|/var/lib/containerd.*|/var/lib/docker.*\"}) * 100",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{mountpoint}}",
@@ -2712,7 +2712,7 @@
           "targets": [
             {
               "editorMode": "code",
-              "expr": "rate(node_network_receive_bytes_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])*8",
+              "expr": "rate(node_network_receive_bytes_total{instance=\"$node\",job=\"$job\",device!~\"veth.*|cni.*|flannel.*|cali.*|tunl.*|wireguard.*|wg.*|docker.*|br-.*|lo\"}[$__rate_interval])*8",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{device}} - Rx in",
@@ -2722,7 +2722,7 @@
             },
             {
               "editorMode": "code",
-              "expr": "rate(node_network_transmit_bytes_total{instance=\"$node\",job=\"$job\"}[$__rate_interval])*8",
+              "expr": "rate(node_network_transmit_bytes_total{instance=\"$node\",job=\"$job\",device!~\"veth.*|cni.*|flannel.*|cali.*|tunl.*|wireguard.*|wg.*|docker.*|br-.*|lo\"}[$__rate_interval])*8",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{device}} - Tx out",
