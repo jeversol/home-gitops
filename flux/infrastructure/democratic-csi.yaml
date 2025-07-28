@@ -67,6 +67,9 @@ spec:
       - paths: ["/spec/replicas"]
         target:
           kind: StatefulSet
+      - paths: ["/parameters"]
+        target:
+          kind: VolumeSnapshotClass
   chart:
     spec:
       chart: democratic-csi
