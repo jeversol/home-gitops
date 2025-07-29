@@ -29,20 +29,13 @@ This repo manages my home kubernetes cluster using Flux.
   - [tautulli](https://tautulli.com)
   - [scrutiny](https://github.com/AnalogJ/scrutiny)
   - [homebridge](http://homebridge.io)
-
-## To Migrate:
-### Media Stack:
-* Plex first with hardware decoding
-* Request Stack: overseerr/doplarr
-* Search Stack: flaresolverr/prowlarr
-* Management: Radarr/Sonarr
-* sabNZBd (might stay on NAS?)
-* qbittorrent (stay on NAS with sabnzbd?)
-
-## To keep where they are:
-* minio on NAS
-* public website on linode
-* airsonic on NAS (sonos is too fragile)
+  - Media Services
+    - Plex
+    - Overseerr
+    - Sonarr
+    - Radarr
+    - Prowlarr
+    - Flaresolverr
 
 ### Deployed but backed out/replaced
 
