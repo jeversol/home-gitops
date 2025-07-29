@@ -32,7 +32,7 @@ spec:
             runAsUser: 0
           env:
             - name: COLLECTOR_API_ENDPOINT
-              value: "https://scrutiny.i.recompiled.org"
+              value: "http://scrutiny.scrutiny.svc.cluster.local:8080"
             - name: COLLECTOR_HOST_ID
               valueFrom:
                 fieldRef:
@@ -42,10 +42,10 @@ spec:
           resources:
             requests:
               cpu: 50m
-              memory: 64Mi
+              memory: 128Mi
             limits:
               cpu: 200m
-              memory: 256Mi
+              memory: 384Mi
           volumeMounts:
             - name: dev
               mountPath: /dev
@@ -61,22 +61,6 @@ spec:
             - name: collector-config
               mountPath: /opt/scrutiny/config
               readOnly: true
-          livenessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - "ps aux | grep -v grep | grep scrutiny-collector || exit 1"
-            initialDelaySeconds: 60
-            periodSeconds: 3600
-          readinessProbe:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - "test -f /opt/scrutiny/config/collector.yaml"
-            initialDelaySeconds: 5
-            periodSeconds: 30
       volumes:
         - name: dev
           hostPath:
