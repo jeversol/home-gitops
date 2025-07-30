@@ -1,11 +1,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: oauth2-proxy
+  name: auth
   namespace: flux-system
 spec:
   interval: 10m
-  path: ./infrastructure/oauth2-proxy
+  path: ./infrastructure/auth
   prune: true
   sourceRef:
     kind: GitRepository
