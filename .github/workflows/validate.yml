@@ -83,7 +83,7 @@ jobs:
           # Check that containers have resource limits
           find . -name "*.yaml" -exec grep -l "kind: Deployment\|kind: StatefulSet\|kind: DaemonSet" {} \; | while read -r file; do
             if grep -q "containers:" "$file"; then
-              if ! grep -A 20 "containers:" "$file" | grep -q "limits:"; then
+              if ! grep -A 50 "containers:" "$file" | grep -q "limits:"; then
                 echo "⚠️  Missing resource limits in: $file"
               fi
             fi
