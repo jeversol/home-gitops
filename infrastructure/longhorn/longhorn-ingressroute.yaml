@@ -10,8 +10,10 @@ spec:
     - match: Host(`longhorn.i.recompiled.org`)
       kind: Rule
       services:
-        - name: oauth2-proxy
+        - name: longhorn-frontend
+          port: 80
+      middlewares:
+        - name: longhorn-auth
           namespace: auth
-          port: 4180
   tls:
     secretName: longhorn-tls

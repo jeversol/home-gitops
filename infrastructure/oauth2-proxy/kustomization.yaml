@@ -6,3 +6,4 @@ resources:
   - oauth2-proxy-deployment.yaml
   - oauth2-proxy-service.yaml
   - traefik-auth-middleware.yaml
+  - traefik-dashboard-middleware.yaml
