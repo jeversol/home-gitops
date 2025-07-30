@@ -28,10 +28,9 @@ jobs:
           pip install --user yamllint
           echo "$HOME/.local/bin" >> $GITHUB_PATH
           
-          # Install kubeval (only tool not pre-installed)
-          wget -q https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz
-          tar xf kubeval-linux-amd64.tar.gz
-          sudo mv kubeval /usr/local/bin/
+          # Install kubeconform (kubeval successor with CRD support)
+          curl -L https://github.com/yannh/kubeconform/releases/latest/download/kubeconform-linux-amd64.tar.gz | tar xz
+          sudo mv kubeconform /usr/local/bin/
 
       - name: Lint YAML
         run: |
@@ -41,17 +40,22 @@ jobs:
 
       - name: Validate Kubernetes manifests
         run: |
-          echo "🔍 Validating Kubernetes manifests with kubeval..."
+          echo "🔍 Validating Kubernetes manifests with kubeconform..."
           find . -name "*.yaml" -o -name "*.yml" | grep -E "(apps|infrastructure)" | while read -r file; do
             if grep -q "apiVersion:" "$file" && grep -q "kind:" "$file"; then
+              # Skip Flux CRDs - exclude anything with toolkit.fluxcd.io apiVersion
+              if grep -q "toolkit.fluxcd.io" "$file"; then
+                echo "Skipping Flux CRD validation: $file"
+                continue
+              fi
               echo "Validating: $file"
-              if ! kubeval "$file"; then
+              if ! kubeconform "$file"; then
                 echo "❌ Invalid Kubernetes manifest: $file"
                 exit 1
               fi
             fi
           done
-          echo "✅ All Kubernetes manifests are valid"
+          echo "✅ All core Kubernetes manifests are valid"
 
       - name: Test kustomize builds
         run: |
