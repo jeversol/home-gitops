@@ -38,8 +38,8 @@ spec:
                   key: cookie-secret
             - name: COOKIE_DOMAIN
               value: ".recompiled.org"
-            - name: WHITELIST
-              value: "@recompiled.org"
+            - name: DOMAIN
+              value: "recompiled.org"
             - name: DEFAULT_PROVIDER
               value: "oidc"
           ports:
