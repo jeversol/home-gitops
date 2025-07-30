@@ -40,6 +40,8 @@ spec:
               value: ".recompiled.org"
             - name: WHITELIST
               value: "@recompiled.org"
+            - name: DEFAULT_PROVIDER
+              value: "oidc"
           ports:
             - containerPort: 4181
               name: http
