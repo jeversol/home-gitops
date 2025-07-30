@@ -13,7 +13,7 @@ spec:
         - name: longhorn-frontend
           port: 80
       middlewares:
-        - name: longhorn-auth
+        - name: traefik-forward-auth
           namespace: auth
   tls:
     secretName: longhorn-tls

@@ -10,7 +10,7 @@ resources:
   - metrics-server.yaml
   - longhorn.yaml
   - descheduler.yaml
-  - oauth2-proxy.yaml
+  - auth.yaml
   - nfs-csi-driver.yaml
   - nfs-csi.yaml
   - helmrepo-cowboysysop.yaml
