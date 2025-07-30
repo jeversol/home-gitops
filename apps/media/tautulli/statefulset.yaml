@@ -37,21 +37,29 @@ spec:
               cpu: 25m
               memory: 225Mi
             limits:
-              cpu: 25m
+              cpu: 100m
               memory: 296Mi
           volumeMounts:
             - name: config
               mountPath: /config
+          startupProbe:
+            httpGet:
+              path: /status
+              port: 8181
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 10
+            failureThreshold: 24
           livenessProbe:
             httpGet:
-              path: /
+              path: /status
               port: 8181
             initialDelaySeconds: 60
             periodSeconds: 60
             timeoutSeconds: 10
           readinessProbe:
             httpGet:
-              path: /
+              path: /status
               port: 8181
             initialDelaySeconds: 30
             periodSeconds: 60
