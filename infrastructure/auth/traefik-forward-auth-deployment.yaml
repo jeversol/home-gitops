@@ -42,6 +42,8 @@ spec:
               value: "recompiled.org"
             - name: DEFAULT_PROVIDER
               value: "oidc"
+            - name: INSECURE_COOKIE
+              value: "true"
           ports:
             - containerPort: 4181
               name: http
