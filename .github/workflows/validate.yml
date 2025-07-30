@@ -43,9 +43,9 @@ jobs:
           echo "🔍 Validating Kubernetes manifests with kubeconform..."
           find . -name "*.yaml" -o -name "*.yml" | grep -E "(apps|infrastructure)" | while read -r file; do
             if grep -q "apiVersion:" "$file" && grep -q "kind:" "$file"; then
-              # Skip Flux CRDs - exclude anything with toolkit.fluxcd.io apiVersion
-              if grep -q "toolkit.fluxcd.io" "$file"; then
-                echo "Skipping Flux CRD validation: $file"
+              # Skip non-Kubernetes APIs - Flux CRDs and Kustomize configs
+              if grep -q "toolkit.fluxcd.io" "$file" || grep -q "kustomize.config.k8s.io" "$file"; then
+                echo "Skipping non-Kubernetes API validation: $file"
                 continue
               fi
               echo "Validating: $file"
