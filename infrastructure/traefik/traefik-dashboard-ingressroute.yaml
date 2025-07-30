@@ -8,7 +8,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`traefik.i.recompiled.org`)
+    - match: Host(`traefik.i.recompiled.org`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
       kind: Rule
       middlewares:
         - name: auth
