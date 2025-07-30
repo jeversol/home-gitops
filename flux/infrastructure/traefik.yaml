@@ -72,6 +72,9 @@ spec:
     providers:
       kubernetesCRD:
         allowCrossNamespace: true
+    api:
+      dashboard: true
+      insecure: true
     metrics:
       prometheus:
         service:

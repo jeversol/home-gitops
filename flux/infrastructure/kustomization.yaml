@@ -5,6 +5,7 @@ resources:
   - harry-botter.yaml
   - cert-manager.yaml
   - traefik.yaml
+  - traefik-config.yaml
   - democratic-csi.yaml
   - metrics-server.yaml
   - longhorn.yaml
