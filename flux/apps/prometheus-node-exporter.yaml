@@ -40,8 +40,8 @@ spec:
         memory: "100Mi"
         cpu: "25m"
       limits:
-        memory: "120Mi"
-        cpu: "27m"
+        memory: "256Mi"
+        cpu: "100m"
     
     # Tolerations for control plane nodes
     tolerations:
