@@ -9,6 +9,13 @@ configMapGenerator:
       - pod-resources.json
       - node-resources.json
       - node-exporter-full.json
+      - k8s-system-api-server.json
+      - k8s-system-coredns.json
+      - k8s-views-global.json
+      - k8s-views-nodes.json
+      - k8s-views-pods.json
+      - k8s-views-namespaces.json
+      
     options:
       labels:
         grafana_dashboard: "1"
