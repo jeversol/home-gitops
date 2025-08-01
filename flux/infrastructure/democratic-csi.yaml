@@ -70,6 +70,9 @@ spec:
       - paths: ["/parameters"]
         target:
           kind: VolumeSnapshotClass
+      - paths: ["/metadata/annotations/argocd.argoproj.io~1tracking-id"]
+        target:
+          kind: VolumeSnapshotClass
   chart:
     spec:
       chart: democratic-csi

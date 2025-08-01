@@ -58,6 +58,10 @@ spec:
       - paths: ["/spec/replicas"]
         target:
           kind: DaemonSet
+      - paths: ["/spec/routes"]
+        target:
+          kind: IngressRoute
+          name: traefik-dashboard
   chart:
     spec:
       chart: traefik
