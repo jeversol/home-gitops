@@ -9,6 +9,8 @@ spec:
   serviceScrapeNamespaceSelector: {}
   podScrapeNamespaceSelector: {}
   replicaCount: 1
+  externalLabels:
+    cluster: "home-cluster"
   remoteWrite:
     - url: "http://metrics-server.o11y.svc:8428/api/v1/write"
   resources:

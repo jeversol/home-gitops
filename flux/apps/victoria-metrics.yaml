@@ -60,11 +60,6 @@ spec:
               namespace: o11y
       scrape:
         enabled: true
-        config:
-          global:
-            scrape_interval: 15s
-            external_labels:
-              cluster: "home-cluster"
       alertmanager:
         enabled: true
       vmalert:
