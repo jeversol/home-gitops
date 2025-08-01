@@ -66,5 +66,8 @@ spec:
         enabled: true
       vmagent:
         enabled: true
+        spec:
+          externalLabels:
+            cluster: "home-cluster"
       vector:
         enabled: false
