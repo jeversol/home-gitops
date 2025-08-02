@@ -39,6 +39,9 @@ spec:
         enabled: true
         size: 10Gi
         storageClassName: longhorn
-    # Disable node-exporter if you want to use existing ones
-    # nodeExporter:
-    #   enabled: false
+    kubeControllerManager:
+      enabled: false
+    kubeScheduler:
+      enabled: false
+    kubeProxy:
+      enabled: false
