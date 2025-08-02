@@ -1,28 +1,19 @@
 ---
 apiVersion: operator.victoriametrics.com/v1beta1
-kind: VMServiceScrape
+kind: VMNodeScrape
 metadata:
   name: cadvisor
   namespace: o11y
 spec:
-  selector:
-    matchLabels:
-      k8s-app: kubelet
-  namespaceSelector:
-    matchNames:
-      - kube-system
-  endpoints:
-    - port: https-metrics
-      interval: 30s
-      path: /metrics/cadvisor
-      scheme: https
-      tlsConfig:
-        caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-        insecureSkipVerify: true
-      bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
-      honorLabels: true
-      relabelConfigs:
-        - sourceLabels: [__metrics_path__]
-          targetLabel: metrics_path
-        - targetLabel: job
-          replacement: kubernetes-nodes-cadvisor
+  port: "10250"
+  interval: 30s
+  path: /metrics/cadvisor
+  scheme: https
+  tlsConfig:
+    caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    insecureSkipVerify: true
+  bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+  honorLabels: true
+  relabelConfigs:
+    - targetLabel: job
+      replacement: kubernetes-nodes-cadvisor
