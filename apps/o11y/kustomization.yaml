@@ -9,3 +9,4 @@ resources:
   - global-vmagent.yaml
   - kube-state-metrics-scrape.yaml
   - node-exporter-scrape.yaml
+  - cadvisor-scrape.yaml
