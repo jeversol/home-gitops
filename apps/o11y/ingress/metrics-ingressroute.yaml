@@ -11,8 +11,8 @@ spec:
     - match: Host(`metrics.i.recompiled.org`)
       kind: Rule
       services:
-        - name: metrics-server
-          port: 8428
+        - name: kube-prometheus-stack-prometheus
+          port: 9090
   tls:
     secretName: metrics-tls
 ---

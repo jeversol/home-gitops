@@ -1,18 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - helmrepo-victoria-metrics.yaml
   - helmrepo-grafana.yaml
   - helmrepo-prometheus-community.yaml
-  - helmrepo-vector.yaml
-  - victoria-metrics-operator.yaml
   - o11y.yaml
-  - victoria-metrics.yaml
-  - victoria-logs.yaml
-  - grafana.yaml
-  - kube-state-metrics.yaml
-  - vector-logs.yaml
-  - prometheus-node-exporter.yaml
+  - kube-prometheus-stack.yaml
   - scrutiny.yaml
   - scrutiny-influxdb.yaml
   - helmrepo-influxdata.yaml
