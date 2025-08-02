@@ -69,7 +69,7 @@ spec:
             httpGet:
               path: /web/index.html
               port: http
-            initialDelaySeconds: 180
+            initialDelaySeconds: 300
             periodSeconds: 60
             timeoutSeconds: 10
             failureThreshold: 3
@@ -77,9 +77,9 @@ spec:
             httpGet:
               path: /web/index.html
               port: http
-            initialDelaySeconds: 120
-            periodSeconds: 60
-            timeoutSeconds: 5
+            initialDelaySeconds: 240
+            periodSeconds: 30
+            timeoutSeconds: 10
             failureThreshold: 3
       volumes:
         - name: media-storage
