@@ -68,7 +68,7 @@ spec:
           livenessProbe:
             httpGet:
               path: /web/index.html
-              port: http
+              port: 32400
             initialDelaySeconds: 300
             periodSeconds: 60
             timeoutSeconds: 10
@@ -76,7 +76,7 @@ spec:
           readinessProbe:
             httpGet:
               path: /web/index.html
-              port: http
+              port: 32400
             initialDelaySeconds: 240
             periodSeconds: 30
             timeoutSeconds: 10
