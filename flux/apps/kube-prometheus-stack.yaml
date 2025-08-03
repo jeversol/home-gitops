@@ -27,6 +27,7 @@ spec:
     prometheus:
       prometheusSpec:
         retention: 15d
+        enableRemoteWriteReceiver: true
         storageSpec:
           volumeClaimTemplate:
             spec:
