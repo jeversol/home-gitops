@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - ingress/
+  - grafana-auth0-secret.yaml
