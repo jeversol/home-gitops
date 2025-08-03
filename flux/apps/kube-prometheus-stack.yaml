@@ -40,6 +40,7 @@ spec:
         enabled: true
         size: 10Gi
         storageClassName: longhorn
+      defaultDashboardsEnabled: false
       envFromSecrets:
         - name: grafana-auth0-secret
       grafana.ini:
