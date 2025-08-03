@@ -55,7 +55,8 @@ spec:
           api_url: https://auth.recompiled.org/userinfo
           allow_sign_up: true
           auto_login: false
-          role_attribute_path: email == 'joe@recompiled.org' && 'Admin' || 'Viewer'
+          allow_assign_grafana_admin: true
+          role_attribute_path: email == 'joe@recompiled.org' && 'GrafanaAdmin' || 'Viewer'
         users:
           auto_assign_org_role: Viewer
         auth:
