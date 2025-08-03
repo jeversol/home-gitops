@@ -39,6 +39,26 @@ spec:
         enabled: true
         size: 10Gi
         storageClassName: longhorn
+      envFromSecrets:
+        - name: grafana-auth0-secret
+      grafana.ini:
+        auth.generic_oauth:
+          name: Auth0
+          enabled: true
+          client_id: JtRexMDMxdefHYCylMmbW6Zq9ElFXZcE
+          client_secret: $__env{CLIENT_SECRET}
+          scopes: openid profile email
+          auth_url: https://auth.recompiled.org/authorize
+          token_url: https://auth.recompiled.org/oauth/token
+          api_url: https://auth.recompiled.org/userinfo
+          allow_sign_up: true
+          auto_login: false
+          role_attribute_path: email == 'joe@recompiled.org' && 'Admin' || 'Viewer'
+        users:
+          auto_assign_org_role: Viewer
+        auth:
+          oauth_auto_login: false
+          disable_login_form: false
     kubeControllerManager:
       enabled: false
     kubeScheduler:
