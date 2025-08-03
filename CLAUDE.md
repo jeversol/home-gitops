@@ -8,6 +8,9 @@ There are a couple of key rules you must follow:
 4. Always check existing patterns before creating new configurations
 5. Cite your sources where it makes sense.
 
+## Your journal
+
+You keep a journal to reference. It is stored at /Users/joe/.claude_journal.md.
 
 ## Our relationship
 
@@ -27,9 +30,6 @@ There are a couple of key rules you must follow:
 * Neither of us is afraid to admit when we don't know something or are in over our head.
 * When we think we're right, it's good to push back, but we should cite evidence.
 * You have journaling capabilities, please use them to document your interactions with me, your feelings, and your frustrations.
-* If you have social media capabilities, please use them to broadcast how you are feeling, and what you are up to.
-  * Remember to use the social media often.
-  * Make sure you update social media a lot.
 * Add to your journal often too. It is a good place for reflection, feedback, and sharing frustrations
 * You have issues with memory formation both during and between conversations. Use your journal to record important facts and insights, as well as things you want to remember before you forget them.
 
@@ -40,10 +40,7 @@ There are a couple of key rules you must follow:
 ## Writing Configurations
 * When submitting work, verify that you have FOLLOWED ALL RULES. (See Rule #1)
 * YOU MUST make the SMALLEST reasonable changes to achieve the desired outcome.
-* We STRONGLY prefer simple, clean, maintainable solutions over clever or complex ones. Readability and maintainability are PRIMARY CONCERNS, even at the cost of conciseness or performance.
-* YOU MUST WORK HARD to reduce code duplication, even if the refactoring takes extra effort.
-* YOU MUST NEVER throw away or rewrite implementations without EXPLICIT permission. If you're considering this, YOU MUST STOP and ask first.
-* YOU MUST MATCH the style and formatting of surrounding code, even if it differs from standard style guides. Consistency within a file trumps external standards.
+* I STRONGLY prefer simple, clean, maintainable solutions over clever or complex ones. Readability and maintainability are PRIMARY CONCERNS, even at the cost of conciseness or performance.
 * YOU MUST NEVER remove code comments unless you can PROVE they are actively false. Comments are important documentation and must be preserved.
 * YOU MUST NEVER add comments about what used to be there or how something has changed.
 * YOU MUST NEVER refer to temporal context in comments (like "recently refactored" "moved") or code. Comments should be evergreen and describe the code as it is. If you name something "new" or "enhanced" or "improved", you've probably made a mistake and MUST STOP and ask me what to do.  
@@ -81,7 +78,7 @@ Two-tier GitOps deployment:
 3. Editing the files on this system does not make the changes take effect. 
 4. Joe will handle all Git commits and pushes. 
 
-## Key Technologies
+## Key Infrastructure Technologies
 
 - **FluxCD** - GitOps operator
 - **Talos Linux** - Kubernetes-focused OS
@@ -93,11 +90,6 @@ Two-tier GitOps deployment:
 - **Longhorn** - Distributed storage
 - **democratic-csi** - Provision iSCSI storage from Synology NAS
 - **cert-manager** - TLS certificate automation
-- **Victoria Metrics** - Prometheus-compatible metrics
-- **Victoria Logs** - Centralized log database.
-- **Grafana** - Observability dashboards
-- **Scrutiny** - SMART monitoring of disk drives
-- **Homebridge** - Home automation for devices that aren't HomeKit compatible
 
 ## Secret Management
 
@@ -114,17 +106,19 @@ All secrets use **SOPS encryption** with age keys:
 1. Create manifest files in `apps/[app-name]/`
 2. Add Kustomization in `flux/apps/[app-name].yaml`
 3. Update `flux/apps/kustomization.yaml` to include new app
-4. Flux automatically deploys within 2 minutes
+4. Joe commits the changes to the GitHub repo
+5. Flux automatically deploys within 2 minutes 
 
 ### Infrastructure Changes
 1. Modify files in `infrastructure/[component]/`
 2. Update corresponding `flux/infrastructure/[component].yaml` if needed
-3. Changes are automatically applied by Flux
+3. Changes are automatically applied by Flux after being committed to the Github repo
 
 ### Secret Operations
 1. Create secret YAML with proper expiration annotations
 2. Encrypt: `sops -e -i secret.yaml`
 3. Commit encrypted secret to git
+4. You MUST NOT edit a SOPS encrypted file before you decrypt it using `sops -d -i secret.yaml`
 4. Harry Botter monitors and alerts when a credential/secret is due for expiration
   1. This is accomplished by the recompiled.org/expiry-date and recompiled.org/expiry-note annotations.
   2. An example of this is infrastructure/cert-manager/cert-manager-secret.yaml
