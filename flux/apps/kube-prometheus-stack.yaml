@@ -42,6 +42,8 @@ spec:
       envFromSecrets:
         - name: grafana-auth0-secret
       grafana.ini:
+        server:
+          root_url: https://grafana.i.recompiled.org
         auth.generic_oauth:
           name: Auth0
           enabled: true
