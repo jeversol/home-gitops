@@ -1,0 +1,65 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: etcd-backup
+  namespace: etcd-backup
+spec:
+  schedule: "2 2 * * *"
+  timeZone: "America/New_York"
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 5
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: etcd-backup
+              image: alpine:latest
+              command: ["/bin/sh"]
+              args: ["/scripts/backup.sh"]
+              env:
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: etcd-backup-minio-secret
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: etcd-backup-minio-secret
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: AWS_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: etcd-backup-minio-secret
+                      key: AWS_ENDPOINT
+                - name: BUCKET_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: etcd-backup-minio-secret
+                      key: BUCKET_NAME
+              volumeMounts:
+                - name: talos-config
+                  mountPath: /etc/talos
+                  readOnly: true
+                - name: backup-script
+                  mountPath: /scripts
+                  readOnly: true
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 128Mi
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
+          volumes:
+            - name: talos-config
+              secret:
+                secretName: talos-etcd-backup-config
+            - name: backup-script
+              configMap:
+                name: etcd-backup-script
+                defaultMode: 0755

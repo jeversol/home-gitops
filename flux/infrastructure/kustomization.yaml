@@ -18,3 +18,4 @@ resources:
   - vpa-resources.yaml
   - node-feature-discovery.yaml
   - intel-gpu-plugin.yaml
+  - etcd-backup.yaml
