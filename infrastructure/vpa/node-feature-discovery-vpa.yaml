@@ -1,39 +1,40 @@
+# Node Feature Discovery components
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: cert-manager-vpa
-  namespace: cert-manager
+  name: nfd-worker-vpa
+  namespace: node-feature-discovery
 spec:
   targetRef:
     apiVersion: apps/v1
-    kind: Deployment
-    name: cert-manager
+    kind: DaemonSet
+    name: nfd-worker
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: cert-manager-cainjector-vpa
-  namespace: cert-manager
+  name: nfd-gc-vpa
+  namespace: node-feature-discovery
 spec:
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: cert-manager-cainjector
+    name: nfd-gc
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: cert-manager-webhook-vpa
-  namespace: cert-manager
+  name: nfd-master-vpa
+  namespace: node-feature-discovery
 spec:
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: cert-manager-webhook
+    name: nfd-master
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode

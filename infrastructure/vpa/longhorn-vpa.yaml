@@ -1,4 +1,6 @@
 # Longhorn storage system components
+# NOTE: engine-image DaemonSets (engine-image-ei-*) are NOT monitored by VPA
+# because they have version-specific hashes that change on Longhorn upgrades
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
@@ -62,5 +64,44 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: csi-provisioner
+  updatePolicy:
+    updateMode: "Off"
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: longhorn-csi-resizer-vpa
+  namespace: longhorn
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: csi-resizer
+  updatePolicy:
+    updateMode: "Off"
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: longhorn-csi-snapshotter-vpa
+  namespace: longhorn
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: csi-snapshotter
+  updatePolicy:
+    updateMode: "Off"
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: longhorn-driver-deployer-vpa
+  namespace: longhorn
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: longhorn-driver-deployer
   updatePolicy:
     updateMode: "Off"

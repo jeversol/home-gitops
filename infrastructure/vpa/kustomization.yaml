@@ -1,15 +1,13 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - grafana-vpa.yaml
+  - kube-prometheus-stack-vpa.yaml
   - homebridge-vpa.yaml
   - traefik-vpa.yaml
-  - kube-state-metrics-vpa.yaml
   - media-vpa.yaml
   - scrutiny-vpa.yaml
   - traefik-forward-auth-vpa.yaml
   - metallb-vpa.yaml
-  - node-exporter-vpa.yaml
   - democratic-csi-vpa.yaml
   - flux-vpa.yaml
   - cert-manager-vpa.yaml
@@ -17,3 +15,4 @@ resources:
   - longhorn-vpa.yaml
   - system-deployments-vpa.yaml
   - cloudflare-tunnel-vpa.yaml
+  - node-feature-discovery-vpa.yaml
