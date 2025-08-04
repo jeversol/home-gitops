@@ -2,12 +2,12 @@
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: victoria-logs-vpa
-  namespace: o11y
+  name: cloudflare-tunnel
+  namespace: cloudflare
 spec:
   targetRef:
     apiVersion: apps/v1
-    kind: StatefulSet
-    name: logs-server
+    kind: Deployment
+    name: cloudflare-tunnel
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode

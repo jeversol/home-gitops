@@ -8,6 +8,6 @@ spec:
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: kube-state-metrics
+    name: kube-prometheus-stack-kube-state-metrics
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
