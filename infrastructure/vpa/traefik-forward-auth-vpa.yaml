@@ -2,12 +2,12 @@
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: victoria-metrics-vpa
-  namespace: o11y
+  name: traefik-forward-auth
+  namespace: auth
 spec:
   targetRef:
     apiVersion: apps/v1
-    kind: StatefulSet
-    name: metrics-server
+    kind: Deployment
+    name: traefik-forward-auth
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
