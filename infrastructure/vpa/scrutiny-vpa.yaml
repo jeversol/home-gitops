@@ -24,3 +24,16 @@ spec:
     name: influxdb
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: scrutiny-collector-vpa
+  namespace: scrutiny
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: scrutiny-collector
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
