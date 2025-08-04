@@ -1,0 +1,84 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: etcd-backup-script
+  namespace: etcd-backup
+data:
+  backup.sh: |
+    #!/bin/sh
+    set -euo pipefail
+    
+    # Configuration from environment
+    BACKUP_DIR="/tmp"
+    TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+    BACKUP_FILE="${BACKUP_DIR}/etcd-snapshot-${TIMESTAMP}.db"
+    TALOS_NODE="192.168.1.221"  # Primary node for snapshots
+    RETENTION_DAYS=14
+    
+    echo "=== Starting etcd backup at $(date) ==="
+    
+    # Install talosctl binary
+    echo "Installing talosctl..."
+    wget -q https://github.com/siderolabs/talos/releases/download/v1.10.6/talosctl-linux-amd64 -O /usr/local/bin/talosctl
+    chmod +x /usr/local/bin/talosctl
+    
+    # Install mc client
+    echo "Installing mc client..."
+    wget -q https://dl.min.io/client/mc/release/linux-amd64/mc -O /usr/local/bin/mc
+    chmod +x /usr/local/bin/mc
+    
+    # Configure MinIO client
+    echo "Configuring MinIO client..."
+    mc alias set backup-minio "${AWS_ENDPOINT}" "${AWS_ACCESS_KEY_ID}" "${AWS_SECRET_ACCESS_KEY}"
+    
+    # Test MinIO connection
+    echo "Testing MinIO connection..."
+    if ! mc ls backup-minio/${BUCKET_NAME}/ >/dev/null 2>&1; then
+        echo "❌ ERROR: Cannot connect to MinIO bucket!"
+        exit 1
+    fi
+    echo "✅ MinIO connection successful"
+
+    # Create etcd snapshot using restricted credentials
+    echo "Creating etcd snapshot..."
+    export TALOSCONFIG=/etc/talos/talosconfig
+    echo "Running talosctl..."
+    if talosctl etcd snapshot "${BACKUP_FILE}" --nodes "${TALOS_NODE}"; then
+        BACKUP_SIZE=$(du -h "${BACKUP_FILE}" | cut -f1)
+        echo "✅ Backup created successfully: ${BACKUP_FILE} (${BACKUP_SIZE})"
+    else
+        echo "❌ ERROR: Failed to create etcd snapshot!"
+        exit 1
+    fi
+    
+    # Upload to MinIO
+    echo "Uploading backup to MinIO..."
+    REMOTE_PATH="backup-minio/${BUCKET_NAME}/etcd-snapshot-${TIMESTAMP}.db"
+    if mc cp "${BACKUP_FILE}" "${REMOTE_PATH}"; then
+        echo "✅ Backup uploaded successfully to ${REMOTE_PATH}"
+    else
+        echo "❌ ERROR: Failed to upload backup to MinIO!"
+        exit 1
+    fi
+    
+    # Clean up local file
+    rm -f "${BACKUP_FILE}"
+    echo "🧹 Local backup file cleaned up"
+    
+    # Clean up old backups in MinIO (keep last 14 days)
+    echo "Cleaning up old backups (retention: ${RETENTION_DAYS} days)..."
+    # Use mc find with age-based filtering (more reliable than manual date arithmetic)
+    echo "Looking for backups older than ${RETENTION_DAYS} days..."
+    mc find "backup-minio/${BUCKET_NAME}/" --name "etcd-snapshot-*.db" --older-than "${RETENTION_DAYS}d" 2>/dev/null | while read -r old_backup; do
+        if [ -n "$old_backup" ]; then
+            echo "🗑️  Deleting old backup: $(basename "$old_backup")"
+            mc rm "$old_backup" || echo "⚠️  Failed to delete $old_backup"
+        fi
+    done
+    
+    # List current backups
+    echo "📋 Current backups:"
+    mc ls "backup-minio/${BUCKET_NAME}/" | grep etcd-snapshot || echo "No etcd backups found"
+    
+    echo "=== ✅ Backup completed successfully at $(date) ==="
