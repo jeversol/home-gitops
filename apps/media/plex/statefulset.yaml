@@ -48,8 +48,8 @@ spec:
               mountPath: /media
           resources:
             requests:
-              cpu: 500m
-              memory: 1Gi
+              cpu: 150m
+              memory: 2.5Gi
               gpu.intel.com/i915: 1
             limits:
               cpu: 4000m

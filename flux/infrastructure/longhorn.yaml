@@ -99,11 +99,11 @@ spec:
         prometheus.io/path: "/metrics"
       resources:
         requests:
-          cpu: 35m
-          memory: 248Mi
+          cpu: 50m
+          memory: 335Mi
         limits:
-          cpu: 41m
-          memory: 296Mi
+          cpu: 250m
+          memory: 650Mi
       preUpgradeChecker:
         resources:
           requests:
