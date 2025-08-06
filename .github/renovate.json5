@@ -75,5 +75,15 @@
       depNameTemplate: 'kubernetes/kubernetes',
       versioningTemplate: 'semver',
     },
+    {
+      customType: 'regex', 
+      managerFilePatterns: [
+        'infrastructure/cluster-multitool/Dockerfile',
+      ],
+      matchStrings: [
+        '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=\"(?<currentValue>.*)\"\\s'
+      ],
+      versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
+    },
   ],
 }

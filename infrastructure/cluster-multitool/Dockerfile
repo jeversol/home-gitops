@@ -68,17 +68,15 @@ COPY --from=builder /opt/deps /usr/local
 ENV PYTHONPATH="/usr/local/lib/python3.12/site-packages:$PYTHONPATH"
 
 # Install talosctl
-# renovate: datasource=github-releases depName=siderolabs/talos
 RUN wget -q https://github.com/siderolabs/talos/releases/download/${TALOS_VERSION}/talosctl-linux-amd64 -O /usr/local/bin/talosctl \
     && chmod +x /usr/local/bin/talosctl
 
 # Install kubectl
-# renovate: datasource=github-releases depName=kubernetes/kubernetes
 RUN curl -LO "https://dl.k8s.io/release/${KUBERNETES_VERSION}/bin/linux/amd64/kubectl" \
     && install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl \
     && rm kubectl
 
-# Create non-root user (matching both previous containers)
+# Create a non-root user to run the container
 RUN adduser -D -u 1000 opsuser
 
 USER opsuser
@@ -88,5 +86,4 @@ WORKDIR /app
 LABEL org.opencontainers.image.source=https://github.com/jeversol/home-gitops
 LABEL org.opencontainers.image.description="Universal cluster operations container with Python and shell tools"
 
-# Default to bash shell
 CMD ["/bin/bash"]
