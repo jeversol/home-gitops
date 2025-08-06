@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'infrastructure/cluster-multitool/Dockerfile'
+      - 'infrastructure/cluster/track-versions.yaml'
       - '.github/workflows/docker-build.yml'
 
 jobs:
@@ -28,6 +29,14 @@ jobs:
           username: jeversol
           password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
           
+      - name: Read versions from track-versions.yaml
+        id: versions
+        run: |
+          KUBERNETES_VERSION=$(yq '.kubernetesVersion' infrastructure/cluster/track-versions.yaml)
+          TALOS_VERSION=$(yq '.talosVersion' infrastructure/cluster/track-versions.yaml)
+          echo "kubernetes_version=$KUBERNETES_VERSION" >> $GITHUB_OUTPUT
+          echo "talos_version=$TALOS_VERSION" >> $GITHUB_OUTPUT
+
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
@@ -47,3 +56,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            KUBERNETES_VERSION=${{ steps.versions.outputs.kubernetes_version }}
+            TALOS_VERSION=${{ steps.versions.outputs.talos_version }}
