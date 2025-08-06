@@ -50,5 +50,9 @@ RUN adduser -D -u 1000 opsuser
 USER opsuser
 WORKDIR /app
 
+# Add OCI labels to link package to repository
+LABEL org.opencontainers.image.source=https://github.com/jeversol/home-gitops
+LABEL org.opencontainers.image.description="Universal cluster operations container with Python and shell tools"
+
 # Default to bash shell
 CMD ["/bin/bash"]
