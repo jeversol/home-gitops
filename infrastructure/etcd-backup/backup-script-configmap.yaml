@@ -18,27 +18,18 @@ data:
     
     echo "=== Starting etcd backup at $(date) ==="
     
-    # Install talosctl binary
-    echo "Installing talosctl..."
-    wget -q https://github.com/siderolabs/talos/releases/download/v1.10.6/talosctl-linux-amd64 -O /usr/local/bin/talosctl
-    chmod +x /usr/local/bin/talosctl
     
-    # Install mc client
-    echo "Installing mc client..."
-    wget -q https://dl.min.io/client/mc/release/linux-amd64/mc -O /usr/local/bin/mc
-    chmod +x /usr/local/bin/mc
+    # Set up s3cmd parameters
+    S3CMD_HOST=$(echo "${AWS_ENDPOINT}" | sed 's|https\?://||')
+    S3CMD_ARGS="--access_key=${AWS_ACCESS_KEY_ID} --secret_key=${AWS_SECRET_ACCESS_KEY} --host=${S3CMD_HOST} --host-bucket=${S3CMD_HOST}"
     
-    # Configure MinIO client
-    echo "Configuring MinIO client..."
-    mc alias set backup-minio "${AWS_ENDPOINT}" "${AWS_ACCESS_KEY_ID}" "${AWS_SECRET_ACCESS_KEY}"
-    
-    # Test MinIO connection
-    echo "Testing MinIO connection..."
-    if ! mc ls backup-minio/${BUCKET_NAME}/ >/dev/null 2>&1; then
-        echo "❌ ERROR: Cannot connect to MinIO bucket!"
+    # Test S3 connection
+    echo "Testing S3 connection..."
+    if ! s3cmd ${S3CMD_ARGS} ls s3://${BUCKET_NAME}/ >/dev/null 2>&1; then
+        echo "❌ ERROR: Cannot connect to S3 bucket!"
         exit 1
     fi
-    echo "✅ MinIO connection successful"
+    echo "✅ S3 connection successful"
 
     # Create etcd snapshot using restricted credentials
     echo "Creating etcd snapshot..."
@@ -52,13 +43,13 @@ data:
         exit 1
     fi
     
-    # Upload to MinIO
-    echo "Uploading backup to MinIO..."
-    REMOTE_PATH="backup-minio/${BUCKET_NAME}/etcd-snapshot-${TIMESTAMP}.db"
-    if mc cp "${BACKUP_FILE}" "${REMOTE_PATH}"; then
+    # Upload to S3
+    echo "Uploading backup to S3..."
+    REMOTE_PATH="s3://${BUCKET_NAME}/etcd-snapshot-${TIMESTAMP}.db"
+    if s3cmd ${S3CMD_ARGS} put "${BACKUP_FILE}" "${REMOTE_PATH}"; then
         echo "✅ Backup uploaded successfully to ${REMOTE_PATH}"
     else
-        echo "❌ ERROR: Failed to upload backup to MinIO!"
+        echo "❌ ERROR: Failed to upload backup to S3!"
         exit 1
     fi
     
@@ -66,19 +57,21 @@ data:
     rm -f "${BACKUP_FILE}"
     echo "🧹 Local backup file cleaned up"
     
-    # Clean up old backups in MinIO (keep last 14 days)
+    # Clean up old backups in S3 (keep last 14 days)
     echo "Cleaning up old backups (retention: ${RETENTION_DAYS} days)..."
-    # Use mc find with age-based filtering (more reliable than manual date arithmetic)
     echo "Looking for backups older than ${RETENTION_DAYS} days..."
-    mc find "backup-minio/${BUCKET_NAME}/" --name "etcd-snapshot-*.db" --older-than "${RETENTION_DAYS}d" 2>/dev/null | while read -r old_backup; do
-        if [ -n "$old_backup" ]; then
-            echo "🗑️  Deleting old backup: $(basename "$old_backup")"
-            mc rm "$old_backup" || echo "⚠️  Failed to delete $old_backup"
+    CUTOFF_DATE=$(date -d "@$(($(date +%s) - ${RETENTION_DAYS} * 86400))" +%Y%m%d)
+    s3cmd ${S3CMD_ARGS} ls s3://${BUCKET_NAME}/ | grep "etcd-snapshot-" | while read -r line; do
+        BACKUP_FILE=$(echo "$line" | awk '{print $4}')
+        BACKUP_DATE=$(echo "$BACKUP_FILE" | sed -n 's/.*etcd-snapshot-\([0-9]\{8\}\)_.*/\1/p')
+        if [ -n "$BACKUP_DATE" ] && [ "$BACKUP_DATE" -lt "$CUTOFF_DATE" ]; then
+            echo "🗑️  Deleting old backup: $(basename "$BACKUP_FILE")"
+            s3cmd ${S3CMD_ARGS} del "$BACKUP_FILE" || echo "⚠️  Failed to delete $BACKUP_FILE"
         fi
     done
     
     # List current backups
     echo "📋 Current backups:"
-    mc ls "backup-minio/${BUCKET_NAME}/" | grep etcd-snapshot || echo "No etcd backups found"
+    s3cmd ${S3CMD_ARGS} ls s3://${BUCKET_NAME}/ | grep etcd-snapshot || echo "No etcd backups found"
     
     echo "=== ✅ Backup completed successfully at $(date) ==="

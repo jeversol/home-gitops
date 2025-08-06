@@ -17,7 +17,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: etcd-backup
-              image: alpine:latest
+              image: ghcr.io/jeversol/cluster-multitool:main-b0ba473
               command: ["/bin/sh"]
               args: ["/scripts/backup.sh"]
               env:
@@ -55,6 +55,8 @@ spec:
                 limits:
                   cpu: 500m
                   memory: 256Mi
+          imagePullSecrets:
+            - name: ghcr-secret
           volumes:
             - name: talos-config
               secret:
