@@ -20,19 +20,19 @@ RUN apk add --no-cache \
 
 # Build Python dependencies in isolated environment
 # renovate: datasource=pypi depName=kubernetes
-ENV PYPI-KUBERNETES_VERSION="33.1.0"
+ENV PYPI_KUBERNETES_VERSION="33.1.0"
 # renovate: datasource=pypi depName=PyJWT
-ENV PYPI-PYJWT_VERSION="2.10.1"
+ENV PYPI_PYJWT_VERSION="2.10.1"
 # renovate: datasource=pypi depName=requests
-ENV PYPI-REQUESTS_VERSION="2.32.4"
+ENV PYPI_REQUESTS_VERSION="2.32.4"
 # renovate: datasource=pypi depName=s3cmd
-ENV PYPI-S3CMD_VERSION="2.4.0"
+ENV PYPI_S3CMD_VERSION="2.4.0"
 
 RUN python3 -m pip install --no-cache-dir --prefix=/opt/deps \
-    kubernetes="${PYPI-KUBERNETES_VERSION}" \
-    PyJWT[crypto]="${PYPI-PYJWT_VERSION}" \
-    requests="${PYPI-REQUESTS_VERSION}" \
-    s3cmd="${PYPI-S3CMD_VERSION}"
+    kubernetes=="${PYPI_KUBERNETES_VERSION}" \
+    PyJWT[crypto]=="${PYPI_PYJWT_VERSION}" \
+    requests=="${PYPI_REQUESTS_VERSION}" \
+    s3cmd=="${PYPI_S3CMD_VERSION}"
 
 FROM alpine:3.22.1
 
@@ -41,6 +41,8 @@ ARG KUBERNETES_VERSION
 ARG TALOS_VERSION
 
 # Install system packages, Python runtime, and tools
+# renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
+ENV PYTHON3_VERSION="3.12.11-r0"
 # renovate: datasource=repology depName=alpine_3_22/curl versioning=loose
 ENV CURL_VERSION="8.14.1-r1"
 # renovate: datasource=repology depName=alpine_3_22/wget versioning=loose
@@ -63,6 +65,8 @@ ENV IPUTILS_VERSION="20240905-r0"
 ENV NETCAT_OPENBSD_VERSION="1.229.1-r0"
 # renovate: datasource=repology depName=alpine_3_22/mtr versioning=loose
 ENV MTR_VERSION="0.95-r2"
+# renovate: datasource=repology depName=alpine_3_22/bash versioning=loose
+ENV BASH_VERSION="5.2.37-r0"
 
 # renovate: datasource=repology depName=alpine_3_22/bash versioning=loose
 RUN apk add --no-cache \ 
@@ -78,7 +82,7 @@ RUN apk add --no-cache \
     iputils="${IPUTILS_VERSION}" \
     netcat-openbsd="${NETCAT_OPENBSD_VERSION}" \
     mtr="${MTR_VERSION}" \
-    bash
+    bash="${BASH_VERSION}"
 
 # Copy Python dependencies from builder
 COPY --from=builder /opt/deps /usr/local
