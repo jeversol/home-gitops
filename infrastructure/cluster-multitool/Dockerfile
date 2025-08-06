@@ -6,25 +6,33 @@ ARG TALOS_VERSION
 
 # Install Python and pip
 # renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
+ENV PYTHON3_VERSION="3.12.11-r0"
 # renovate: datasource=repology depName=alpine_3_22/py3-pip versioning=loose
-# renovate: datasource=repology depName=alpine_3_22/python3-dev versioning=loose
+ENV PIP_VERSION="25.1.1-r0"
 # renovate: datasource=repology depName=alpine_3_22/build-base versioning=loose
+ENV BUILD_BASE_VERSION="0.5-r3"
+
 RUN apk add --no-cache \
-    python3=3.12.11-r0 \
-    py3-pip=25.1.1-r0 \
-    python3-dev=3.12.11-r0 \
-    build-base=0.5-r3
+    python3="${PYTHON3_VERSION}" \
+    py3-pip="${PIP_VERSION}" \
+    python3-dev="${PYTHON3_VERSION}" \
+    build-base="${BUILD_BASE_VERSION}"
 
 # Build Python dependencies in isolated environment
 # renovate: datasource=pypi depName=kubernetes
+ENV PYPI-KUBERNETES_VERSION="33.1.0"
 # renovate: datasource=pypi depName=PyJWT
+ENV PYPI-PYJWT_VERSION="2.10.1"
 # renovate: datasource=pypi depName=requests
+ENV PYPI-REQUESTS_VERSION="2.32.4"
 # renovate: datasource=pypi depName=s3cmd
+ENV PYPI-S3CMD_VERSION="2.4.0"
+
 RUN python3 -m pip install --no-cache-dir --prefix=/opt/deps \
-    kubernetes==33.1.0 \
-    PyJWT[crypto]==2.10.1 \
-    requests==2.32.4 \
-    s3cmd==2.4.0
+    kubernetes="${PYPI-KUBERNETES_VERSION}" \
+    PyJWT[crypto]="${PYPI-PYJWT_VERSION}" \
+    requests="${PYPI-REQUESTS_VERSION}" \
+    s3cmd="${PYPI-S3CMD_VERSION}"
 
 FROM alpine:3.22.1
 
@@ -33,33 +41,44 @@ ARG KUBERNETES_VERSION
 ARG TALOS_VERSION
 
 # Install system packages, Python runtime, and tools
-# renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
 # renovate: datasource=repology depName=alpine_3_22/curl versioning=loose
+ENV CURL_VERSION="8.14.1-r1"
 # renovate: datasource=repology depName=alpine_3_22/wget versioning=loose
+ENV WGET_VERSION="1.25.0-r1"
 # renovate: datasource=repology depName=alpine_3_22/ca-certificates versioning=loose
+ENV CA_CERTIFICATES_VERSION="20250619-r0"
 # renovate: datasource=repology depName=alpine_3_22/jq versioning=loose
+ENV JQ_VERSION="1.8.0-r0"
 # renovate: datasource=repology depName=alpine_3_22/yq-go versioning=loose
+ENV YQ_GO_VERSION="4.46.1-r0"
 # renovate: datasource=repology depName=alpine_3_22/vim versioning=loose
+ENV VIM_VERSION="9.1.1566-r0"
 # renovate: datasource=repology depName=alpine_3_22/git versioning=loose
+ENV GIT_VERSION="2.49.1-r0"
 # renovate: datasource=repology depName=alpine_3_22/bind-tools versioning=loose
+ENV BIND_TOOLS_VERSION="9.20.11-r0"
 # renovate: datasource=repology depName=alpine_3_22/iputils versioning=loose
+ENV IPUTILS_VERSION="20240905-r0"
 # renovate: datasource=repology depName=alpine_3_22/netcat-openbsd versioning=loose
+ENV NETCAT_OPENBSD_VERSION="1.229.1-r0"
 # renovate: datasource=repology depName=alpine_3_22/mtr versioning=loose
+ENV MTR_VERSION="0.95-r2"
+
 # renovate: datasource=repology depName=alpine_3_22/bash versioning=loose
 RUN apk add --no-cache \ 
-    python3=3.12.11-r0 \
-    curl=8.14.1-r1 \
-    wget=1.25.0-r1 \
-    ca-certificates=20250619-r0 \
-    jq=1.8.0-r0 \
-    yq-go=4.46.1-r0 \
-    vim=9.1.1566-r0 \
-    git=2.49.1-r0 \
-    bind-tools=9.20.11-r0 \
-    iputils=20240905-r0 \
-    netcat-openbsd=1.229.1-r0 \
-    mtr=0.95-r2 \
-    bash=5.2.37-r0
+    python3="${PYTHON3_VERSION}" \
+    curl="${CURL_VERSION}" \
+    wget="${WGET_VERSION}" \
+    ca-certificates="${CA_CERTIFICATES_VERSION}" \
+    jq="${JQ_VERSION}" \
+    yq-go="${YQ_GO_VERSION}" \
+    vim="${VIM_VERSION}" \
+    git="${GIT_VERSION}" \
+    bind-tools="${BIND_TOOLS_VERSION}" \
+    iputils="${IPUTILS_VERSION}" \
+    netcat-openbsd="${NETCAT_OPENBSD_VERSION}" \
+    mtr="${MTR_VERSION}" \
+    bash
 
 # Copy Python dependencies from builder
 COPY --from=builder /opt/deps /usr/local
