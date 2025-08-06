@@ -3,12 +3,14 @@ name: Build and Push Docker Images
 on:
   push:
     branches: [main]
+    paths:
+      - 'infrastructure/cluster-multitool/Dockerfile'
+      - '.github/workflows/docker-build.yml'
     tags: 
       - 'v*'
 
 jobs:
   build-cluster-multitool:
-    if: startsWith(github.ref, 'refs/tags/') || contains(github.event.head_commit.modified, 'infrastructure/cluster-multitool/Dockerfile') || contains(github.event.head_commit.added, 'infrastructure/cluster-multitool/Dockerfile')
     runs-on: ubuntu-latest
     permissions:
       contents: read
