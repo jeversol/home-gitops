@@ -28,6 +28,10 @@ RUN python3 -m pip install --no-cache-dir --prefix=/opt/deps \
 
 FROM alpine:3.22.1
 
+# Build arguments for versions (must be redeclared for second stage)
+ARG KUBERNETES_VERSION
+ARG TALOS_VERSION
+
 # Install system packages, Python runtime, and tools
 # renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
 # renovate: datasource=repology depName=alpine_3_22/curl versioning=loose
