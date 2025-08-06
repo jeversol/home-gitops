@@ -2,14 +2,11 @@ name: Build and Push Docker Images
 
 on:
   push:
-    paths:
-      - 'infrastructure/harry-botter/Dockerfile'
-      - 'infrastructure/harry-botter/configmap.yaml'
-      - 'infrastructure/etcd-backup/Dockerfile'
     branches: [main]
 
 jobs:
   build-harry-botter:
+    if: contains(github.event.head_commit.modified, 'infrastructure/harry-botter/Dockerfile') || contains(github.event.head_commit.added, 'infrastructure/harry-botter/Dockerfile')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -93,6 +90,7 @@ jobs:
           cache-to: type=gha,mode=max
 
   build-cluster-multitool:
+    if: contains(github.event.head_commit.modified, 'infrastructure/etcd-backup/Dockerfile') || contains(github.event.head_commit.added, 'infrastructure/etcd-backup/Dockerfile')
     runs-on: ubuntu-latest
     permissions:
       contents: read
