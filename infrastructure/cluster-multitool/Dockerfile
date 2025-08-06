@@ -1,4 +1,5 @@
 FROM alpine:latest AS builder
+# Comment to force change
 
 # Install Python and pip
 RUN apk add --no-cache \
