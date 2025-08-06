@@ -12,3 +12,10 @@ spec:
             - --port=7472
             - --log-level=info
             - --ignore-exclude-lb
+          resources:
+            requests:
+              cpu: 25m
+              memory: 100Mi
+            limits:
+              cpu: 50m
+              memory: 150Mi
