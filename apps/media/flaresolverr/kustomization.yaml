@@ -4,5 +4,4 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - service.yaml
-  - ingressroute.yaml
-  - tls-cert.yaml
+  # TLS certificate removed; service kept internal-only
