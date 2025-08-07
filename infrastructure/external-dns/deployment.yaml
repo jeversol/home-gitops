@@ -20,15 +20,14 @@ spec:
           image: registry.k8s.io/external-dns/external-dns:v0.18.0
           args:
             - --source=traefik-proxy
-            - --domain-filter=i.recompiled.org
+            - --domain-filter=recompiled.org
             - --provider=cloudflare
-            - --cloudflare-proxied
             - --cloudflare-dns-records-per-page=5000
             - --policy=sync
             - --txt-owner-id=k8s-home-cluster
             - --txt-prefix=external-dns-
             - --interval=1m
-            - --log-level=info
+            - --log-level=debug
             - --traefik-disable-legacy
           env:
             - name: CF_API_TOKEN
