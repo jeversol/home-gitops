@@ -44,6 +44,11 @@
       automerge: false,
     },
     {
+      matchPackageNames: ['ghcr.io/jeversol/cluster-multitool'],
+      pinDigests: true,
+      followTag: 'latest',
+    },
+    {
       matchDatasources: ['docker'],
       matchPackageNames: ['homebridge/homebridge'],
       versioning: 'regex:^(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$',
