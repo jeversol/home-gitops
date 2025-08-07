@@ -2,6 +2,7 @@
   extends: [
     'config:recommended',
     ':enablePreCommit',
+    'docker:pinDigests',
   ],
   automerge: false,
   timezone: 'America/Indiana/Indianapolis',
@@ -42,6 +43,11 @@
       // NEVER automerge Talos/Kubernetes version updates - these require manual intervention
       matchFileNames: ['infrastructure/cluster/track-versions.yaml'],
       automerge: false,
+    },
+    {
+      matchPackageNames: ['ghcr.io/jeversol/cluster-multitool'],
+      pinDigests: true,
+      followTag: 'latest',
     },
     {
       matchDatasources: ['docker'],
