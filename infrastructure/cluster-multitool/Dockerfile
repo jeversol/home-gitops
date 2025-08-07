@@ -1,5 +1,7 @@
 FROM alpine:3.22.1 AS builder
 
+# Make a chance to commit and trigger the build
+
 # Build arguments for versions
 ARG KUBERNETES_VERSION
 ARG TALOS_VERSION
