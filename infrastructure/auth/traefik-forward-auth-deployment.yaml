@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: traefik-forward-auth
-          image: thomseddon/traefik-forward-auth:2.2.0
+          image: thomseddon/traefik-forward-auth:2.2.0@sha256:e875194d67e21c077f3de0b9d315bb3023a226f2cac81ddd9d02a4250ed89b4b
           env:
             - name: PROVIDERS_OIDC_ISSUER_URL
               value: "https://auth.recompiled.org/"

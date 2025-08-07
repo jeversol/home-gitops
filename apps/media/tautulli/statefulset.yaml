@@ -21,7 +21,7 @@ spec:
             value: "1"
       containers:
         - name: tautulli
-          image: ghcr.io/tautulli/tautulli:v2.15.3
+          image: ghcr.io/tautulli/tautulli:v2.15.3@sha256:fffd16c87c9428ce2d53ce9c0897a11cb912679700a49a986385d4d12d819de3
           ports:
             - name: tautulli-port
               containerPort: 8181

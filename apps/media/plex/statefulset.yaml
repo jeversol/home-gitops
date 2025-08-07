@@ -26,7 +26,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: plex
-          image: lscr.io/linuxserver/plex:1.41.9.9961-46083195d-ls274
+          image: lscr.io/linuxserver/plex:1.41.9.9961-46083195d-ls274@sha256:f8ed359f87f1becab37c2586af9f3414bd5c604d031d47f75e8422baf5224ef5
           imagePullPolicy: Always
           ports:
             - containerPort: 32400

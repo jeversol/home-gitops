@@ -35,7 +35,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: status.hostIP
-          image: intel/intel-gpu-plugin:0.32.1
+          image: intel/intel-gpu-plugin:0.32.1@sha256:42cbcb436fa5b6c97ee7c0da29b538308070c6ebc2690b4cb3c1989abfc72bec
           imagePullPolicy: IfNotPresent
           resources:
             requests:
