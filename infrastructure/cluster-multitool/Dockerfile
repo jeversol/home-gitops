@@ -90,7 +90,7 @@ RUN apk add --no-cache \
 COPY --from=builder /opt/deps /usr/local
 
 # Set Python path to include /usr/local packages
-ENV PYTHONPATH="/usr/local/lib/python3.12/site-packages:$PYTHONPATH"
+ENV PYTHONPATH="/usr/local/lib/python3.12/site-packages"
 
 # Install talosctl
 RUN wget -q https://github.com/siderolabs/talos/releases/download/${TALOS_VERSION}/talosctl-linux-amd64 -O /usr/local/bin/talosctl \
