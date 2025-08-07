@@ -16,3 +16,4 @@ resources:
   - system-deployments-vpa.yaml
   - cloudflare-tunnel-vpa.yaml
   - node-feature-discovery-vpa.yaml
+  - external-dns-vpa.yaml
