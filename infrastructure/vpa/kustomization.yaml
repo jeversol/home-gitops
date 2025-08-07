@@ -9,6 +9,7 @@ resources:
   - traefik-forward-auth-vpa.yaml
   - metallb-vpa.yaml
   - democratic-csi-vpa.yaml
+  - external-dns-vpa.yaml
   - flux-vpa.yaml
   - cert-manager-vpa.yaml
   - system-daemonsets-vpa.yaml
