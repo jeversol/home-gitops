@@ -20,14 +20,20 @@ spec:
           image: registry.k8s.io/external-dns/external-dns:v0.18.0
           args:
             - --source=traefik-proxy
+            # Filter to the Cloudflare-managed zone (root domain)
             - --domain-filter=recompiled.org
             - --provider=cloudflare
             - --cloudflare-dns-records-per-page=5000
-            - --policy=sync
+            # Safer migration: only upsert managed records, never delete
+            - --policy=upsert-only
+            # Opt-in management via annotation on IngressRoutes
+            - --annotation-filter=external-dns.alpha.kubernetes.io/expose=true
+            # Ensure only CNAME/TXT are managed (we publish CNAMEs to traefik)
+            - --managed-record-types=CNAME,TXT
             - --txt-owner-id=k8s-home-cluster
             - --txt-prefix=external-dns-
             - --interval=1m
-            - --log-level=debug
+            - --log-level=info
             - --traefik-disable-legacy
           env:
             - name: CF_API_TOKEN
