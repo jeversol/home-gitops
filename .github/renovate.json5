@@ -46,7 +46,7 @@
     {
       matchPackageNames: ['ghcr.io/jeversol/cluster-multitool'],
       pinDigests: true,
-      followTag: 'latest',
+      versioning: 'loose',
     },
     {
       matchDatasources: ['docker'],
