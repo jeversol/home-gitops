@@ -4,6 +4,11 @@ kind: IngressRoute
 metadata:
   name: grafana-ingress-https
   namespace: o11y
+  annotations:
+    external-dns.alpha.kubernetes.io/expose: "true"
+    external-dns.alpha.kubernetes.io/target: traefik.i.recompiled.org
+    external-dns.alpha.kubernetes.io/ttl: "60"
+    external-dns.alpha.kubernetes.io/cloudflare-proxied: "false"
 spec:
   entryPoints:
     - websecure
