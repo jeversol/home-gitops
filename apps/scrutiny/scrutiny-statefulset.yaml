@@ -21,7 +21,7 @@ spec:
             value: "1"
       containers:
         - name: scrutiny
-          image: ghcr.io/analogj/scrutiny:master-web
+          image: ghcr.io/analogj/scrutiny:master-web@sha256:120e271f71b74de976502fedd5dc691c730a9ae1e117a38fd4e61371e69ff483
           ports:
             - name: scrutiny-port
               containerPort: 8080
