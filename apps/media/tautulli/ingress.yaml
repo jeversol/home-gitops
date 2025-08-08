@@ -3,6 +3,9 @@ apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: tautulli-ingress-https
+  annotations:
+    external-dns.alpha.kubernetes.io/expose: "true"
+    external-dns.alpha.kubernetes.io/target: traefik.i.recompiled.org
 spec:
   entryPoints:
     - websecure
