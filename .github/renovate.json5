@@ -44,9 +44,21 @@
       automerge: false,
     },
     {
+      // Auto-merge patch and minor updates for cluster-multitool Dockerfile dependencies
+      matchFileNames: ['infrastructure/cluster-multitool/Dockerfile'],
+      matchUpdateTypes: ['patch', 'minor'],
+      automerge: true,
+      automergeType: 'pr',
+      assignees: [],
+    },
+    {
+      // Auto-merge digest pins for cluster-multitool container images
       matchPackageNames: ['ghcr.io/jeversol/cluster-multitool'],
+      matchUpdateTypes: ['digest', 'pin'],
       pinDigests: true,
-      versioning: 'loose',
+      automerge: true,
+      automergeType: 'pr',
+      assignees: [],
     },
     {
       matchDatasources: ['docker'],
