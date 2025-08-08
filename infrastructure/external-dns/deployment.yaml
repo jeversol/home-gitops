@@ -26,7 +26,6 @@ spec:
             - --policy=sync
             - --annotation-filter=external-dns.alpha.kubernetes.io/expose=true
             - --managed-record-types=CNAME
-            - --default-targets=traefik.i.recompiled.org
             - --interval=2m
             - --log-level=info
             - --traefik-disable-legacy
