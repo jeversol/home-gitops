@@ -4,4 +4,4 @@ resources:
   - namespace.yaml
   - longhorn-ingressroute.yaml
   - longhorn-tls-cert.yaml
-  - longhorn-minio-secret.yaml
+  - longhorn-backup-secret.yaml
