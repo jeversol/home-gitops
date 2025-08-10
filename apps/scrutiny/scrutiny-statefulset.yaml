@@ -44,8 +44,8 @@ spec:
               cpu: 25m
               memory: 104Mi
             limits:
-              cpu: 25m
-              memory: 104Mi
+              cpu: 200m
+              memory: 256Mi
           volumeMounts:
             - name: config
               mountPath: /opt/scrutiny/config
