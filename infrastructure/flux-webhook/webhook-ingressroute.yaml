@@ -15,6 +15,6 @@ spec:
       kind: Rule
       services:
         - name: notification-controller
-          port: 9292
+          port: 80
   tls:
     secretName: flux-webhook-tls
