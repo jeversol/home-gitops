@@ -20,3 +20,4 @@ resources:
   - intel-gpu-plugin.yaml
   - etcd-backup.yaml
   - external-dns.yaml
+  - flux-webhook.yaml

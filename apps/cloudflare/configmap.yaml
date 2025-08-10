@@ -8,4 +8,6 @@ data:
     ingress:
       - hostname: media-requests.recompiled.org
         service: http://overseerr.media.svc.cluster.local:5055
+      - hostname: flux-webhook.recompiled.org  # Add this
+        service: http://notification-controller.flux-system.svc.cluster.local:9292
       - service: http_status:404
