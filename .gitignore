@@ -25,3 +25,7 @@ Thumbs.db
 client-info.yml
 AGENTS.md
 CLAUDE.md
+
+# Ignore mixins generated files
+tools/grafana-mixins/vendor
+tools/grafana-mixins/out

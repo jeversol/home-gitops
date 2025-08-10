@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'infrastructure/cluster-multitool/Dockerfile'
+      - 'tools/cluster-multitool/Dockerfile'
       - 'infrastructure/cluster/track-versions.yaml'
       - '.github/workflows/docker-build.yml'
 
@@ -48,7 +48,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: infrastructure/cluster-multitool
+          context: tools/cluster-multitool
           platforms: linux/amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
