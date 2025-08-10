@@ -45,7 +45,7 @@
     },
     {
       // Auto-merge patch and minor updates for cluster-multitool Dockerfile dependencies
-      matchFileNames: ['infrastructure/cluster-multitool/Dockerfile'],
+      matchFileNames: ['tools/cluster-multitool/Dockerfile'],
       matchUpdateTypes: ['patch', 'minor'],
       automerge: true,
       automergeType: 'pr',
@@ -100,7 +100,7 @@
     {
       customType: 'regex', 
       managerFilePatterns: [
-        'infrastructure/cluster-multitool/Dockerfile',
+        'tools/cluster-multitool/Dockerfile',
       ],
       matchStrings: [
         '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=\"(?<currentValue>.*)\"\\s'

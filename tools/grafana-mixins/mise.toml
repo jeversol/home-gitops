@@ -1,0 +1,3 @@
+[tools]
+go = "latest"
+jsonnet-bundler = "latest"
