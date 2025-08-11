@@ -9,5 +9,5 @@ data:
       - hostname: media-requests.recompiled.org
         service: http://overseerr.media.svc.cluster.local:5055
       - hostname: flux-webhook.recompiled.org
-        service: http://notification-controller.flux-system.svc.cluster.local:80
+        service: http://webhook-receiver.flux-system.svc.cluster.local:80
       - service: http_status:404
