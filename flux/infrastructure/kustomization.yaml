@@ -21,3 +21,4 @@ resources:
   - etcd-backup.yaml
   - external-dns.yaml
   - flux-webhook.yaml
+  - cloudflared.yaml
