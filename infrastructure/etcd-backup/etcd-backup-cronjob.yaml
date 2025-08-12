@@ -17,7 +17,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: etcd-backup
-              image: ghcr.io/jeversol/cluster-multitool:latest@sha256:707e51f24909003bb1b6000d48353c6c7b02bff5944c21870dd6aad518ae6967
+              image: ghcr.io/jeversol/cluster-multitool:latest@sha256:60893bfcd1600801fef4553ef63f62d9dc430a30fdcc442c7d94d78fb48f3af1
               command: ["/bin/sh"]
               args: ["/scripts/backup.sh"]
               env:
