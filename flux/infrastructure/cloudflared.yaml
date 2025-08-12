@@ -1,11 +1,11 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cloudflare
+  name: cloudflared
   namespace: flux-system
 spec:
   interval: 2m
-  path: ./apps/cloudflare
+  path: ./infrastructure/cloudflared
   prune: true
   sourceRef:
     kind: GitRepository
