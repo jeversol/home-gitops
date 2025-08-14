@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  talos-automation:
+    image: talos-automation:latest
+    ports:
+      - "3847:3847"
+    volumes:
+      - ./logs:/app/logs
+      - ./talosconfig:/talos/talosconfig:ro
+    env_file:
+      - .env
+    restart: unless-stopped
