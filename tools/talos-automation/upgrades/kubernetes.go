@@ -1,6 +1,7 @@
 package upgrades
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -144,32 +145,45 @@ func (k *KubernetesUpgrader) GetCurrentVersion(node string, executeCommands bool
 	log.Printf("GetCurrentVersion called: node=%s, executeCommands=%t, mockVersion=%s", node, executeCommands, k.mockCurrentVersion)
 	
 	if !executeCommands {
-		// Return mock version for testing - can be overridden by SetMockCurrentVersion
+		// In diagnostics mode, check for mock version override first
 		if k.mockCurrentVersion != "" {
-			log.Printf("Returning mock current version: %s", k.mockCurrentVersion)
+			log.Printf("DIAGNOSTICS MODE: Using test override K8s version: %s", k.mockCurrentVersion)
 			return k.mockCurrentVersion, nil
 		}
-		log.Printf("Returning default mock current version: 1.33.3")
+		log.Printf("DIAGNOSTICS MODE: Using default mock K8s version: 1.33.3")
 		return "1.33.3", nil
 	}
 	
 	log.Printf("PRODUCTION MODE: Getting actual current version from cluster")
 
-	cmd := exec.Command("talosctl", "--talosconfig", k.TalosConfigPath, "version", "--short", "-n", node)
+	cmd := exec.Command("talosctl", "--talosconfig", k.TalosConfigPath, "get", "members", "-o", "json", "-n", node)
 
 	output, err := cmd.Output()
 	if err != nil {
 		return "", fmt.Errorf("failed to get current version: %w", err)
 	}
 
-	// Parse version from talosctl output
-	versionRegex := regexp.MustCompile(`Kubernetes:\s+v?(\d+\.\d+\.\d+)`)
-	matches := versionRegex.FindStringSubmatch(string(output))
-	if len(matches) < 2 {
-		return "", fmt.Errorf("could not parse Kubernetes version from output: %s", string(output))
+	// Parse Kubernetes version from members JSON output
+	var members []map[string]interface{}
+	if err := json.Unmarshal(output, &members); err != nil {
+		return "", fmt.Errorf("failed to parse members JSON: %w", err)
 	}
 
-	return matches[1], nil
+	if len(members) == 0 {
+		return "", fmt.Errorf("no cluster members found")
+	}
+
+	// Look for kubernetes version in the first member
+	member := members[0]
+	if spec, ok := member["spec"].(map[string]interface{}); ok {
+		if k8sVersion, ok := spec["kubernetesVersion"].(string); ok {
+			// Clean the version (remove 'v' prefix if present)
+			cleanVersion := strings.TrimPrefix(k8sVersion, "v")
+			return cleanVersion, nil
+		}
+	}
+
+	return "", fmt.Errorf("could not find Kubernetes version in members output")
 }
 
 func (k *KubernetesUpgrader) isValidVersion(version string) bool {

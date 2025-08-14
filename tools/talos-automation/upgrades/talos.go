@@ -201,6 +201,11 @@ func (t *TalosUpgrader) isValidVersion(version string) bool {
 
 // Get current Talos version from cluster
 func (t *TalosUpgrader) getCurrentVersion(executeCommands bool) (string, error) {
+	return t.GetCurrentVersion(executeCommands)
+}
+
+// GetCurrentVersion - public method to get current Talos version
+func (t *TalosUpgrader) GetCurrentVersion(executeCommands bool) (string, error) {
 	log.Printf("getCurrentVersion called: executeCommands=%t, mockVersion=%s", executeCommands, t.mockCurrentVersion)
 	
 	if !executeCommands {
