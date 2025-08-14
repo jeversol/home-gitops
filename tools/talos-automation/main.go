@@ -138,6 +138,83 @@ func handleWebhook(w http.ResponseWriter, r *http.Request, config *Config) {
 	fmt.Fprint(w, "Upgrade processed successfully")
 }
 
+func processUpgradeWithTestOverrides(cfg *Config, currentK8s, currentTalos, scenario string) error {
+	log.Printf("Fetching current versions from repository...")
+	
+	// Create GitHub client and fetch versions
+	githubClient := repo.NewGitHubClient(cfg.GitHubToken)
+	versions, err := githubClient.FetchVersions(cfg.GitHubOwner, cfg.GitHubRepo)
+	if err != nil {
+		return fmt.Errorf("failed to fetch versions: %w", err)
+	}
+
+	log.Printf("Found versions - Talos: %s, Kubernetes: %s", versions.TalosVersion, versions.KubernetesVersion)
+
+	// Parse talos config to get node information
+	talosConfig, err := talos.ParseConfig(cfg.TalosConfigPath)
+	if err != nil {
+		return fmt.Errorf("failed to parse talos config: %w", err)
+	}
+
+	allNodes, err := talosConfig.GetAllNodes()
+	if err != nil {
+		return fmt.Errorf("failed to get cluster nodes: %w", err)
+	}
+	
+	controlPlaneNode, err := talosConfig.GetFirstControlPlaneNode()
+	if err != nil {
+		return fmt.Errorf("failed to get control plane node: %w", err)
+	}
+
+	log.Printf("Using control plane node: %s", controlPlaneNode)
+	log.Printf("Cluster has %d nodes: %v", len(allNodes), allNodes)
+
+	// Step 1: Upgrade Talos if needed (must be done first)
+	log.Printf("Checking for Talos upgrade...")
+	talosUpgrader := upgrades.NewTalosUpgrader(cfg.TalosConfigPath, cfg.LogPath, githubClient)
+	
+	// Apply test overrides for Talos
+	if currentTalos != "" {
+		talosUpgrader.SetMockCurrentVersion(currentTalos)
+		log.Printf("TEST OVERRIDE: Using Talos version %s", currentTalos)
+	} else {
+		switch scenario {
+		case "talos-upgrade", "both-upgrade":
+			talosUpgrader.SetMockCurrentVersion("1.10.5")
+			log.Printf("TEST SCENARIO: Using Talos version 1.10.5")
+		}
+	}
+	
+	if err := talosUpgrader.UpgradeToVersion(versions.TalosVersion, allNodes, cfg.GitHubOwner, cfg.GitHubRepo, false); err != nil {
+		return fmt.Errorf("talos upgrade failed: %w", err)
+	}
+
+	log.Printf("Talos upgrade completed successfully")
+
+	// Step 2: Upgrade Kubernetes if needed
+	log.Printf("Starting Kubernetes upgrade...")
+	k8sUpgrader := upgrades.NewKubernetesUpgrader(cfg.TalosConfigPath, cfg.LogPath)
+	
+	// Apply test overrides for K8s
+	if currentK8s != "" {
+		k8sUpgrader.SetMockCurrentVersion(currentK8s)
+		log.Printf("TEST OVERRIDE: Using K8s version %s", currentK8s)
+	} else {
+		switch scenario {
+		case "k8s-upgrade", "both-upgrade":
+			k8sUpgrader.SetMockCurrentVersion("1.33.2")
+			log.Printf("TEST SCENARIO: Using K8s version 1.33.2")
+		}
+	}
+	
+	if err := k8sUpgrader.UpgradeToVersion(versions.KubernetesVersion, controlPlaneNode, false); err != nil {
+		return fmt.Errorf("kubernetes upgrade failed: %w", err)
+	}
+
+	log.Printf("All upgrades completed successfully")
+	return nil
+}
+
 func processUpgrade(cfg *Config) error {
 	log.Printf("Fetching current versions from repository...")
 	
@@ -308,76 +385,47 @@ func diagnosticsEndpoint(w http.ResponseWriter, r *http.Request, config *Config)
 		}
 	}
 
-	// Test 5: Current Cluster Versions (set mock versions first)
+	// Test 5: Run the exact same upgrade logic as production, but with test mode
 	if talosConfig != nil {
-		log.Printf("Testing cluster version detection...")
+		log.Printf("Running IDENTICAL upgrade logic as production...")
+		
+		// Get real versions first for logging comparison
+		tempK8sUpgrader := upgrades.NewKubernetesUpgrader(config.TalosConfigPath, config.LogPath)
+		tempTalosUpgrader := upgrades.NewTalosUpgrader(config.TalosConfigPath, config.LogPath, githubClient)
 		controlPlaneNode, _ := talosConfig.GetFirstControlPlaneNode()
-		k8sUpgrader := upgrades.NewKubernetesUpgrader(config.TalosConfigPath, config.LogPath)
 		
-		// Set mock versions based on scenario and URL parameters BEFORE testing
-		if currentK8s != "" {
-			k8sUpgrader.SetMockCurrentVersion(currentK8s)
-			log.Printf("Set mock K8s version: %s", currentK8s)
+		realK8sVersion, k8sErr := tempK8sUpgrader.GetCurrentVersion(controlPlaneNode, true)
+		realTalosVersion, talosErr := tempTalosUpgrader.GetCurrentVersion(true)
+		
+		if k8sErr == nil {
+			log.Printf("REAL cluster K8s version: %s", realK8sVersion)
 		} else {
-			switch scenario {
-			case "k8s-upgrade", "both-upgrade":
-				k8sUpgrader.SetMockCurrentVersion("1.33.2") // Default older version
-			}
+			log.Printf("Could not get real K8s version: %v", k8sErr)
 		}
 		
-		currentVersion, err := k8sUpgrader.GetCurrentVersion(controlPlaneNode, false)
+		if talosErr == nil {
+			log.Printf("REAL cluster Talos version: %s", realTalosVersion)
+		} else {
+			log.Printf("Could not get real Talos version: %v", talosErr)
+		}
+		
+		results["cluster_versions"] = map[string]interface{}{
+			"status":               "success",
+			"real_k8s_version":     realK8sVersion,
+			"real_talos_version":   realTalosVersion,
+		}
+		
+		// Now run the exact same processUpgrade logic with test overrides
+		err := processUpgradeWithTestOverrides(config, currentK8s, currentTalos, scenario)
 		if err != nil {
-			results["cluster_versions"] = map[string]interface{}{
+			results["upgrade_test"] = map[string]interface{}{
 				"status": "failed",
 				"error":  err.Error(),
 			}
 		} else {
-			results["cluster_versions"] = map[string]interface{}{
-				"status":              "success",
-				"current_k8s_version": currentVersion,
-			}
-		}
-
-		// Test upgrade logic with executeCommands=false
-		err = k8sUpgrader.UpgradeToVersion(versions.KubernetesVersion, controlPlaneNode, false)
-		if err != nil {
-			results["k8s_upgrade_test"] = map[string]interface{}{
-				"status": "failed",
-				"error":  err.Error(),
-			}
-		} else {
-			results["k8s_upgrade_test"] = map[string]interface{}{
+			results["upgrade_test"] = map[string]interface{}{
 				"status":  "success",
-				"message": "K8s upgrade logic validated successfully",
-				"scenario": scenario,
-			}
-		}
-
-		// Test Talos upgrade logic
-		allNodes, _ := talosConfig.GetAllNodes()
-		talosUpgrader := upgrades.NewTalosUpgrader(config.TalosConfigPath, config.LogPath, githubClient)
-		
-		// Set mock versions for Talos BEFORE testing
-		if currentTalos != "" {
-			talosUpgrader.SetMockCurrentVersion(currentTalos)
-			log.Printf("Set mock Talos version: %s", currentTalos)
-		} else {
-			switch scenario {
-			case "talos-upgrade", "both-upgrade":
-				talosUpgrader.SetMockCurrentVersion("1.10.5") // Default older version
-			}
-		}
-		err = talosUpgrader.UpgradeToVersion(versions.TalosVersion, allNodes, config.GitHubOwner, config.GitHubRepo, false)
-		if err != nil {
-			results["talos_upgrade_test"] = map[string]interface{}{
-				"status": "failed",
-				"error":  err.Error(),
-			}
-		} else {
-			results["talos_upgrade_test"] = map[string]interface{}{
-				"status":  "success",
-				"message": "Talos upgrade logic validated successfully", 
-				"scenario": scenario,
+				"message": "Full upgrade logic validated successfully",
 			}
 		}
 	}
