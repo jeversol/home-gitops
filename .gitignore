@@ -29,3 +29,8 @@ CLAUDE.md
 # Ignore mixins generated files
 tools/grafana-mixins/vendor
 tools/grafana-mixins/out
+
+# Ignore talos automation secrets and build artifacts
+tools/talos-automation/.env
+tools/talos-automation/talosconfig
+tools/talos-automation/talos-automation.tar
