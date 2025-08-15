@@ -71,6 +71,16 @@
       pinDigests: true,
       separateMinorPatch: true,
     },
+    {
+      // Home-operations Plex - auto-merge patch/minor updates at 5am
+      matchPackageNames: ['ghcr.io/home-operations/plex'],
+      pinDigests: true,
+      matchUpdateTypes: ['patch', 'minor', 'digest'],
+      automerge: true,
+      automergeType: 'pr',
+      schedule: ['* 5 * * *'],
+      assignees: [],
+    },
   ],
   customManagers: [
     {

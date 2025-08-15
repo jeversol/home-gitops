@@ -21,26 +21,22 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: k8s-node1
       securityContext:
+        runAsUser: 1029
+        runAsGroup: 65537
         fsGroup: 65537
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: plex
-          image: lscr.io/linuxserver/plex:1.41.9.9961-46083195d-ls274
+          image: ghcr.io/home-operations/plex:rolling@sha256:04563be281364ba2462285aacb2ca13d7ef7e1d0b19e1203f4c19b4a56840c5c
           imagePullPolicy: Always
           ports:
             - containerPort: 32400
               name: http
               protocol: TCP
           env:
-            - name: PUID
-              value: "1029"
-            - name: PGID
-              value: "65537"
             - name: TZ
               value: "America/New_York"
-            - name: VERSION
-              value: "docker"
           volumeMounts:
             - name: config
               mountPath: /config
