@@ -72,8 +72,13 @@
       separateMinorPatch: true,
     },
     {
-      // Home-operations Plex - auto-merge patch/minor updates at 5am
-      matchPackageNames: ['ghcr.io/home-operations/plex'],
+      // Home-operations containers - auto-merge patch/minor updates at 5am
+      matchPackageNames: [
+        'ghcr.io/home-operations/plex',
+        'ghcr.io/home-operations/sonarr',
+        'ghcr.io/home-operations/radarr',
+        'ghcr.io/home-operations/prowlarr'
+      ],
       pinDigests: true,
       matchUpdateTypes: ['patch', 'minor', 'digest'],
       automerge: true,

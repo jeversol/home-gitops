@@ -19,22 +19,20 @@ spec:
     spec:
       automountServiceAccountToken: false
       securityContext:
+        runAsUser: 1029
+        runAsGroup: 65537
         fsGroup: 65537
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: prowlarr
-          image: lscr.io/linuxserver/prowlarr:1.37.0.5076-ls123
+          image: ghcr.io/home-operations/prowlarr:rolling@sha256:fe167e4a211dac7c049b125d7c5efefaa039e41e57083d17f3e87ffda1966dd0
           imagePullPolicy: Always
           ports:
             - containerPort: 9696
               name: http
               protocol: TCP
           env:
-            - name: PUID
-              value: "1029"
-            - name: PGID
-              value: "65537"
             - name: TZ
               value: "America/New_York"
           volumeMounts:
