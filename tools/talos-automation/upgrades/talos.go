@@ -206,20 +206,13 @@ func (t *TalosUpgrader) getCurrentVersion(executeCommands bool) (string, error) 
 
 // GetCurrentVersion - public method to get current Talos version
 func (t *TalosUpgrader) GetCurrentVersion(executeCommands bool) (string, error) {
-	log.Printf("getCurrentVersion called: executeCommands=%t, mockVersion=%s", executeCommands, t.mockCurrentVersion)
-	
-	if !executeCommands {
-		// Return mock version for testing - can be overridden by SetMockCurrentVersion
-		if t.mockCurrentVersion != "" {
-			log.Printf("Returning mock current Talos version: %s", t.mockCurrentVersion)
-			return t.mockCurrentVersion, nil
-		}
-		log.Printf("Returning default mock current Talos version: 1.10.6")
-		return "1.10.6", nil
-	}
-	
-	log.Printf("PRODUCTION MODE: Getting actual current Talos version from cluster")
+    log.Printf("getCurrentVersion called: executeCommands=%t, mockVersion=%s", executeCommands, t.mockCurrentVersion)
+    
+    log.Printf("Getting Talos version from cluster")
 
+    // ALWAYS fetch real version from cluster APIs regardless of executeCommands
+    // This ensures diagnostics and production workflows are identical until command execution
+    
 	cmd := exec.Command("talosctl", "--talosconfig", t.TalosConfigPath, "version", "--short")
 
 	output, err := cmd.Output()
@@ -234,7 +227,16 @@ func (t *TalosUpgrader) GetCurrentVersion(executeCommands bool) (string, error) 
 		return "", fmt.Errorf("could not parse Talos version from output: %s", string(output))
 	}
 
-	return matches[1], nil
+    realVersion := matches[1]
+    log.Printf("Real Talos version detected: %s", realVersion)
+    
+    // Apply test override if provided (for diagnostics testing)
+    if !executeCommands && t.mockCurrentVersion != "" {
+        log.Printf("DIAGNOSTICS: Overriding real version %s with test version %s", realVersion, t.mockCurrentVersion)
+        return t.mockCurrentVersion, nil
+    }
+    
+	return realVersion, nil
 }
 
 func (t *TalosUpgrader) SetMockCurrentVersion(version string) {

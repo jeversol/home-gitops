@@ -398,13 +398,13 @@ func diagnosticsEndpoint(w http.ResponseWriter, r *http.Request, config *Config)
 		realTalosVersion, talosErr := tempTalosUpgrader.GetCurrentVersion(true)
 		
 		if k8sErr == nil {
-			log.Printf("REAL cluster K8s version: %s", realK8sVersion)
+			log.Printf("Detected K8s version: %s", realK8sVersion)
 		} else {
 			log.Printf("Could not get real K8s version: %v", k8sErr)
 		}
 		
 		if talosErr == nil {
-			log.Printf("REAL cluster Talos version: %s", realTalosVersion)
+			log.Printf("Detected Talos version: %s", realTalosVersion)
 		} else {
 			log.Printf("Could not get real Talos version: %v", talosErr)
 		}
@@ -413,6 +413,14 @@ func diagnosticsEndpoint(w http.ResponseWriter, r *http.Request, config *Config)
 			"status":               "success",
 			"real_k8s_version":     realK8sVersion,
 			"real_talos_version":   realTalosVersion,
+		}
+		
+		// Make overrides explicit in logs if provided
+		if currentK8s != "" && realK8sVersion != "" && currentK8s != realK8sVersion {
+			log.Printf("Detected K8s version %s, overriding with %s from diagnostics call", realK8sVersion, currentK8s)
+		}
+		if currentTalos != "" && realTalosVersion != "" && currentTalos != realTalosVersion {
+			log.Printf("Detected Talos version %s, overriding with %s from diagnostics call", realTalosVersion, currentTalos)
 		}
 		
 		// Now run the exact same processUpgrade logic with test overrides
