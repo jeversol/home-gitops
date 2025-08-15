@@ -1,14 +1,21 @@
 package upgrades
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
-	"os"
-	"os/exec"
-	"regexp"
-	"strings"
-	"time"
+    "context"
+    "crypto/tls"
+    "crypto/x509"
+    "encoding/base64"
+    "encoding/json"
+    "fmt"
+    "log"
+    "net/http"
+    "os"
+    "os/exec"
+    "regexp"
+    "strings"
+    "time"
+
+    "gopkg.in/yaml.v3"
 )
 
 type KubernetesUpgrader struct {
@@ -142,48 +149,41 @@ func (k *KubernetesUpgrader) runUpgradeCommand(version, node string, dryRun, exe
 }
 
 func (k *KubernetesUpgrader) GetCurrentVersion(node string, executeCommands bool) (string, error) {
-	log.Printf("GetCurrentVersion called: node=%s, executeCommands=%t, mockVersion=%s", node, executeCommands, k.mockCurrentVersion)
-	
-	if !executeCommands {
-		// In diagnostics mode, check for mock version override first
-		if k.mockCurrentVersion != "" {
-			log.Printf("DIAGNOSTICS MODE: Using test override K8s version: %s", k.mockCurrentVersion)
-			return k.mockCurrentVersion, nil
-		}
-		log.Printf("DIAGNOSTICS MODE: Using default mock K8s version: 1.33.3")
-		return "1.33.3", nil
-	}
-	
-	log.Printf("PRODUCTION MODE: Getting actual current version from cluster")
+    log.Printf("GetCurrentVersion called: node=%s, executeCommands=%t, mockVersion=%s", node, executeCommands, k.mockCurrentVersion)
 
-	cmd := exec.Command("talosctl", "--talosconfig", k.TalosConfigPath, "get", "members", "-o", "json", "-n", node)
+    log.Printf("Getting Kubernetes version via kube-apiserver /version")
 
-	output, err := cmd.Output()
-	if err != nil {
-		return "", fmt.Errorf("failed to get current version: %w", err)
-	}
+    // ALWAYS fetch real version from cluster APIs regardless of executeCommands
+    // This ensures diagnostics and production workflows are identical until command execution
+    
+    // Fetch kubeconfig from the control plane node
+    kubeconfig, err := k.fetchKubeconfig(node)
+    if err != nil {
+        return "", fmt.Errorf("failed to fetch kubeconfig: %w", err)
+    }
 
-	// Parse Kubernetes version from members JSON output
-	var members []map[string]interface{}
-	if err := json.Unmarshal(output, &members); err != nil {
-		return "", fmt.Errorf("failed to parse members JSON: %w", err)
-	}
+    // Extract server + credentials
+    server, ca, cert, key, token, err := parseKubeconfigForCreds(kubeconfig)
+    if err != nil {
+        return "", fmt.Errorf("failed to parse kubeconfig: %w", err)
+    }
 
-	if len(members) == 0 {
-		return "", fmt.Errorf("no cluster members found")
-	}
+    // Build HTTP client with TLS using provided creds
+    realVersion, err := getAPIServerVersion(server, ca, cert, key, token)
+    if err != nil {
+        return "", err
+    }
 
-	// Look for kubernetes version in the first member
-	member := members[0]
-	if spec, ok := member["spec"].(map[string]interface{}); ok {
-		if k8sVersion, ok := spec["kubernetesVersion"].(string); ok {
-			// Clean the version (remove 'v' prefix if present)
-			cleanVersion := strings.TrimPrefix(k8sVersion, "v")
-			return cleanVersion, nil
-		}
-	}
-
-	return "", fmt.Errorf("could not find Kubernetes version in members output")
+    cleanRealVersion := strings.TrimPrefix(realVersion, "v")
+    log.Printf("Real K8s version detected: %s", cleanRealVersion)
+    
+    // Apply test override if provided (for diagnostics testing)
+    if !executeCommands && k.mockCurrentVersion != "" {
+        log.Printf("DIAGNOSTICS: Overriding real version %s with test version %s", cleanRealVersion, k.mockCurrentVersion)
+        return k.mockCurrentVersion, nil
+    }
+    
+    return cleanRealVersion, nil
 }
 
 func (k *KubernetesUpgrader) isValidVersion(version string) bool {
@@ -198,7 +198,200 @@ func (k *KubernetesUpgrader) isDowngrade(current, target string) bool {
 }
 
 func (k *KubernetesUpgrader) SetMockCurrentVersion(version string) {
-	log.Printf("SetMockCurrentVersion called: setting mock version to %s", version)
-	k.mockCurrentVersion = version
-	log.Printf("Mock version now set to: %s", k.mockCurrentVersion)
+    log.Printf("SetMockCurrentVersion called: setting mock version to %s", version)
+    k.mockCurrentVersion = version
+    log.Printf("Mock version now set to: %s", k.mockCurrentVersion)
+}
+
+// fetchKubeconfig obtains the admin kubeconfig from a node
+func (k *KubernetesUpgrader) fetchKubeconfig(node string) ([]byte, error) {
+    log.Printf("Fetching kubeconfig from control-plane node: %s", node)
+    // Write kubeconfig to a temporary file, then read it back.
+    tmpFile, err := os.CreateTemp("", "talos-kubeconfig-*.yaml")
+    if err != nil {
+        return nil, fmt.Errorf("failed to create temp kubeconfig file: %w", err)
+    }
+    tmpPath := tmpFile.Name()
+    tmpFile.Close()
+    defer os.Remove(tmpPath)
+
+    // Use positional local-path, and disable merge so we get a standalone file
+    args := []string{"--talosconfig", k.TalosConfigPath, "kubeconfig", "--merge=false", "-n", node, "--force", tmpPath}
+    log.Printf("Running: talosctl %s", strings.Join(args, " "))
+    cmd := exec.Command("talosctl", args...)
+    if out, err := cmd.CombinedOutput(); err != nil {
+        return nil, fmt.Errorf("talosctl kubeconfig failed: %v: %s", err, string(out))
+    }
+
+    data, err := os.ReadFile(tmpPath)
+    if err != nil {
+        return nil, fmt.Errorf("failed to read generated kubeconfig: %w", err)
+    }
+    return data, nil
+}
+
+// (removed K8S_API_ENDPOINT override; kubeconfig already contains the cluster endpoint)
+
+// Kubeconfig structures (minimal)
+type kubeConfig struct {
+    CurrentContext string         `yaml:"current-context"`
+    Clusters       []namedCluster `yaml:"clusters"`
+    Contexts       []namedContext `yaml:"contexts"`
+    Users          []namedUser    `yaml:"users"`
+}
+
+type namedCluster struct {
+    Name    string       `yaml:"name"`
+    Cluster clusterEntry `yaml:"cluster"`
+}
+
+type clusterEntry struct {
+    Server                   string `yaml:"server"`
+    CertificateAuthorityData string `yaml:"certificate-authority-data"`
+}
+
+type namedContext struct {
+    Name    string       `yaml:"name"`
+    Context contextEntry `yaml:"context"`
+}
+
+type contextEntry struct {
+    Cluster string `yaml:"cluster"`
+    User    string `yaml:"user"`
+}
+
+type namedUser struct {
+    Name string    `yaml:"name"`
+    User userEntry `yaml:"user"`
+}
+
+type userEntry struct {
+    ClientCertificateData string `yaml:"client-certificate-data"`
+    ClientKeyData         string `yaml:"client-key-data"`
+    Token                 string `yaml:"token"`
+}
+
+// parseKubeconfigForCreds extracts server URL and credentials
+func parseKubeconfigForCreds(data []byte) (server string, ca, cert, key []byte, token string, err error) {
+    var kc kubeConfig
+    if err = yaml.Unmarshal(data, &kc); err != nil {
+        return
+    }
+    var ctx contextEntry
+    for _, c := range kc.Contexts {
+        if c.Name == kc.CurrentContext {
+            ctx = c.Context
+            break
+        }
+    }
+    if ctx.Cluster == "" || ctx.User == "" {
+        err = fmt.Errorf("current context not found or incomplete")
+        return
+    }
+    var cl clusterEntry
+    for _, c := range kc.Clusters {
+        if c.Name == ctx.Cluster {
+            cl = c.Cluster
+            break
+        }
+    }
+    if cl.Server == "" || cl.CertificateAuthorityData == "" {
+        err = fmt.Errorf("cluster entry missing server/CA")
+        return
+    }
+    var usr userEntry
+    for _, u := range kc.Users {
+        if u.Name == ctx.User {
+            usr = u.User
+            break
+        }
+    }
+    // Decode CA and optional client cert/key
+    ca, err = base64.StdEncoding.DecodeString(cl.CertificateAuthorityData)
+    if err != nil {
+        err = fmt.Errorf("failed to decode CA: %w", err)
+        return
+    }
+    if usr.ClientCertificateData != "" && usr.ClientKeyData != "" {
+        cert, err = base64.StdEncoding.DecodeString(usr.ClientCertificateData)
+        if err != nil {
+            err = fmt.Errorf("failed to decode client cert: %w", err)
+            return
+        }
+        key, err = base64.StdEncoding.DecodeString(usr.ClientKeyData)
+        if err != nil {
+            err = fmt.Errorf("failed to decode client key: %w", err)
+            return
+        }
+    } else if usr.Token != "" {
+        token = usr.Token
+    } else {
+        err = fmt.Errorf("no usable credentials in kubeconfig user entry")
+        return
+    }
+    server = strings.TrimRight(cl.Server, "/")
+    return
+}
+
+// getAPIServerVersion hits the /version endpoint and returns gitVersion
+func getAPIServerVersion(server string, ca, cert, key []byte, token string) (string, error) {
+    // Root CA pool
+    roots := x509.NewCertPool()
+    if ok := roots.AppendCertsFromPEM(ca); !ok {
+        return "", fmt.Errorf("failed to parse CA cert")
+    }
+    tlsCfg := &tls.Config{RootCAs: roots, MinVersion: tls.VersionTLS12}
+    if len(cert) > 0 && len(key) > 0 {
+        pair, err := tls.X509KeyPair(cert, key)
+        if err != nil {
+            return "", fmt.Errorf("invalid client cert/key: %w", err)
+        }
+        tlsCfg.Certificates = []tls.Certificate{pair}
+    }
+    tr := &http.Transport{TLSClientConfig: tlsCfg}
+    client := &http.Client{Transport: tr, Timeout: 10 * time.Second}
+
+    const maxRetries = 3
+    const retryDelay = 5 * time.Second
+
+    var lastErr error
+    for attempt := 1; attempt <= maxRetries; attempt++ {
+        req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, server+"/version", nil)
+        if err != nil {
+            return "", fmt.Errorf("failed to create request: %w", err)
+        }
+        req.Header.Set("Accept", "application/json")
+        if token != "" && len(cert) == 0 {
+            req.Header.Set("Authorization", "Bearer "+token)
+        }
+
+        resp, err := client.Do(req)
+        if err != nil {
+            lastErr = fmt.Errorf("attempt %d/%d: failed to call /version: %w", attempt, maxRetries, err)
+        } else {
+            defer resp.Body.Close()
+            if resp.StatusCode != http.StatusOK {
+                lastErr = fmt.Errorf("attempt %d/%d: /version returned %d", attempt, maxRetries, resp.StatusCode)
+            } else {
+                var ver struct{ GitVersion string `json:"gitVersion"` }
+                if err := json.NewDecoder(resp.Body).Decode(&ver); err != nil {
+                    lastErr = fmt.Errorf("attempt %d/%d: failed to decode /version: %w", attempt, maxRetries, err)
+                } else if ver.GitVersion == "" {
+                    lastErr = fmt.Errorf("attempt %d/%d: gitVersion missing in /version response", attempt, maxRetries)
+                } else {
+                    return ver.GitVersion, nil
+                }
+            }
+        }
+
+        log.Printf("K8s /version query failed: %v", lastErr)
+        if attempt < maxRetries {
+            log.Printf("Retrying in %s...", retryDelay)
+            time.Sleep(retryDelay)
+        }
+    }
+    if lastErr == nil {
+        lastErr = fmt.Errorf("unknown error while querying /version")
+    }
+    return "", lastErr
 }
