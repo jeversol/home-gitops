@@ -19,22 +19,20 @@ spec:
     spec:
       automountServiceAccountToken: false
       securityContext:
+        runAsUser: 1029
+        runAsGroup: 65537
         fsGroup: 65537
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: radarr
-          image: lscr.io/linuxserver/radarr:5.26.2.10099-ls279
+          image: ghcr.io/home-operations/radarr:rolling@sha256:1bf822eaf3d944dc994656c3a712a89df0d88f5f46731af4fccc90c5e0333167
           imagePullPolicy: Always
           ports:
             - containerPort: 7878
               name: http
               protocol: TCP
           env:
-            - name: PUID
-              value: "1029"
-            - name: PGID
-              value: "65537"
             - name: TZ
               value: "America/New_York"
           volumeMounts:
