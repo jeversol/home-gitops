@@ -2,7 +2,7 @@ apiVersion: upgrade.cattle.io/v1
 kind: Plan
 metadata:
   name: talos-controlplane
-  namespace: cattle-system
+  namespace: system-upgrade
   labels:
     upgrade-type: talos
 spec:
@@ -46,7 +46,7 @@ apiVersion: upgrade.cattle.io/v1
 kind: Plan
 metadata:
   name: talos-workers
-  namespace: cattle-system
+  namespace: system-upgrade
   labels:
     upgrade-type: talos
 spec:
@@ -86,7 +86,7 @@ apiVersion: upgrade.cattle.io/v1
 kind: Plan
 metadata:
   name: kubernetes
-  namespace: cattle-system
+  namespace: system-upgrade
   labels:
     upgrade-type: kubernetes
 spec:
