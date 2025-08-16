@@ -1,3 +1,5 @@
+# This tool has (already) been deprecated in favor of system-upgrade-controller
+
 # Talos Automation Deployment
 
 This directory contains everything needed to deploy the talos-automation webhook service.
