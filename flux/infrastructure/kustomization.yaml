@@ -23,4 +23,3 @@ resources:
   - flux-webhook.yaml
   - cloudflared.yaml
   - system-upgrade-controller.yaml
-  - system-upgrade-controller-plans.yaml
