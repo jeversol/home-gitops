@@ -1,0 +1,34 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: rancher-charts
+  namespace: flux-system
+spec:
+  interval: 24h
+  url: https://charts.rancher.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: system-upgrade-controller
+  namespace: flux-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: system-upgrade-controller
+      version: 107.0.0
+      sourceRef:
+        kind: HelmRepository
+        name: rancher-charts
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  targetNamespace: cattle-system
+  createNamespace: true
+  values: {}

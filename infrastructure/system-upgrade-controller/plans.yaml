@@ -1,0 +1,126 @@
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: talos-controlplane
+  namespace: cattle-system
+  labels:
+    upgrade-type: talos
+spec:
+  concurrency: 1
+  exclusive: false
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+  serviceAccountName: system-upgrade-controller
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  upgrade:
+    # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
+    image: ghcr.io/siderolabs/talosctl:v1.10.6
+    command: ["talosctl"]
+    args: 
+      - "upgrade"
+      - "--nodes"
+      - "$(SYSTEM_UPGRADE_NODE_NAME)"
+      - "--image"
+      - "factory.talos.dev/metal-installer-secureboot/a909707b6aa53d929ffcb43779e31dd21474d7fdff203b77803e17ea910277d3:v1.10.6"
+      - "--preserve"
+    env:
+      - name: TALOSCONFIG
+        value: "/etc/talos/talosconfig"
+    securityContext:
+      privileged: true
+    volumes:
+      - name: talos-config
+        secret:
+          secretName: talos-config
+    volumeMounts:
+      - name: talos-config
+        mountPath: /etc/talos
+        readOnly: true
+---
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: talos-workers
+  namespace: cattle-system
+  labels:
+    upgrade-type: talos
+spec:
+  concurrency: 1
+  exclusive: false
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: DoesNotExist
+  serviceAccountName: system-upgrade-controller
+  upgrade:
+    # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
+    image: ghcr.io/siderolabs/talosctl:v1.10.6
+    command: ["talosctl"]
+    args:
+      - "upgrade"
+      - "--nodes"
+      - "$(SYSTEM_UPGRADE_NODE_NAME)"
+      - "--image"
+      - "factory.talos.dev/metal-installer-secureboot/a909707b6aa53d929ffcb43779e31dd21474d7fdff203b77803e17ea910277d3:v1.10.6"
+      - "--preserve"
+    env:
+      - name: TALOSCONFIG
+        value: "/etc/talos/talosconfig"
+    securityContext:
+      privileged: true
+    volumes:
+      - name: talos-config
+        secret:
+          secretName: talos-config
+    volumeMounts:
+      - name: talos-config
+        mountPath: /etc/talos
+        readOnly: true
+---
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: kubernetes
+  namespace: cattle-system
+  labels:
+    upgrade-type: kubernetes
+spec:
+  concurrency: 1
+  exclusive: false
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+  serviceAccountName: system-upgrade-controller
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  upgrade:
+    # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
+    image: ghcr.io/siderolabs/talosctl:v1.10.6
+    command: ["talosctl"]
+    args:
+      - "upgrade-k8s"
+      - "--nodes"
+      - "$(SYSTEM_UPGRADE_NODE_NAME)"
+      - "--to"
+      - "v1.33.4"
+    env:
+      - name: TALOSCONFIG
+        value: "/etc/talos/talosconfig"
+    securityContext:
+      privileged: true
+    volumes:
+      - name: talos-config
+        secret:
+          secretName: talos-config
+    volumeMounts:
+      - name: talos-config
+        mountPath: /etc/talos
+        readOnly: true
