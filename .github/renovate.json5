@@ -122,5 +122,33 @@
       ],
       versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
     },
+    {
+      // System Upgrade Controller Plans - Talos versions in upgrade commands
+      customType: 'regex',
+      managerFilePatterns: [
+        'infrastructure/system-upgrade-controller/upgrade-plans.yaml',
+      ],
+      matchStrings: [
+        'talosctl:v(?<currentValue>\\d+\\.\\d+\\.\\d+)',
+        'factory\\.talos\\.dev/installer/[^:]+:v(?<currentValue>\\d+\\.\\d+\\.\\d+)',
+        'upgrade.*--image.*factory\\.talos\\.dev/installer/[^:]+:v(?<currentValue>\\d+\\.\\d+\\.\\d+)'
+      ],
+      datasourceTemplate: 'github-releases',
+      depNameTemplate: 'siderolabs/talos',
+      versioningTemplate: 'semver',
+    },
+    {
+      // System Upgrade Controller Plans - Kubernetes versions in upgrade commands  
+      customType: 'regex',
+      managerFilePatterns: [
+        'infrastructure/system-upgrade-controller/upgrade-plans.yaml',
+      ],
+      matchStrings: [
+        '--to v(?<currentValue>\\d+\\.\\d+\\.\\d+)'
+      ],
+      datasourceTemplate: 'github-tags',
+      depNameTemplate: 'kubernetes/kubernetes', 
+      versioningTemplate: 'semver',
+    },
   ],
 }
