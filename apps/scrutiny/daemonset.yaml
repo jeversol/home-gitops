@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: scrutiny-collector
-  namespace: scrutiny
+  namespace: o11y
   labels:
     app: scrutiny-collector
 spec:
@@ -32,7 +32,7 @@ spec:
             runAsUser: 0
           env:
             - name: COLLECTOR_API_ENDPOINT
-              value: "http://scrutiny.scrutiny.svc.cluster.local:8080"
+              value: "http://scrutiny.o11y.svc.cluster.local:8080"
             - name: COLLECTOR_HOST_ID
               valueFrom:
                 fieldRef:

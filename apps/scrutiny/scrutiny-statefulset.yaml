@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: scrutiny
-  namespace: scrutiny
+  namespace: o11y
 spec:
   serviceName: scrutiny
   replicas: 1
@@ -27,7 +27,7 @@ spec:
               containerPort: 8080
           env:
             - name: SCRUTINY_WEB_INFLUXDB_HOST
-              value: "influxdb.scrutiny.svc.cluster.local"
+              value: "influxdb.o11y.svc.cluster.local"
             - name: SCRUTINY_WEB_INFLUXDB_PORT
               value: "8086"
             - name: SCRUTINY_WEB_INFLUXDB_TOKEN
