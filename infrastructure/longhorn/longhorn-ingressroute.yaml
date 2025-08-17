@@ -17,6 +17,6 @@ spec:
           port: 80
       middlewares:
         - name: traefik-forward-auth
-          namespace: auth
+          namespace: traefik
   tls:
     secretName: longhorn-tls

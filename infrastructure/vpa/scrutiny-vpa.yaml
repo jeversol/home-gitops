@@ -3,7 +3,7 @@ apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
   name: scrutiny-vpa
-  namespace: scrutiny
+  namespace: o11y
 spec:
   targetRef:
     apiVersion: apps/v1
@@ -16,7 +16,7 @@ apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
   name: scrutiny-influxdb-vpa
-  namespace: scrutiny
+  namespace: o11y
 spec:
   targetRef:
     apiVersion: apps/v1
@@ -29,7 +29,7 @@ apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
   name: scrutiny-collector-vpa
-  namespace: scrutiny
+  namespace: o11y
 spec:
   targetRef:
     apiVersion: apps/v1

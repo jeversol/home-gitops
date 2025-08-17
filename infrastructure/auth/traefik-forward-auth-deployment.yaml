@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: traefik-forward-auth
-  namespace: auth
+  namespace: traefik
 spec:
   replicas: 1
   revisionHistoryLimit: 3
