@@ -22,4 +22,5 @@ resources:
   - external-dns.yaml
   - flux-webhook.yaml
   - cloudflared.yaml
+  - system-upgrade-controller-crds.yaml
   - system-upgrade-controller.yaml

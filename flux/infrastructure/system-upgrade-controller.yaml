@@ -11,6 +11,14 @@ spec:
     kind: GitRepository
     name: flux-system
   wait: true
+  timeout: 10m
+  dependsOn:
+    - name: system-upgrade-controller-crds
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: system-upgrade-controller
+      namespace: system-upgrade
   decryption:
     provider: sops
     secretRef:
