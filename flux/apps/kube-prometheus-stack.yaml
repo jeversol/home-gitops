@@ -28,6 +28,13 @@ spec:
       prometheusSpec:
         retention: 15d
         enableRemoteWriteReceiver: true
+        thanos:
+          baseImage: quay.io/thanos/thanos
+          version: v0.39.2
+          objectStorageConfig:
+            existingSecret:
+              name: thanos-storage-config
+              key: thanos-storage-config.yaml
         storageSpec:
           volumeClaimTemplate:
             spec:
@@ -35,6 +42,8 @@ spec:
               resources:
                 requests:
                   storage: 20Gi
+      thanosService:
+        enabled: true
     grafana:
       persistence:
         enabled: true

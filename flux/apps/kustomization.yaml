@@ -3,8 +3,10 @@ kind: Kustomization
 resources:
   - helmrepo-grafana.yaml
   - helmrepo-prometheus-community.yaml
+  - helmrepo-stevehipwell.yaml
   - o11y.yaml
   - kube-prometheus-stack.yaml
+  - thanos.yaml
   - scrutiny.yaml
   - scrutiny-influxdb.yaml
   - helmrepo-influxdata.yaml
