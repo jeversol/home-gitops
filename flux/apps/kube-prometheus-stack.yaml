@@ -52,6 +52,18 @@ spec:
       defaultDashboardsEnabled: false
       envFromSecrets:
         - name: grafana-auth0-secret
+      additionalDataSources:
+        - name: Thanos
+          type: prometheus
+          url: http://thanos-query.o11y.svc.cluster.local:10902
+          access: proxy
+          isDefault: true
+          jsonData:
+            httpMethod: GET
+            timeInterval: 30s
+      sidecar:
+        datasources:
+          defaultDatasourceEnabled: false
       grafana.ini:
         server:
           root_url: https://grafana.i.recompiled.org
