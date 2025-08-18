@@ -72,7 +72,7 @@
       separateMinorPatch: true,
     },
     {
-      // Home-operations containers - auto-merge patch/minor updates at 5am
+      // Home-operations containers - auto-merge patch/minor updates between 5-8am
       matchPackageNames: [
         'ghcr.io/home-operations/plex',
         'ghcr.io/home-operations/sonarr',
@@ -83,7 +83,7 @@
       matchUpdateTypes: ['patch', 'minor', 'digest'],
       automerge: true,
       automergeType: 'pr',
-      schedule: ['* 5 * * *'],
+      automergeSchedule: ['* 5-8 * * *'],
       assignees: [],
     },
   ],
