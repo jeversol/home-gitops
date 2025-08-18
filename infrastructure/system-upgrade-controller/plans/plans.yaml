@@ -17,6 +17,9 @@ spec:
     - key: node-role.kubernetes.io/control-plane
       operator: Exists
       effect: NoSchedule
+  secrets:
+    - name: talos-config
+      path: /etc/talos
   upgrade:
     # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
     image: ghcr.io/siderolabs/talosctl:v1.10.6
@@ -33,14 +36,6 @@ spec:
         value: "/etc/talos/talosconfig"
     securityContext:
       privileged: true
-    volumes:
-      - name: talos-config
-        secret:
-          secretName: talos-config
-    volumeMounts:
-      - name: talos-config
-        mountPath: /etc/talos
-        readOnly: true
 ---
 apiVersion: upgrade.cattle.io/v1
 kind: Plan
@@ -57,6 +52,9 @@ spec:
       - key: node-role.kubernetes.io/control-plane
         operator: DoesNotExist
   serviceAccountName: system-upgrade-controller
+  secrets:
+    - name: talos-config
+      path: /etc/talos
   upgrade:
     # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
     image: ghcr.io/siderolabs/talosctl:v1.10.6
@@ -73,14 +71,6 @@ spec:
         value: "/etc/talos/talosconfig"
     securityContext:
       privileged: true
-    volumes:
-      - name: talos-config
-        secret:
-          secretName: talos-config
-    volumeMounts:
-      - name: talos-config
-        mountPath: /etc/talos
-        readOnly: true
 ---
 apiVersion: upgrade.cattle.io/v1
 kind: Plan
@@ -101,6 +91,9 @@ spec:
     - key: node-role.kubernetes.io/control-plane
       operator: Exists
       effect: NoSchedule
+  secrets:
+    - name: talos-config
+      path: /etc/talos
   upgrade:
     # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
     image: ghcr.io/siderolabs/talosctl:v1.10.6
@@ -116,11 +109,3 @@ spec:
         value: "/etc/talos/talosconfig"
     securityContext:
       privileged: true
-    volumes:
-      - name: talos-config
-        secret:
-          secretName: talos-config
-    volumeMounts:
-      - name: talos-config
-        mountPath: /etc/talos
-        readOnly: true
