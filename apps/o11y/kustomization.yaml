@@ -4,3 +4,4 @@ resources:
   - namespace.yaml
   - ingress/
   - grafana-auth0-secret.yaml
+  - thanos-storage-secret.yaml
