@@ -42,7 +42,7 @@ spec:
           cpu: 500m
           memory: 1Gi
       stores:
-        - dnssrv+_grpc._tcp.kube-prometheus-stack-thanos-discovery.o11y.svc.cluster.local:10901
+        - dnssrv+_grpc._tcp.prometheus-operated.o11y.svc.cluster.local
       
     # Enable Store Gateway for historical data from S3
     storeGateway:
