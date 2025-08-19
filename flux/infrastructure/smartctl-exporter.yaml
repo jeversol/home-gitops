@@ -1,0 +1,85 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: smartctl-exporter
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: smartctl-exporter
+  targetNamespace: o11y
+  chart:
+    spec:
+      chart: prometheus-smartctl-exporter
+      version: "0.15.4"  # renovate: datasource=helm depName=prometheus-smartctl-exporter registryUrl=https://prometheus-community.github.io/helm-charts
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+  install:
+    createNamespace: false
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    serviceMonitor:
+      enabled: true
+      interval: 60s
+      scrapeTimeout: 55s
+      labels:
+        release: kube-prometheus-stack
+    
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    
+    hostNetwork: true
+    hostPID: true
+    
+    extraVolumeMounts:
+      - name: dev
+        mountPath: /dev
+      - name: udev
+        mountPath: /run/udev
+        readOnly: true
+      - name: proc
+        mountPath: /host/proc
+        readOnly: true
+      - name: sys
+        mountPath: /host/sys
+        readOnly: true
+    
+    extraVolumes:
+      - name: dev
+        hostPath:
+          path: /dev
+      - name: udev
+        hostPath:
+          path: /run/udev
+      - name: proc
+        hostPath:
+          path: /proc
+      - name: sys
+        hostPath:
+          path: /sys
+    
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi
+    
+    tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
+    
+    nodeSelector:
+      kubernetes.io/os: linux
