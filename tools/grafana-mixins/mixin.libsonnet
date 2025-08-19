@@ -12,6 +12,7 @@ local rawMixins = kubernetes + node + {
     grafanaK8s+:: {
       dashboardTags: ['kubernetes', 'mixin'],
       dashboardNamePrefix: '',
+      grafanaTimezone: 'browser',
     },
   },
 };
