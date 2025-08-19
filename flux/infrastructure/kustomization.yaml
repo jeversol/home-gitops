@@ -24,3 +24,4 @@ resources:
   - cloudflared.yaml
   - system-upgrade-controller.yaml
   - system-upgrade-controller-plans.yaml
+  - smartctl-exporter.yaml
