@@ -26,7 +26,7 @@ ENV PYPI_KUBERNETES_VERSION="33.1.0"
 # renovate: datasource=pypi depName=PyJWT
 ENV PYPI_PYJWT_VERSION="2.10.1"
 # renovate: datasource=pypi depName=requests
-ENV PYPI_REQUESTS_VERSION="2.32.4"
+ENV PYPI_REQUESTS_VERSION="2.32.5"
 # renovate: datasource=pypi depName=s3cmd
 ENV PYPI_S3CMD_VERSION="2.4.0"
 
