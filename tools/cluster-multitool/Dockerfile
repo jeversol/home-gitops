@@ -60,7 +60,7 @@ ENV VIM_VERSION="9.1.1566-r0"
 # renovate: datasource=repology depName=alpine_3_22/git versioning=loose
 ENV GIT_VERSION="2.49.1-r0"
 # renovate: datasource=repology depName=alpine_3_22/bind-tools versioning=loose
-ENV BIND_TOOLS_VERSION="9.20.11-r0"
+ENV BIND_TOOLS_VERSION="9.20.12-r0"
 # renovate: datasource=repology depName=alpine_3_22/iputils versioning=loose
 ENV IPUTILS_VERSION="20240905-r0"
 # renovate: datasource=repology depName=alpine_3_22/netcat-openbsd versioning=loose
