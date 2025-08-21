@@ -8,6 +8,17 @@ This repo manages my home kubernetes cluster using Flux.
 | Node 2 | HP EliteDesk 800 G4 Mini | Intel Core i5-8500T | 16GB | 256GB SSD | 2.5Gbit |
 | Node 3 | HP ProDesk 600 G4 Mini | Intel Core i5-8500T | 16GB | 256GB SSD | 2.5Gbit |
 
+## About This Repository
+
+This serves as a learning environment for cloud-native technologies and GitOps practices. The focus is on implementing production-ready infrastructure patterns, security practices, and operational complexity using real-world workloads.
+
+The infrastructure implements:
+- Complete GitOps workflow with FluxCD
+- Production security practices (SOPS encryption, cert-manager, OAuth)
+- Comprehensive observability (Prometheus, Grafana, Alerting)
+- Storage orchestration (Longhorn, democratic-csi)
+- Advanced Kubernetes features (VPA, descheduler, node feature discovery)
+
 ## Deployed and Migrated Services:
 - Infrastructure
   - [FluxCD](https://fluxcd.io/) - GitOps continuous delivery
