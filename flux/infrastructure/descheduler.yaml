@@ -38,6 +38,12 @@ spec:
     # Run every 6 hours
     schedule: "0 */6 * * *"
     
+    # Use Prometheus for actual resource utilization
+    metricsProviders:
+      - source: Prometheus
+        prometheus:
+          url: http://kube-prometheus-stack-prometheus.o11y.svc.cluster.local:9090
+    
     # Descheduling strategies
     deschedulerPolicy:
       strategies:
@@ -48,12 +54,22 @@ spec:
             nodeResourceUtilizationThresholds:
               # Nodes below these thresholds are underutilized
               thresholds:
-                cpu: 20
-                memory: 20
+                cpu: 15
+                memory: 15
               # Nodes above these thresholds are overutilized  
               targetThresholds:
-                cpu: 70
-                memory: 70
+                cpu: 80
+                memory: 80
+        
+        # Consolidate pods when cluster utilization is low
+        HighNodeUtilization:
+          enabled: true
+          params:
+            nodeResourceUtilizationThresholds:
+              # Target utilization for consolidation
+              thresholds:
+                cpu: 50
+                memory: 50
         
         # Spread duplicate pods across nodes
         RemoveDuplicates:
