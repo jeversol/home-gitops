@@ -55,6 +55,8 @@ spec:
       envFromSecrets:
         - name: grafana-auth0-secret
       sidecar:
+        dashboards:
+          enabled: false
         datasources:
           enabled: false
       dashboardProviders:
