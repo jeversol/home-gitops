@@ -45,6 +45,8 @@ spec:
       thanosService:
         enabled: true
     grafana:
+      deploymentStrategy:
+        type: Recreate
       persistence:
         enabled: true
         size: 10Gi
