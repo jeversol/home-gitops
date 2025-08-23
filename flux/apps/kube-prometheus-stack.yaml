@@ -27,6 +27,7 @@ spec:
     crds:
       upgradeJob:
         enabled: true
+        forceConflicts: true
     prometheus:
       prometheusSpec:
         retention: 15d
