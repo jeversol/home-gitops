@@ -20,4 +20,4 @@ ignore: |
   .vscode/
   flux/flux-system/gotk-components.yaml
   infrastructure/metrics-server/metrics-server.yaml
-  infrastructure/cluster/*
+  tools/cluster/k8s-node?.yaml

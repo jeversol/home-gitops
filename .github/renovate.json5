@@ -39,11 +39,6 @@
       assignees: [],
     },
     {
-      // NEVER automerge Talos/Kubernetes version updates - these require manual intervention
-      matchFileNames: ['infrastructure/cluster/track-versions.yaml'],
-      automerge: false,
-    },
-    {
       // Auto-merge patch and minor updates for cluster-multitool Dockerfile dependencies
       matchFileNames: ['tools/cluster-multitool/Dockerfile'],
       matchUpdateTypes: ['patch', 'minor'],
@@ -86,32 +81,18 @@
       automergeSchedule: ['* 5-8 * * *'],
       assignees: [],
     },
+    {
+      // Group Kubernetes ecosystem updates into atomic PRs
+      groupName: 'Kubernetes ecosystem',
+      matchPackageNames: [
+        'kubernetes/kubernetes',
+        'siderolabs/talos'
+      ],
+      groupSlug: 'k8s-ecosystem',
+      additionalBranchPrefix: 'k8s-',
+    },
   ],
   customManagers: [
-    {
-      customType: 'regex',
-      managerFilePatterns: [
-        'infrastructure/cluster/track-versions.yaml',
-      ],
-      matchStrings: [
-        'talosVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)',
-      ],
-      datasourceTemplate: 'github-releases',
-      depNameTemplate: 'talos-systems/talos',
-      versioningTemplate: 'semver',
-    },
-    {
-      customType: 'regex',
-      managerFilePatterns: [
-        'infrastructure/cluster/track-versions.yaml',
-      ],
-      matchStrings: [
-        'kubernetesVersion:\\s+v?(?<currentValue>\\d+\\.\\d+\\.\\d+)',
-      ],
-      datasourceTemplate: 'github-tags',
-      depNameTemplate: 'kubernetes/kubernetes',
-      versioningTemplate: 'semver',
-    },
     {
       customType: 'regex', 
       managerFilePatterns: [
@@ -121,34 +102,6 @@
         '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=\"(?<currentValue>.*)\"\\s'
       ],
       versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
-    },
-    {
-      // System Upgrade Controller Plans - Talos versions in upgrade commands
-      customType: 'regex',
-      managerFilePatterns: [
-        'infrastructure/system-upgrade-controller/upgrade-plans.yaml',
-      ],
-      matchStrings: [
-        'talosctl:v(?<currentValue>\\d+\\.\\d+\\.\\d+)',
-        'factory\\.talos\\.dev/installer/[^:]+:v(?<currentValue>\\d+\\.\\d+\\.\\d+)',
-        'upgrade.*--image.*factory\\.talos\\.dev/installer/[^:]+:v(?<currentValue>\\d+\\.\\d+\\.\\d+)'
-      ],
-      datasourceTemplate: 'github-releases',
-      depNameTemplate: 'siderolabs/talos',
-      versioningTemplate: 'semver',
-    },
-    {
-      // System Upgrade Controller Plans - Kubernetes versions in upgrade commands  
-      customType: 'regex',
-      managerFilePatterns: [
-        'infrastructure/system-upgrade-controller/upgrade-plans.yaml',
-      ],
-      matchStrings: [
-        '--to v(?<currentValue>\\d+\\.\\d+\\.\\d+)'
-      ],
-      datasourceTemplate: 'github-tags',
-      depNameTemplate: 'kubernetes/kubernetes', 
-      versioningTemplate: 'semver',
     },
   ],
 }

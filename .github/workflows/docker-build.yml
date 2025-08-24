@@ -5,7 +5,6 @@ on:
     branches: [main]
     paths:
       - 'tools/cluster-multitool/Dockerfile'
-      - 'infrastructure/cluster/track-versions.yaml'
       - '.github/workflows/docker-build.yml'
 
 jobs:
@@ -29,11 +28,12 @@ jobs:
           username: jeversol
           password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
           
-      - name: Read versions from track-versions.yaml
+      - name: Extract versions from Dockerfile ARGs
         id: versions
         run: |
-          KUBERNETES_VERSION=$(yq '.kubernetesVersion' infrastructure/cluster/track-versions.yaml)
-          TALOS_VERSION=$(yq '.talosVersion' infrastructure/cluster/track-versions.yaml)
+          # Extract versions from Dockerfile ARG defaults
+          KUBERNETES_VERSION=$(grep "ARG KUBERNETES_VERSION=" tools/cluster-multitool/Dockerfile | cut -d'=' -f2)
+          TALOS_VERSION=$(grep "ARG TALOS_VERSION=" tools/cluster-multitool/Dockerfile | cut -d'=' -f2)
           echo "kubernetes_version=$KUBERNETES_VERSION" >> $GITHUB_OUTPUT
           echo "talos_version=$TALOS_VERSION" >> $GITHUB_OUTPUT
 
