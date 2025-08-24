@@ -3,8 +3,10 @@ FROM alpine:3.22.1 AS builder
 # Make a chance to commit and trigger the build
 
 # Build arguments for versions
-ARG KUBERNETES_VERSION
-ARG TALOS_VERSION
+# renovate: datasource=github-tags depName=kubernetes/kubernetes versioning=semver
+ARG KUBERNETES_VERSION=v1.33.4
+# renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
+ARG TALOS_VERSION=v1.10.6
 
 # Install Python and pip
 # renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
