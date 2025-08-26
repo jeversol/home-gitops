@@ -95,7 +95,7 @@ spec:
       path: /etc/talos
   upgrade:
     # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
-    image: ghcr.io/siderolabs/talosctl:v1.10.6
+    image: ghcr.io/siderolabs/talosctl:v1.10.7
     command: ["talosctl"]
     args:
       - "upgrade-k8s"
