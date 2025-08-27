@@ -81,16 +81,6 @@
       automergeSchedule: ['* 5-8 * * *'],
       assignees: [],
     },
-    {
-      // Group Kubernetes ecosystem updates into atomic PRs
-      groupName: 'Kubernetes ecosystem',
-      matchPackageNames: [
-        'kubernetes/kubernetes',
-        'siderolabs/talos'
-      ],
-      groupSlug: 'k8s-ecosystem',
-      additionalBranchPrefix: 'k8s-',
-    },
   ],
   customManagers: [
     {
@@ -102,6 +92,16 @@
         '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=\"(?<currentValue>.*)\"\\s'
       ],
       versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        'infrastructure/system-upgrade-controller/plans/plans.yaml'
+      ],
+      matchStrings: [
+        'version:\\s*(?<currentValue>\\S+)\\s*#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?'
+      ],
+      versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}'
     },
   ],
 }

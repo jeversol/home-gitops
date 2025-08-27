@@ -6,8 +6,7 @@ metadata:
   labels:
     upgrade-type: talos
 spec:
-  # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
-  version: v1.10.6
+  version: v1.10.6  # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
   concurrency: 1
   exclusive: false
   nodeSelector:
@@ -44,8 +43,7 @@ metadata:
   labels:
     upgrade-type: talos
 spec:
-  # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
-  version: v1.10.6
+  version: v1.10.6  # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
   concurrency: 1
   exclusive: false
   nodeSelector:
