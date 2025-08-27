@@ -68,7 +68,7 @@ ENV IPUTILS_VERSION="20240905-r0"
 # renovate: datasource=repology depName=alpine_3_22/netcat-openbsd versioning=loose
 ENV NETCAT_OPENBSD_VERSION="1.229.1-r0"
 # renovate: datasource=repology depName=alpine_3_22/mtr versioning=loose
-ENV MTR_VERSION="0.95-r2"
+ENV MTR_VERSION="0.96-r0"
 # renovate: datasource=repology depName=alpine_3_22/bash versioning=loose
 ENV BASH_VERSION="5.2.37-r0"
 
