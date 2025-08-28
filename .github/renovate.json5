@@ -27,7 +27,7 @@
       automerge: true,
       automergeType: 'pr',
       matchUpdateTypes: ['patch', 'minor'],
-      schedule: ['* 2 * * *'],
+      schedule: ['* 2 * * 1'],
       assignees: [],
     },
     {
