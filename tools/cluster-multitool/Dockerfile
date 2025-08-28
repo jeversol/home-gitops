@@ -1,14 +1,9 @@
 FROM alpine:3.22.1 AS builder
 
-# Make a chance to commit and trigger the build
-
-# Build arguments for versions
 # renovate: datasource=github-tags depName=kubernetes/kubernetes versioning=semver
-ARG KUBERNETES_VERSION=v1.33.4
+ENV KUBERNETES_VERSION="v1.33.4"
 # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
-ARG TALOS_VERSION=v1.10.6
-
-# Install Python and pip
+ENV TALOS_VERSION="v1.10.6"
 # renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
 ENV PYTHON3_VERSION="3.12.11-r0"
 # renovate: datasource=repology depName=alpine_3_22/py3-pip versioning=loose
@@ -22,7 +17,6 @@ RUN apk add --no-cache \
     python3-dev="${PYTHON3_VERSION}" \
     build-base="${BUILD_BASE_VERSION}"
 
-# Build Python dependencies in isolated environment
 # renovate: datasource=pypi depName=kubernetes
 ENV PYPI_KUBERNETES_VERSION="33.1.0"
 # renovate: datasource=pypi depName=PyJWT
@@ -40,11 +34,6 @@ RUN python3 -m pip install --no-cache-dir --prefix=/opt/deps \
 
 FROM alpine:3.22.1
 
-# Build arguments for versions (must be redeclared for second stage)
-ARG KUBERNETES_VERSION
-ARG TALOS_VERSION
-
-# Install system packages, Python runtime, and tools
 # renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
 ENV PYTHON3_VERSION="3.12.11-r0"
 # renovate: datasource=repology depName=alpine_3_22/curl versioning=loose
@@ -91,8 +80,9 @@ RUN apk add --no-cache \
 # Copy Python dependencies from builder
 COPY --from=builder /opt/deps /usr/local
 
-# Set Python path to include /usr/local packages
-ENV PYTHONPATH="/usr/local/lib/python3.12/site-packages"
+# Set Python path to include /usr/local packages dynamically
+RUN PYTHON_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')") \
+    && echo "export PYTHONPATH=/usr/local/lib/python${PYTHON_VERSION}/site-packages" >> /etc/environment
 
 # Install talosctl
 RUN wget -q https://github.com/siderolabs/talos/releases/download/${TALOS_VERSION}/talosctl-linux-amd64 -O /usr/local/bin/talosctl \
