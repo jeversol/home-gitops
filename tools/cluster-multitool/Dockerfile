@@ -1,9 +1,5 @@
 FROM alpine:3.22.1 AS builder
 
-# renovate: datasource=github-tags depName=kubernetes/kubernetes versioning=semver
-ENV KUBERNETES_VERSION="v1.33.4"
-# renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
-ENV TALOS_VERSION="v1.10.6"
 # renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
 ENV PYTHON3_VERSION="3.12.11-r0"
 # renovate: datasource=repology depName=alpine_3_22/py3-pip versioning=loose
@@ -33,6 +29,12 @@ RUN python3 -m pip install --no-cache-dir --prefix=/opt/deps \
     s3cmd=="${PYPI_S3CMD_VERSION}"
 
 FROM alpine:3.22.1
+
+# Build environment variables for versions
+# renovate: datasource=github-tags depName=kubernetes/kubernetes versioning=semver
+ENV KUBERNETES_VERSION="v1.33.4"
+# renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
+ENV TALOS_VERSION="v1.10.6"
 
 # renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
 ENV PYTHON3_VERSION="3.12.11-r0"
