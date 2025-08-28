@@ -81,6 +81,12 @@
       automergeSchedule: ['* 5-8 * * *'],
       assignees: [],
     },
+    {
+      // Group all cluster-multitool Dockerfile updates together
+      matchFileNames: ['tools/cluster-multitool/Dockerfile'],
+      groupName: 'cluster-multitool dependencies',
+      groupSlug: 'cluster-multitool-deps',
+    },
   ],
   customManagers: [
     {
