@@ -1,0 +1,22 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: homebridge-backup
+  namespace: homebridge
+spec:
+  sourcePVC: storage-homebridge-0
+  trigger:
+    schedule: "45 2 * * *"  # Daily at 2:45 AM
+  restic:
+    repository: volsync-restic-config
+    retain:
+      hourly: 24
+      daily: 30
+      weekly: 4
+      monthly: 12
+    copyMethod: Snapshot
+    pruneIntervalDays: 7
+    storageClassName: longhorn
+    accessModes:
+      - ReadWriteOnce
