@@ -17,4 +17,3 @@ resources:
   - system-deployments-vpa.yaml
   - cloudflare-tunnel-vpa.yaml
   - node-feature-discovery-vpa.yaml
-  - volsync-vpa.yaml
