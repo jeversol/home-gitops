@@ -12,3 +12,4 @@ resources:
   - helmrepo-influxdata.yaml
   - homebridge.yaml
   - media.yaml
+  - spoolman.yaml

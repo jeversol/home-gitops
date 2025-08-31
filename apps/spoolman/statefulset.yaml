@@ -35,6 +35,24 @@ spec:
           env:
             - name: TZ
               value: "America/New_York"
+            - name: SPOOLMAN_DB_TYPE
+              value: "postgres"
+            - name: SPOOLMAN_DB_HOST
+              value: "spoolman-postgres-rw"
+            - name: SPOOLMAN_DB_PORT
+              value: "5432"
+            - name: SPOOLMAN_DB_NAME
+              value: "spoolman"
+            - name: SPOOLMAN_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: spoolman-postgres-credentials
+                  key: username
+            - name: SPOOLMAN_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: spoolman-postgres-credentials
+                  key: password
           volumeMounts:
             - name: data
               mountPath: /data
