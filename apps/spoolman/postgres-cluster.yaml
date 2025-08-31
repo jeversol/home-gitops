@@ -6,20 +6,13 @@ metadata:
 spec:
   instances: 1
   
-  postgresql:
-    parameters:
-      max_connections: "200"
-      shared_buffers: "64MB"
-      effective_cache_size: "192MB"
-      
   storage:
     size: 2Gi
     storageClass: longhorn
     
   monitoring:
-    enabled: true
+    enablePodMonitor: true
     
-  # Bootstrap empty database
   bootstrap:
     initdb:
       database: spoolman
