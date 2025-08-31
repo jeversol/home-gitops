@@ -5,3 +5,4 @@ resources:
   - longhorn-ingressroute.yaml
   - longhorn-tls-cert.yaml
   - longhorn-backup-secret.yaml
+  - longhorn-volumesnapshotclass.yaml
