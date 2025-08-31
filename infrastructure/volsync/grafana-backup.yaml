@@ -1,0 +1,22 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: grafana-backup
+  namespace: o11y
+spec:
+  sourcePVC: kube-prometheus-stack-grafana
+  trigger:
+    schedule: "30 2 * * *"  # Daily at 2:30 AM
+  restic:
+    repository: volsync-restic-config
+    retain:
+      hourly: 24
+      daily: 30
+      weekly: 4
+      monthly: 12
+    copyMethod: Snapshot
+    pruneIntervalDays: 7
+    storageClassName: longhorn
+    accessModes:
+      - ReadWriteOnce
