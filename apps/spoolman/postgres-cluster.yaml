@@ -1,0 +1,28 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: spoolman-postgres
+  namespace: spoolman
+spec:
+  instances: 1
+  
+  postgresql:
+    parameters:
+      max_connections: "200"
+      shared_buffers: "64MB"
+      effective_cache_size: "192MB"
+      
+  storage:
+    size: 2Gi
+    storageClass: longhorn
+    
+  monitoring:
+    enabled: true
+    
+  # Bootstrap empty database
+  bootstrap:
+    initdb:
+      database: spoolman
+      owner: spoolman
+      secret:
+        name: spoolman-postgres-credentials
