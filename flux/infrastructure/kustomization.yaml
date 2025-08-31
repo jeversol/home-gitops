@@ -1,27 +1,28 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - metallb-system.yaml
-  - harry-botter.yaml
-  - cert-manager.yaml
-  - traefik.yaml
-  - traefik-config.yaml
-  - democratic-csi.yaml
-  - metrics-server.yaml
-  - longhorn.yaml
-  - descheduler.yaml
   - auth.yaml
-  - nfs-csi-driver.yaml
-  - nfs-csi.yaml
-  - helmrepo-cowboysysop.yaml
-  - vpa.yaml
-  - vpa-resources.yaml
-  - node-feature-discovery.yaml
-  - intel-gpu-plugin.yaml
+  - cert-manager.yaml
+  - cloudflared.yaml
+  - cloudnative-pg.yaml
+  - democratic-csi.yaml
+  - descheduler.yaml
   - etcd-backup.yaml
   - external-dns.yaml
   - flux-webhook.yaml
-  - cloudflared.yaml
+  - harry-botter.yaml
+  - helmrepo-cowboysysop.yaml
+  - intel-gpu-plugin.yaml
+  - longhorn.yaml
+  - metallb-system.yaml
+  - metrics-server.yaml
+  - nfs-csi-driver.yaml
+  - nfs-csi.yaml
+  - node-feature-discovery.yaml
+  - smartctl-exporter.yaml
   - system-upgrade-controller.yaml
   - system-upgrade-controller-plans.yaml
-  - smartctl-exporter.yaml
+  - traefik.yaml
+  - traefik-config.yaml
+  - vpa.yaml
+  - vpa-resources.yaml
