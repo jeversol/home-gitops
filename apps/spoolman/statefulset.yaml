@@ -19,11 +19,7 @@ spec:
     spec:
       automountServiceAccountToken: false
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
         fsGroup: 1000
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: spoolman
           image: ghcr.io/donkie/spoolman:0.22.1
@@ -68,9 +64,10 @@ spec:
             capabilities:
               drop:
                 - ALL
+              add:
+                - SETGID
+                - SETUID
             readOnlyRootFilesystem: false
-            runAsNonRoot: true
-            runAsUser: 1000
           livenessProbe:
             httpGet:
               path: /
