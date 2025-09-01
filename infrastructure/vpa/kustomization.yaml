@@ -1,19 +1,20 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - kube-prometheus-stack-vpa.yaml
-  - homebridge-vpa.yaml
-  - traefik-vpa.yaml
-  - media-vpa.yaml
-  - scrutiny-vpa.yaml
-  - traefik-forward-auth-vpa.yaml
-  - metallb-vpa.yaml
+  - cert-manager-vpa.yaml
+  - cloudflare-tunnel-vpa.yaml
   - democratic-csi-vpa.yaml
   - external-dns-vpa.yaml
   - flux-vpa.yaml
-  - cert-manager-vpa.yaml
-  - system-daemonsets-vpa.yaml
+  - homebridge-vpa.yaml
+  - kube-prometheus-stack-vpa.yaml
   - longhorn-vpa.yaml
-  - system-deployments-vpa.yaml
-  - cloudflare-tunnel-vpa.yaml
+  - media-vpa.yaml
+  - metallb-vpa.yaml
   - node-feature-discovery-vpa.yaml
+  - scrutiny-vpa.yaml
+  - spoolman-vpa.yaml
+  - system-daemonsets-vpa.yaml
+  - system-deployments-vpa.yaml
+  - traefik-forward-auth-vpa.yaml
+  - traefik-vpa.yaml
