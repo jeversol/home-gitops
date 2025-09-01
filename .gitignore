@@ -26,6 +26,9 @@ client-info.yml
 AGENTS.md
 CLAUDE.md
 
+# Claude Code working directory
+.claude/
+
 # Ignore mixins generated files
 tools/grafana-mixins/vendor
 tools/grafana-mixins/out
