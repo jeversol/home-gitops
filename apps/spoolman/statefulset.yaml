@@ -31,6 +31,8 @@ spec:
           env:
             - name: TZ
               value: "America/New_York"
+            - name: "SPOOLMAN_PORT"
+              value: "8000"
             - name: SPOOLMAN_DB_TYPE
               value: "postgres"
             - name: SPOOLMAN_DB_HOST

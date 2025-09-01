@@ -17,5 +17,8 @@ spec:
       services:
         - name: spoolman
           port: 8000
+      middlewares:
+        - name: traefik-forward-auth
+          namespace: traefik
   tls:
     secretName: spoolman-tls
