@@ -6,7 +6,7 @@ metadata:
   labels:
     app: plex
   annotations:
-    metallb.universe.tf/loadBalancerIPs: 192.168.1.241
+    metallb.io/loadBalancerIPs: 192.168.1.241
 spec:
   type: LoadBalancer
   externalTrafficPolicy: Local
