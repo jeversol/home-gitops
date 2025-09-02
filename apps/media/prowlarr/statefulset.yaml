@@ -82,7 +82,7 @@ spec:
         name: config
       spec:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: longhorn
+        storageClassName: longhorn-ssd
         resources:
           requests:
             storage: 2Gi
