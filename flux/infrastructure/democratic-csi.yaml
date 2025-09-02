@@ -59,20 +59,7 @@ spec:
   dependsOn:
     - name: democratic-csi-snapshot-controller
   driftDetection:
-    mode: warn
-    ignore:
-      - paths: ["/spec/replicas"]
-        target:
-          kind: Deployment
-      - paths: ["/spec/replicas"]
-        target:
-          kind: StatefulSet
-      - paths: ["/parameters"]
-        target:
-          kind: VolumeSnapshotClass
-      - paths: ["/metadata/annotations/argocd.argoproj.io~1tracking-id"]
-        target:
-          kind: VolumeSnapshotClass
+    mode: disabled
   chart:
     spec:
       chart: democratic-csi
