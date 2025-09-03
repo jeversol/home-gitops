@@ -28,7 +28,6 @@ spec:
             - --managed-record-types=CNAME
             - --interval=2m
             - --log-level=info
-            - --traefik-disable-legacy
           env:
             - name: CF_API_TOKEN
               valueFrom:
