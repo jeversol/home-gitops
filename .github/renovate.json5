@@ -10,40 +10,34 @@
   ],
   flux: {
     enabled: true,
-    managerFilePatterns: [
-      'flux/**/*.{yaml,yml}',
-    ],
+    managerFilePatterns: ['/flux/.+\\.(yaml|yml)$/'],
   },
   kubernetes: {
-    managerFilePatterns: [
-      '**/*.{yaml,yml}',
-      '!**/kustomization.{yaml,yml}',
-      '!flux/flux-system/gotk*.{yaml,yml}',
-    ],
+    managerFilePatterns: ['/.*\\.(yaml|yml)$/'],
+    ignorePaths: ['**/kustomization.{yaml,yml}', 'flux/flux-system/gotk*.{yaml,yml}'],
   },
   packageRules: [
     {
       matchPackageNames: ['renovatebot/pre-commit-hooks'],
       automerge: true,
-      automergeType: 'pr',
       matchUpdateTypes: ['patch', 'minor'],
-      schedule: ['* 2 * * 1'],
+      schedule: ['* 0-4 * * 1'],
       assignees: [],
     },
     {
-      // Auto-merge patch updates for container images and charts
+      // Auto-merge patch updates for container images and charts (except specific packages)
       matchUpdateTypes: ['patch'],
       matchDatasources: ['docker', 'helm'],
       automerge: true,
-      automergeType: 'pr',
       assignees: [],
+      matchPackageNames: ['!kube-prometheus-stack'],
     },
     {
-      // Auto-merge patch and minor updates for cluster-multitool Dockerfile dependencies
+      // Auto-merge patch updates for cluster-multitool dependencies (noise reduction)
       matchFileNames: ['tools/cluster-multitool/Dockerfile'],
-      matchUpdateTypes: ['patch', 'minor'],
+      matchUpdateTypes: ['patch'],
+      matchDatasources: ['repology', 'pypi'],
       automerge: true,
-      automergeType: 'pr',
       assignees: [],
     },
     {
@@ -52,7 +46,6 @@
       matchUpdateTypes: ['digest', 'pin'],
       pinDigests: true,
       automerge: true,
-      automergeType: 'pr',
       assignees: [],
     },
     {
@@ -77,23 +70,27 @@
       pinDigests: true,
       matchUpdateTypes: ['patch', 'minor', 'digest'],
       automerge: true,
-      automergeType: 'pr',
       automergeSchedule: ['* 5-8 * * *'],
       assignees: [],
     },
     {
-      // Group all cluster-multitool Dockerfile updates together
-      matchFileNames: ['tools/cluster-multitool/Dockerfile'],
-      groupName: 'cluster-multitool dependencies',
-      groupSlug: 'cluster-multitool-deps',
+      // Auto-merge kube-prometheus-stack patch and minor updates
+      matchPackageNames: ['kube-prometheus-stack'],
+      matchDatasources: ['helm'],
+      matchUpdateTypes: ['patch', 'minor'],
+      automerge: true,
+      assignees: [],
+    },
+    {
+      // Group Talos-related updates together
+      matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl'],
+      groupName: 'talos',
     },
   ],
   customManagers: [
     {
-      customType: 'regex', 
-      managerFilePatterns: [
-        'tools/cluster-multitool/Dockerfile',
-      ],
+      customType: 'regex',
+      managerFilePatterns: ['/tools/cluster-multitool/Dockerfile/'],
       matchStrings: [
         '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=\"(?<currentValue>.*)\"\\s'
       ],
@@ -101,9 +98,7 @@
     },
     {
       customType: 'regex',
-      managerFilePatterns: [
-        'infrastructure/system-upgrade-controller/plans/plans.yaml'
-      ],
+      managerFilePatterns: ['/infrastructure/system-upgrade-controller/plans/plans.yaml/'],
       matchStrings: [
         'version:\\s*(?<currentValue>\\S+)\\s*#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?'
       ],
