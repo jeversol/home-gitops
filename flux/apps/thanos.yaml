@@ -8,14 +8,10 @@ spec:
   interval: 30m
   releaseName: thanos
   targetNamespace: o11y
-  chart:
-    spec:
-      chart: thanos
-      version: "1.21.1"  # renovate: datasource=helm depName=thanos registryUrl=oci://ghcr.io/stevehipwell/helm-charts
-      sourceRef:
-        kind: HelmRepository
-        name: stevehipwell
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: stevehipwell-thanos
+    namespace: flux-system
   install:
     remediation:
       retries: 3

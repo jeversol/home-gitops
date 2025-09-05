@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - helmrepo-grafana.yaml
   - helmrepo-prometheus-community.yaml
-  - helmrepo-stevehipwell.yaml
+  - oci-stevehipwell-thanos.yaml
   - o11y.yaml
   - kube-prometheus-stack.yaml
   - thanos.yaml
