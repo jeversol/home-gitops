@@ -47,7 +47,7 @@ ENV CA_CERTIFICATES_VERSION="20250619-r0"
 # renovate: datasource=repology depName=alpine_3_22/jq versioning=loose
 ENV JQ_VERSION="1.8.0-r0"
 # renovate: datasource=repology depName=alpine_3_22/yq-go versioning=loose
-ENV YQ_GO_VERSION="4.46.1-r1"
+ENV YQ_GO_VERSION="4.46.1-r2"
 # renovate: datasource=repology depName=alpine_3_22/vim versioning=loose
 ENV VIM_VERSION="9.1.1566-r0"
 # renovate: datasource=repology depName=alpine_3_22/git versioning=loose
