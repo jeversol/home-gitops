@@ -77,7 +77,11 @@ spec:
     defaultSettings:
       defaultDataPath: /var/lib/longhorn
       defaultReplicaCount: 2
-      replicaSoftAntiAffinity: "true"
+      # Enforce one replica per node (hard) and per disk (hard),
+      # but ignore zones (soft) for a simple 3-node cluster without AZs.
+      replicaSoftAntiAffinity: "false"
+      replicaDiskSoftAntiAffinity: "false"
+      replicaZoneSoftAntiAffinity: "true"
       defaultDataLocality: "best-effort"
       createDefaultDiskLabeledNodes: "true"
       defaultLonghornStaticStorageClass: "longhorn"
