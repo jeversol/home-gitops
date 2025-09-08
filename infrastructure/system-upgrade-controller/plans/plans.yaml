@@ -6,7 +6,7 @@ metadata:
   labels:
     upgrade-type: talos
 spec:
-  version: v1.11.0  # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
+  version: v1.11.1  # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
   concurrency: 1
   exclusive: false
   nodeSelector:
@@ -45,7 +45,7 @@ metadata:
   labels:
     upgrade-type: talos
 spec:
-  version: v1.11.0  # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
+  version: v1.11.1  # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
   concurrency: 1
   exclusive: false
   nodeSelector:
@@ -96,7 +96,7 @@ spec:
       path: /etc/talos
   upgrade:
     # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
-    image: ghcr.io/siderolabs/talosctl:v1.11.0
+    image: ghcr.io/siderolabs/talosctl:v1.11.1
     args:
       - "upgrade-k8s"
       - "--nodes"
