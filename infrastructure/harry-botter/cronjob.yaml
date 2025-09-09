@@ -17,7 +17,7 @@ spec:
           automountServiceAccountToken: true
           containers:
             - name: watcher
-              image: ghcr.io/jeversol/cluster-multitool:latest@sha256:72d606e64ed004bccbc32ec37f9e7db98e96f68d21a7eaf15fbb626d3a0b4a37
+              image: ghcr.io/jeversol/cluster-multitool:latest@sha256:023cf8c7ed69c726c6d828a4c27a7801f6892da52cc580a37757a4bee4f10276
               command:
                 - python
                 - /script/harry-botter.py
