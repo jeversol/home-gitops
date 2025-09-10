@@ -32,7 +32,7 @@ FROM alpine:3.22.1
 
 # Build environment variables for versions
 # renovate: datasource=github-tags depName=kubernetes/kubernetes versioning=semver
-ENV KUBERNETES_VERSION="v1.34.0"
+ENV KUBERNETES_VERSION="v1.34.1"
 # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
 ENV TALOS_VERSION="v1.11.1"
 
