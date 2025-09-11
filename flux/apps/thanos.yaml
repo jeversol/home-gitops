@@ -65,6 +65,11 @@ spec:
         enabled: true
         storageClass: longhorn
         size: 5Gi
+      # Retain all resolutions for 180 days
+      extraArgs:
+        - --retention.resolution-raw=180d
+        - --retention.resolution-5m=180d
+        - --retention.resolution-1h=180d
       resources:
         requests:
           cpu: 100m
