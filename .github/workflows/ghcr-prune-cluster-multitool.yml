@@ -19,5 +19,8 @@ jobs:
           package-type: container
           owner: ${{ github.repository_owner }}
           package-name: cluster-multitool
+          # Use PAT with delete:packages for reliable GHCR cleanup
+          token: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+          # Only remove untagged digests; keep moving tags like `latest`
+          delete-only-untagged-versions: true
           min-versions-to-keep: 2
-
