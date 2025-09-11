@@ -30,7 +30,7 @@ spec:
         forceConflicts: true
     prometheus:
       prometheusSpec:
-        retention: 15d
+        retention: 35d
         enableRemoteWriteReceiver: true
         thanos:
           baseImage: quay.io/thanos/thanos
@@ -45,7 +45,7 @@ spec:
               storageClassName: longhorn
               resources:
                 requests:
-                  storage: 20Gi
+                  storage: 40Gi
       thanosService:
         enabled: true
     grafana:
