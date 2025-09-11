@@ -28,14 +28,7 @@ jobs:
           username: jeversol
           password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
           
-      - name: Extract versions from Dockerfile ARGs
-        id: versions
-        run: |
-          # Extract versions from Dockerfile ARG defaults
-          KUBERNETES_VERSION=$(grep "ARG KUBERNETES_VERSION=" tools/cluster-multitool/Dockerfile | cut -d'=' -f2)
-          TALOS_VERSION=$(grep "ARG TALOS_VERSION=" tools/cluster-multitool/Dockerfile | cut -d'=' -f2)
-          echo "kubernetes_version=$KUBERNETES_VERSION" >> $GITHUB_OUTPUT
-          echo "talos_version=$TALOS_VERSION" >> $GITHUB_OUTPUT
+      # No version extraction needed; Dockerfile uses ENV managed by Renovate
 
       - name: Extract metadata
         id: meta
@@ -56,6 +49,3 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: false
-          build-args: |
-            KUBERNETES_VERSION=${{ steps.versions.outputs.kubernetes_version }}
-            TALOS_VERSION=${{ steps.versions.outputs.talos_version }}
