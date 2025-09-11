@@ -63,7 +63,6 @@ ENV MTR_VERSION="0.96-r0"
 # renovate: datasource=repology depName=alpine_3_22/bash versioning=loose
 ENV BASH_VERSION="5.2.37-r0"
 
-# renovate: datasource=repology depName=alpine_3_22/bash versioning=loose
 RUN apk add --no-cache \ 
     python3="${PYTHON3_VERSION}" \
     curl="${CURL_VERSION}" \
