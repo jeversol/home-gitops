@@ -3,7 +3,8 @@ kind: Kustomization
 resources:
   - auth.yaml
   - cert-manager.yaml
-  - cilium-helmrepository.yaml
+  - cilium.yaml
+  - cilium-ui.yaml
   - cloudflared.yaml
   - cloudnative-pg.yaml
   - democratic-csi.yaml
