@@ -5,6 +5,7 @@
   ],
   automerge: false,
   timezone: 'America/Indiana/Indianapolis',
+  ignorePaths: ['tools/cluster-multitool/Dockerfile'],
   assignees: [
     'jeversol',
   ],
