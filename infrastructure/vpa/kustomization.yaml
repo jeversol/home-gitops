@@ -10,7 +10,6 @@ resources:
   - kube-prometheus-stack-vpa.yaml
   - longhorn-vpa.yaml
   - media-vpa.yaml
-  - metallb-vpa.yaml
   - node-feature-discovery-vpa.yaml
   - scrutiny-vpa.yaml
   - spoolman-vpa.yaml
