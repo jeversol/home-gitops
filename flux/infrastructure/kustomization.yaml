@@ -16,7 +16,6 @@ resources:
   - helmrepo-cowboysysop.yaml
   - intel-gpu-plugin.yaml
   - longhorn.yaml
-  - metallb-system.yaml
   - metrics-server.yaml
   - nfs-csi-driver.yaml
   - nfs-csi.yaml
