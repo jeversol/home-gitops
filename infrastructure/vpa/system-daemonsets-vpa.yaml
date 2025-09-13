@@ -29,19 +29,6 @@ spec:
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: metallb-speaker-vpa
-  namespace: metallb-system
-spec:
-  targetRef:
-    apiVersion: apps/v1
-    kind: DaemonSet
-    name: speaker
-  updatePolicy:
-    updateMode: "Off"
----
-apiVersion: autoscaling.k8s.io/v1
-kind: VerticalPodAutoscaler
-metadata:
   name: csi-nfs-node-vpa
   namespace: kube-system
 spec:
