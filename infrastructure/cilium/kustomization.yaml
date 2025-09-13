@@ -4,3 +4,5 @@ kind: Kustomization
 resources:
   - hubble-ui-tls-cert.yaml
   - hubble-ui-ingressroute.yaml
+  - cilium-loadbalancer-pool.yaml
+  - cilium-l2-announcements.yaml
