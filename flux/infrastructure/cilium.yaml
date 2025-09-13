@@ -55,6 +55,8 @@ spec:
     k8sServiceHost: localhost
     k8sServicePort: 7445
     kubeProxyReplacement: true
+    l2announcements:
+      enabled: true
     nodePort:
       enabled: true
     operator:
