@@ -23,7 +23,7 @@ spec:
       path: /etc/talos
   upgrade:
     # renovate: datasource=github-releases depName=jfroy/tnu
-    image: ghcr.io/jfroy/tnu:0.4.3
+    image: ghcr.io/jfroy/tnu:0.4.4
     envs:
       - name: NODE_IP
         valueFrom:
@@ -58,7 +58,7 @@ spec:
       path: /etc/talos
   upgrade:
     # renovate: datasource=github-releases depName=jfroy/tnu
-    image: ghcr.io/jfroy/tnu:0.4.3
+    image: ghcr.io/jfroy/tnu:0.4.4
     envs:
       - name: NODE_IP
         valueFrom:
