@@ -26,11 +26,15 @@ spec:
           type: RuntimeDefault
       containers:
         - name: media-cleanup-service
-          image: ghcr.io/jeversol/media-cleanup@sha256:eed0e30b82f88870dd09a42803356e546ac58501bff1ca5ff94daf40e57cd074
+          image: ghcr.io/jeversol/media-cleanup@sha256:731057e051597115837d2baa3fed33997cad14babc6344206992909430a116c0
           imagePullPolicy: Always
           env:
             - name: TZ
               value: "America/New_York"
+            - name: SCHEDULE_INTERVAL
+              value: "0 */4 * * *"
+            - name: SCHEDULE_JITTER_MINUTES
+              value: "15"
             - name: OVERSEERR_URL
               value: "http://overseerr.media.svc.cluster.local:5055"
             - name: OVERSEERR_API_KEY
@@ -87,24 +91,6 @@ spec:
             runAsNonRoot: true
             runAsUser: 65537
             runAsGroup: 65537
-          livenessProbe:
-            exec:
-              command:
-                - /usr/local/bin/media-cleanup-service
-                - --version
-            initialDelaySeconds: 30
-            periodSeconds: 300
-            timeoutSeconds: 10
-            failureThreshold: 3
-          readinessProbe:
-            exec:
-              command:
-                - /usr/local/bin/media-cleanup-service
-                - --version
-            initialDelaySeconds: 5
-            periodSeconds: 30
-            timeoutSeconds: 5
-            failureThreshold: 3
   volumeClaimTemplates:
     - metadata:
         name: data
