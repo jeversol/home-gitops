@@ -24,7 +24,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: media-cleanup-service
-          image: ghcr.io/jeversol/media-cleanup@sha256:26586d14abb9fe94596d5bc10c8b825a7b754b0f4311d48407510c757769cbab
+          image: ghcr.io/jeversol/media-cleanup@sha256:86f9fd7e9a4ce5b5de391cfd8342d3432edc4db12fac1920011151c7cc2e95f1
           imagePullPolicy: Always
           imagePullSecrets:
             - name: ghcr-secret
