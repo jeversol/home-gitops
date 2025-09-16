@@ -26,6 +26,8 @@ spec:
         - name: media-cleanup-service
           image: ghcr.io/jeversol/media-cleanup@sha256:26586d14abb9fe94596d5bc10c8b825a7b754b0f4311d48407510c757769cbab
           imagePullPolicy: Always
+          imagePullSecrets:
+            - name: ghcr-secret
           env:
             - name: TZ
               value: "America/New_York"
