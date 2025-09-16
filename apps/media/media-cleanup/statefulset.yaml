@@ -18,6 +18,8 @@ spec:
         app: media-cleanup-service
     spec:
       automountServiceAccountToken: false
+      imagePullSecrets:
+        - name: ghcr-secret
       securityContext:
         fsGroup: 65537
         seccompProfile:
@@ -26,8 +28,6 @@ spec:
         - name: media-cleanup-service
           image: ghcr.io/jeversol/media-cleanup@sha256:86f9fd7e9a4ce5b5de391cfd8342d3432edc4db12fac1920011151c7cc2e95f1
           imagePullPolicy: Always
-          imagePullSecrets:
-            - name: ghcr-secret
           env:
             - name: TZ
               value: "America/New_York"
