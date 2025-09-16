@@ -26,7 +26,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: media-cleanup-service
-          image: ghcr.io/jeversol/media-cleanup@sha256:731057e051597115837d2baa3fed33997cad14babc6344206992909430a116c0
+          image: ghcr.io/jeversol/media-cleanup@sha256:77f7cba6c927fa47c7b3ad8e1b545cb80b5b368aec92d621c97e6f40e23617ee
           imagePullPolicy: Always
           env:
             - name: TZ
