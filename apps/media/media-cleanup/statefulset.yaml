@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: media-cleanup-service
+  namespace: media
+  labels:
+    app: media-cleanup-service
+spec:
+  serviceName: media-cleanup-service
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: media-cleanup-service
+  template:
+    metadata:
+      labels:
+        app: media-cleanup-service
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 65537
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: media-cleanup-service
+          image: ghcr.io/jeversol/media-cleanup@sha256:26586d14abb9fe94596d5bc10c8b825a7b754b0f4311d48407510c757769cbab
+          imagePullPolicy: Always
+          env:
+            - name: TZ
+              value: "America/New_York"
+            - name: OVERSEERR_URL
+              value: "http://overseerr.media.svc.cluster.local:5055"
+            - name: OVERSEERR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: media-cleanup-secrets
+                  key: overseerr-api-key
+            - name: RADARR_URL
+              value: "http://radarr.media.svc.cluster.local:7878"
+            - name: RADARR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: media-cleanup-secrets
+                  key: radarr-api-key
+            - name: PLEX_URL
+              value: "http://plex.media.svc.cluster.local:32400"
+            - name: PLEX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: media-cleanup-secrets
+                  key: plex-token
+            - name: DATABASE_PATH
+              value: "/data/media-cleanup.db"
+            - name: HTTP_TIMEOUT_SECONDS
+              value: "30"
+            - name: RETRY_ATTEMPTS
+              value: "3"
+            - name: RETRY_DELAY_SECONDS
+              value: "5"
+            - name: NOTIFICATION_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: media-cleanup-secrets
+                  key: notification-webhook-url
+                  optional: true
+            - name: NOTIFICATION_SERVICE_NAME
+              value: "Media Cleanup Service"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65537
+            runAsGroup: 65537
+          livenessProbe:
+            exec:
+              command:
+                - /usr/local/bin/media-cleanup-service
+                - --version
+            initialDelaySeconds: 30
+            periodSeconds: 300
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /usr/local/bin/media-cleanup-service
+                - --version
+            initialDelaySeconds: 5
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 1Gi
