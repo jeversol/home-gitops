@@ -49,6 +49,13 @@ spec:
                 secretKeyRef:
                   name: media-cleanup-secrets
                   key: radarr-api-key
+            - name: SONARR_URL
+              value: "http://sonarr.media.svc.cluster.local:8989"
+            - name: SONARR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: media-cleanup-secrets
+                  key: sonarr-api-key
             - name: PLEX_URL
               value: "https://plex.media.svc.cluster.local:32400"
             - name: PLEX_TOKEN
@@ -56,14 +63,6 @@ spec:
                 secretKeyRef:
                   name: media-cleanup-secrets
                   key: plex-token
-            - name: DATABASE_PATH
-              value: "/data/media-cleanup.db"
-            - name: HTTP_TIMEOUT_SECONDS
-              value: "30"
-            - name: RETRY_ATTEMPTS
-              value: "3"
-            - name: RETRY_DELAY_SECONDS
-              value: "5"
             - name: NOTIFICATION_WEBHOOK_URL
               valueFrom:
                 secretKeyRef:
