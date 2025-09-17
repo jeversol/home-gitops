@@ -50,7 +50,7 @@ spec:
                   name: media-cleanup-secrets
                   key: radarr-api-key
             - name: PLEX_URL
-              value: "http://plex.media.svc.cluster.local:32400"
+              value: "https://plex.media.svc.cluster.local:32400"
             - name: PLEX_TOKEN
               valueFrom:
                 secretKeyRef:
