@@ -87,6 +87,11 @@
       matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl'],
       groupName: 'talos',
     },
+    {
+      // Force node-feature-discovery to use GitHub releases instead of tags
+      matchPackageNames: ['kubernetes-sigs/node-feature-discovery'],
+      overrideDatasource: 'github-releases',
+    },
   ],
   customManagers: [
     {
