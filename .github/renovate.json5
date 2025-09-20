@@ -87,6 +87,11 @@
       matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl'],
       groupName: 'talos',
     },
+    {
+      // Group node-feature-discovery updates
+      matchPackageNames: ['kubernetes-sigs/node-feature-discovery'],
+      groupName: 'node-feature-discovery',
+    },
   ],
   customManagers: [
     {
