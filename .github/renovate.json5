@@ -86,6 +86,7 @@
       // Group Talos-related updates together
       matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl'],
       groupName: 'talos',
+      automerge: false,
     },
     {
       // Force node-feature-discovery to use GitHub releases instead of tags
