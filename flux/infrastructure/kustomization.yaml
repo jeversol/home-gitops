@@ -20,6 +20,7 @@ resources:
   - nfs-csi-driver.yaml
   - nfs-csi.yaml
   - node-feature-discovery.yaml
+  - renovate.yaml
   - smartctl-exporter.yaml
   - system-upgrade-controller.yaml
   - system-upgrade-controller-plans.yaml

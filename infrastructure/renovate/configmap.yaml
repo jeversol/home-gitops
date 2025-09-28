@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: renovate-config
+  namespace: renovate
+  labels:
+    app.kubernetes.io/name: renovate
+    app.kubernetes.io/part-of: renovate
+data:
+  LOG_LEVEL: debug
+  RENOVATE_ENDPOINT: https://api.github.com
+  RENOVATE_PLATFORM: github
+  RENOVATE_REPOSITORIES: |
+    jeversol/home-gitops
+  RENOVATE_REDIS_URL: redis://renovate-redis:6379/0
+  RENOVATE_CACHE_TTL_MINUTES: "1440"
+  RENOVATE_CONCURRENCY: "5"
+  CONTAINERBASE_IGNORED_TOOLS: "elixir"
+  RENOVATE_GIT_AUTHOR: Harry Botter <41898282+harry-botter-lumos[bot]@users.noreply.github.com>
+  RENOVATE_USERNAME: harry-botter-lumos[bot]
