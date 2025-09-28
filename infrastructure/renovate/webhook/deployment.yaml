@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: renovate-webhook
+  namespace: renovate
+  labels:
+    app.kubernetes.io/name: renovate-webhook
+    app.kubernetes.io/part-of: renovate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: renovate-webhook
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: renovate-webhook
+        app.kubernetes.io/part-of: renovate
+    spec:
+      serviceAccountName: renovate-webhook
+      automountServiceAccountToken: true
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: webhook
+          image: docker.io/ncarlier/webhookd:1.20.2-distrib
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GITHUB_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: renovate-webhook-secret
+                  key: github-secret
+            - name: CRONJOB_NAME
+              value: renovate
+            - name: CRONJOB_NAMESPACE
+              value: renovate
+            - name: RENOVATE_JOB_TTL_SECONDS
+              value: "900"
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+              readOnly: true
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
+      volumes:
+        - name: scripts
+          configMap:
+            name: renovate-webhook-scripts
+            defaultMode: 0755
+            items:
+              - key: renovate-dependency-dashboard.sh
+                path: hooks/renovate-dependency-dashboard.sh

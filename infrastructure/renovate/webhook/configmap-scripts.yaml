@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: renovate-webhook-scripts
+  namespace: renovate
+  labels:
+    app.kubernetes.io/name: renovate-webhook
+    app.kubernetes.io/part-of: renovate
+data:
+  renovate-dependency-dashboard.sh: |
+    #!/bin/sh
+    set -eu
+
+    log() {
+      printf '%s | delivery=%s | %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "${x_github_delivery:-unknown}" "$1" >&2
+    }
+
+    bail() {
+      log "error: $1"
+      exit 1
+    }
+
+    PAYLOAD="${1:-}"
+    [ -n "$PAYLOAD" ] || bail "missing payload"
+
+    [ -n "${GITHUB_SECRET:-}" ] || bail "GITHUB_SECRET not set"
+
+    SIGNATURE_HEADER="${x_hub_signature_256:-}"
+    [ -n "$SIGNATURE_HEADER" ] || bail "missing X-Hub-Signature-256 header"
+
+    CALCULATED_SIGNATURE="sha256=$(printf '%s' "$PAYLOAD" | openssl dgst -sha256 -hmac "$GITHUB_SECRET" | sed 's/^.* //')"
+    [ "$CALCULATED_SIGNATURE" = "$SIGNATURE_HEADER" ] || bail "signature mismatch"
+
+    EVENT="${x_github_event:-}"
+    if [ "$EVENT" != "issues" ]; then
+      log "ignored event $EVENT"
+      exit 0
+    fi
+
+    ACTION=$(printf '%s' "$PAYLOAD" | jq -r '.action // empty')
+    if [ "$ACTION" != "edited" ]; then
+      log "ignored action $ACTION"
+      exit 0
+    fi
+
+    TITLE=$(printf '%s' "$PAYLOAD" | jq -r '.issue.title // empty')
+    if [ "$TITLE" != "Dependency Dashboard" ]; then
+      log "ignored issue title $TITLE"
+      exit 0
+    fi
+
+    if ! printf '%s' "$PAYLOAD" | jq -e '((.changes.body.to? // "") | test("\\[x\\]")) and ((.changes.body.from? // "") | test("\\[ \\]"))' >/dev/null; then
+      log "body change did not toggle unchecked box to checked"
+      exit 0
+    fi
+
+    SENDER_TYPE=$(printf '%s' "$PAYLOAD" | jq -r '.sender.type // empty')
+    case "$SENDER_TYPE" in
+      User|Bot) ;;
+      *)
+        log "sender type $SENDER_TYPE not allowed"
+        exit 0
+        ;;
+    esac
+
+    API_SERVER="https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}"
+    SERVICE_ACCOUNT_TOKEN_PATH="/var/run/secrets/kubernetes.io/serviceaccount/token"
+    CA_CERT_PATH="/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+
+    [ -f "$SERVICE_ACCOUNT_TOKEN_PATH" ] || bail "service account token not found"
+    [ -f "$CA_CERT_PATH" ] || bail "cluster CA bundle not found"
+
+    TOKEN=$(cat "$SERVICE_ACCOUNT_TOKEN_PATH")
+
+    CRONJOB_NAMESPACE="${CRONJOB_NAMESPACE:-renovate}"
+    CRONJOB_NAME="${CRONJOB_NAME:-renovate}"
+    JOB_TTL_RAW="${RENOVATE_JOB_TTL_SECONDS:-900}"
+
+    if printf '%s' "$JOB_TTL_RAW" | grep -Eq '^[0-9]+$'; then
+      JOB_TTL="$JOB_TTL_RAW"
+    else
+      JOB_TTL="0"
+    fi
+
+    CRONJOB_RESPONSE=$(curl -fsS \
+      --cacert "$CA_CERT_PATH" \
+      --header "Authorization: Bearer $TOKEN" \
+      "$API_SERVER/apis/batch/v1/namespaces/${CRONJOB_NAMESPACE}/cronjobs/${CRONJOB_NAME}") || bail "failed to fetch cronjob ${CRONJOB_NAMESPACE}/${CRONJOB_NAME}"
+
+    EXISTING_WEBHOOK_JOBS=$(curl -fsS \
+      --cacert "$CA_CERT_PATH" \
+      --header "Authorization: Bearer $TOKEN" \
+      "$API_SERVER/apis/batch/v1/namespaces/${CRONJOB_NAMESPACE}/jobs?labelSelector=recompiled.org%2Frenovate-trigger%3Dwebhook") || bail "failed to list webhook jobs"
+
+    if printf '%s' "$EXISTING_WEBHOOK_JOBS" | jq -e 'any(.items[]?; (.metadata.deletionTimestamp | not) and ((.status.active // 0) > 0 or (.status.completionTime == null)))' >/dev/null; then
+      log "skipping trigger; webhook job already running"
+      exit 0
+    fi
+
+    DELIVERY_SLUG=$(printf '%s' "${x_github_delivery:-$(date -u '+%s')}" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9' | cut -c1-20)
+    [ -n "$DELIVERY_SLUG" ] || DELIVERY_SLUG=$(date -u '+%Y%m%d%H%M%S')
+
+    JOB_NAME="${CRONJOB_NAME}-webhook-${DELIVERY_SLUG}"
+
+    JOB_PAYLOAD=$(printf '%s' "$CRONJOB_RESPONSE" | jq \
+      --arg name "$JOB_NAME" \
+      --argjson ttl "$JOB_TTL" \
+      --arg delivery "${x_github_delivery:-}" \
+      --arg event "$EVENT" \
+      --arg action "$ACTION" \
+      --arg sender "$SENDER_TYPE" \
+      '
+      .metadata.namespace as $ns |
+      {
+        apiVersion: "batch/v1",
+        kind: "Job",
+        metadata: {
+          name: $name,
+          namespace: $ns,
+          labels: (.spec.jobTemplate.metadata.labels // .metadata.labels // {}) + {
+            "recompiled.org/renovate-trigger": "webhook",
+            "recompiled.org/renovate-source": "dependency-dashboard"
+          },
+          annotations: (.spec.jobTemplate.metadata.annotations // {})
+            + (if ($delivery // "") != "" then {"recompiled.org/github-delivery": $delivery} else {} end)
+            + (if ($event // "") != "" then {"recompiled.org/github-event": $event} else {} end)
+            + (if ($action // "") != "" then {"recompiled.org/github-action": $action} else {} end)
+            + (if ($sender // "") != "" then {"recompiled.org/github-sender": $sender} else {} end)
+        },
+        spec: .spec.jobTemplate.spec
+      }
+      | if $ttl > 0 then .spec.ttlSecondsAfterFinished = $ttl else . end
+    ')
+    [ -n "$JOB_PAYLOAD" ] || bail "failed to build job payload"
+
+    HTTP_STATUS=$(printf '%s' "$JOB_PAYLOAD" | curl -sS -o /tmp/job-response.json -w '%{http_code}' \
+      --cacert "$CA_CERT_PATH" \
+      --header "Authorization: Bearer $TOKEN" \
+      --header 'Content-Type: application/json' \
+      --data @- \
+      "$API_SERVER/apis/batch/v1/namespaces/${CRONJOB_NAMESPACE}/jobs") || bail "failed to submit job"
+
+    if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+      log "triggered job $JOB_NAME (status $HTTP_STATUS)"
+      cat /tmp/job-response.json
+    else
+      ERR_MSG=$(cat /tmp/job-response.json)
+      bail "API returned status $HTTP_STATUS: $ERR_MSG"
+    fi
