@@ -1,4 +1,12 @@
 {
+  flux: {
+    enabled: true,
+    managerFilePatterns: ['flux/**/*.{yaml,yml}'],
+  },
+  kubernetes: {
+    managerFilePatterns: ['**/*.{yaml,yml}'],
+    ignorePaths: ['**/kustomization.{yaml,yml}', 'flux/flux-system/gotk*.{yaml,yml}'],
+  },
   extends: [
     'config:recommended',
     ':enablePreCommit',
@@ -6,17 +14,15 @@
   automerge: false,
   timezone: 'America/Indiana/Indianapolis',
   ignorePaths: ['tools/cluster-multitool/Dockerfile'],
-  assignees: [
-    'jeversol',
+  assignees: ['jeversol'],
+  hostRules: [
+    {
+      matchHost: 'ghcr.io',
+      hostType: 'docker',
+      username: 'jeversol',
+      password: '{{ env "RENOVATE_GHCR_TOKEN" }}',
+    },
   ],
-  flux: {
-    enabled: true,
-    managerFilePatterns: ['/flux/.+\\.(yaml|yml)$/'],
-  },
-  kubernetes: {
-    managerFilePatterns: ['/.*\\.(yaml|yml)$/'],
-    ignorePaths: ['**/kustomization.{yaml,yml}', 'flux/flux-system/gotk*.{yaml,yml}'],
-  },
   packageRules: [
     {
       matchPackageNames: ['renovatebot/pre-commit-hooks'],
@@ -26,7 +32,13 @@
       assignees: [],
     },
     {
-      // Auto-merge patch updates for container images and charts (except specific packages)
+      matchManagers: ['github-actions'],
+      automerge: true,
+      matchUpdateTypes: ['patch', 'minor'],
+      schedule: ['* 0-4 * * 1'],
+      assignees: [],
+    },
+    {
       matchUpdateTypes: ['patch'],
       matchDatasources: ['docker', 'helm'],
       automerge: true,
@@ -34,7 +46,6 @@
       matchPackageNames: ['!kube-prometheus-stack'],
     },
     {
-      // Auto-merge patch updates for cluster-multitool dependencies (noise reduction)
       matchFileNames: ['tools/cluster-multitool/Dockerfile'],
       matchUpdateTypes: ['patch'],
       matchDatasources: ['repology', 'pypi'],
@@ -42,7 +53,6 @@
       assignees: [],
     },
     {
-      // Auto-merge digest pins for cluster-multitool container images
       matchPackageNames: ['ghcr.io/jeversol/cluster-multitool'],
       matchUpdateTypes: ['digest', 'pin'],
       pinDigests: true,
@@ -61,12 +71,11 @@
       separateMinorPatch: true,
     },
     {
-      // Home-operations containers - auto-merge patch/minor updates between 5-8am
       matchPackageNames: [
         'ghcr.io/home-operations/plex',
         'ghcr.io/home-operations/sonarr',
         'ghcr.io/home-operations/radarr',
-        'ghcr.io/home-operations/prowlarr'
+        'ghcr.io/home-operations/prowlarr',
       ],
       pinDigests: true,
       matchUpdateTypes: ['patch', 'minor', 'digest'],
@@ -75,7 +84,6 @@
       assignees: [],
     },
     {
-      // Auto-merge kube-prometheus-stack patch and minor updates
       matchPackageNames: ['kube-prometheus-stack'],
       matchDatasources: ['helm'],
       matchUpdateTypes: ['patch', 'minor'],
@@ -83,13 +91,11 @@
       assignees: [],
     },
     {
-      // Group Talos-related updates together
       matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl'],
       groupName: 'talos',
       automerge: false,
     },
     {
-      // Force node-feature-discovery to use GitHub releases instead of tags
       matchPackageNames: ['kubernetes-sigs/node-feature-discovery'],
       overrideDatasource: 'github-releases',
     },
@@ -99,17 +105,17 @@
       customType: 'regex',
       managerFilePatterns: ['/tools/cluster-multitool/Dockerfile/'],
       matchStrings: [
-        '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=\"(?<currentValue>.*)\"\\s'
+        '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=\"(?<currentValue>.*)\"\\s',
       ],
       versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
     },
     {
       customType: 'regex',
-      managerFilePatterns: ['/infrastructure/system-upgrade-controller/plans/plans.yaml/'],
+      managerFilePatterns: ['/infrastructure/system-upgrade-controller/plans/plans\\.yaml/'],
       matchStrings: [
-        'version:\\s*(?<currentValue>\\S+)\\s*#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?'
+        'version:\\s*(?<currentValue>\\S+)\\s*#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?',
       ],
-      versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}'
+      versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
     },
   ],
 }
