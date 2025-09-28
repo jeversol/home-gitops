@@ -16,5 +16,5 @@ data:
   RENOVATE_CACHE_TTL_MINUTES: "1440"
   RENOVATE_CONCURRENCY: "5"
   CONTAINERBASE_IGNORED_TOOLS: "elixir"
-  RENOVATE_GIT_AUTHOR: Harry Botter <41898282+harry-botter-lumos[bot]@users.noreply.github.com>
+  RENOVATE_GIT_AUTHOR: Harry Botter Lumos <214727849+harry-botter-lumos[bot]@users.noreply.github.com>
   RENOVATE_USERNAME: harry-botter-lumos[bot]
