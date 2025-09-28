@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: renovate-redis
+  namespace: renovate
+  labels:
+    app.kubernetes.io/name: renovate-redis
+    app.kubernetes.io/part-of: renovate
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: renovate-redis
+  ports:
+    - name: redis
+      port: 6379
+      targetPort: redis
+      protocol: TCP

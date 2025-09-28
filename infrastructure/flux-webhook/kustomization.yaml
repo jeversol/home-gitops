@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - webhook-token-secret.yaml
   - webhook-receiver.yaml
+  - renovate-webhook-receiver.yaml
