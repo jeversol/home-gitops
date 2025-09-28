@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: renovate-webhook
+  namespace: renovate
+  labels:
+    app.kubernetes.io/name: renovate-webhook
+    app.kubernetes.io/part-of: renovate
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: renovate-webhook
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cloudflare
+    - from:
+        - podSelector: {}
+  policyTypes:
+    - Ingress

@@ -10,4 +10,4 @@ resources:
   - redis-deployment.yaml
   - redis-service.yaml
   - cronjob.yaml
-  - manual-job.yaml
+  - webhook
