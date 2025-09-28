@@ -12,7 +12,7 @@ data:
     set -eu
 
     log() {
-      printf '%s | delivery=%s | %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "${x_github_delivery:-unknown}" "$1" >&2
+      printf '%s | delivery=%s | %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "${x_github_delivery:-unknown}" "$1"
     }
 
     bail() {
@@ -32,25 +32,81 @@ data:
     [ "$CALCULATED_SIGNATURE" = "$SIGNATURE_HEADER" ] || bail "signature mismatch"
 
     EVENT="${x_github_event:-}"
-    if [ "$EVENT" != "issues" ]; then
-      log "ignored event $EVENT"
-      exit 0
-    fi
-
     ACTION=$(printf '%s' "$PAYLOAD" | jq -r '.action // empty')
-    if [ "$ACTION" != "edited" ]; then
-      log "ignored action $ACTION"
-      exit 0
-    fi
+    log "parsed event=$EVENT action=$ACTION"
 
-    TITLE=$(printf '%s' "$PAYLOAD" | jq -r '.issue.title // empty')
-    if [ "$TITLE" != "Dependency Dashboard" ]; then
-      log "ignored issue title $TITLE"
-      exit 0
-    fi
+    case "$EVENT" in
+      issues)
+        if [ "$ACTION" != "edited" ]; then
+          log "ignored issue action $ACTION"
+          exit 0
+        fi
 
-    if ! printf '%s' "$PAYLOAD" | jq -e '((.changes.body.to? // "") | test("\\[x\\]")) and ((.changes.body.from? // "") | test("\\[ \\]"))' >/dev/null; then
-      log "body change did not toggle unchecked box to checked"
+        TITLE=$(printf '%s' "$PAYLOAD" | jq -r '.issue.title // empty')
+        log "issue title=$TITLE"
+        if [ "$TITLE" != "Dependency Dashboard" ]; then
+          log "ignored issue title $TITLE"
+          exit 0
+        fi
+
+        NEW_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.issue.body // ""')
+        OLD_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.changes.body.from // ""')
+        ;;
+
+      pull_request)
+        if [ "$ACTION" != "edited" ]; then
+          log "ignored pull_request action $ACTION"
+          exit 0
+        fi
+
+        PR_BRANCH=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.head.ref // ""')
+        log "pull_request branch=$PR_BRANCH"
+        case "$PR_BRANCH" in
+          renovate/*) ;;
+          *)
+            log "ignored pull_request branch $PR_BRANCH"
+            exit 0
+            ;;
+        esac
+
+        NEW_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.body // ""')
+        OLD_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.changes.body.from // ""')
+        if [ -z "$OLD_BODY_TEXT" ]; then
+          log "pull_request change did not include previous body"
+          exit 0
+        fi
+        ;;
+
+      *)
+        log "ignored event $EVENT"
+        exit 0
+        ;;
+    esac
+
+    log "new body length=$(printf '%s' "$NEW_BODY_TEXT" | wc -c) old body length=$(printf '%s' "$OLD_BODY_TEXT" | wc -c)"
+
+    if jq -n \
+      --arg old "$OLD_BODY_TEXT" \
+      --arg new "$NEW_BODY_TEXT" \
+      '
+        def lines($t): ($t | split("\n"));
+        def norm($line): ($line | sub("^\\s*"; "") | ascii_downcase);
+        def unchecked($line): norm($line) | test("^(\\-|\\*) \\[ \\]");
+        def checked($line): norm($line) | test("^(\\-|\\*) \\[(x|\\*)\\]");
+
+        lines($old) as $oldLines |
+        lines($new) as $newLines |
+        ([$oldLines|length, $newLines|length] | min) as $len |
+        any(
+          range(0; $len);
+          ($oldLines[.] // "") as $o |
+          ($newLines[.] // "") as $n |
+          $o != $n and unchecked($o) and checked($n)
+        )
+      ' >/dev/null; then
+      log "checkbox toggled in body"
+    else
+      log "no checkbox toggled from unchecked to checked"
       exit 0
     fi
 
@@ -100,7 +156,9 @@ data:
     DELIVERY_SLUG=$(printf '%s' "${x_github_delivery:-$(date -u '+%s')}" | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9' | cut -c1-20)
     [ -n "$DELIVERY_SLUG" ] || DELIVERY_SLUG=$(date -u '+%Y%m%d%H%M%S')
 
-    JOB_NAME="${CRONJOB_NAME}-webhook-${DELIVERY_SLUG}"
+    JOB_NAME="renovate-triggered-${DELIVERY_SLUG}"
+
+    log "triggering job candidate ${JOB_NAME}"
 
     JOB_PAYLOAD=$(printf '%s' "$CRONJOB_RESPONSE" | jq \
       --arg name "$JOB_NAME" \
@@ -117,15 +175,13 @@ data:
         metadata: {
           name: $name,
           namespace: $ns,
-          labels: (.spec.jobTemplate.metadata.labels // .metadata.labels // {}) + {
-            "recompiled.org/renovate-trigger": "webhook",
-            "recompiled.org/renovate-source": "dependency-dashboard"
-          },
-          annotations: (.spec.jobTemplate.metadata.annotations // {})
+          labels: ((.spec.jobTemplate.metadata.labels // .metadata.labels // {}) 
+            + {"recompiled.org/renovate-trigger": "webhook", "recompiled.org/renovate-source": "dependency-dashboard"}),
+          annotations: ((.spec.jobTemplate.metadata.annotations // {})
             + (if ($delivery // "") != "" then {"recompiled.org/github-delivery": $delivery} else {} end)
             + (if ($event // "") != "" then {"recompiled.org/github-event": $event} else {} end)
             + (if ($action // "") != "" then {"recompiled.org/github-action": $action} else {} end)
-            + (if ($sender // "") != "" then {"recompiled.org/github-sender": $sender} else {} end)
+            + (if ($sender // "") != "" then {"recompiled.org/github-sender": $sender} else {} end))
         },
         spec: .spec.jobTemplate.spec
       }
@@ -141,7 +197,7 @@ data:
       "$API_SERVER/apis/batch/v1/namespaces/${CRONJOB_NAMESPACE}/jobs") || bail "failed to submit job"
 
     if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
-      log "triggered job $JOB_NAME (status $HTTP_STATUS)"
+      log "created job $JOB_NAME (status $HTTP_STATUS)"
       cat /tmp/job-response.json
     else
       ERR_MSG=$(cat /tmp/job-response.json)
