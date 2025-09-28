@@ -24,7 +24,7 @@ spec:
         runAsUser: 999
       containers:
         - name: redis
-          image: docker.io/redis:7.4-alpine
+          image: docker.io/redis:8.2-alpine
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 6379
