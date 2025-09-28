@@ -15,14 +15,6 @@
   timezone: 'America/Indiana/Indianapolis',
   ignorePaths: ['tools/cluster-multitool/Dockerfile'],
   assignees: ['jeversol'],
-  hostRules: [
-    {
-      matchHost: 'ghcr.io',
-      hostType: 'docker',
-      username: 'jeversol',
-      password: '{{ env "RENOVATE_GHCR_TOKEN" }}',
-    },
-  ],
   packageRules: [
     {
       matchPackageNames: ['renovatebot/pre-commit-hooks'],
