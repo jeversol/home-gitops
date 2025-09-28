@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: flux-webhook
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/name: flux-webhook
+    app.kubernetes.io/part-of: flux
+spec:
+  podSelector:
+    matchLabels:
+      app: notification-controller
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cloudflare
+    - from:
+        - podSelector: {}
+  policyTypes:
+    - Ingress
