@@ -34,7 +34,7 @@ FROM alpine:3.22.1
 # renovate: datasource=github-tags depName=kubernetes/kubernetes versioning=semver
 ENV KUBERNETES_VERSION="v1.34.1"
 # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
-ENV TALOS_VERSION="v1.11.1"
+ENV TALOS_VERSION="v1.11.2"
 
 # renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
 ENV PYTHON3_VERSION="3.12.11-r0"
