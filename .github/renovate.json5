@@ -13,12 +13,11 @@
   ],
   automerge: false,
   timezone: 'America/Indiana/Indianapolis',
-  ignorePaths: ['tools/cluster-multitool/Dockerfile'],
   assignees: ['jeversol'],
   packageRules: [
     {
-      matchPackageNames: ['renovatebot/pre-commit-hooks'],
-      automerge: true,
+      matchPackageNames: ['renovatebot/pre-commit-hooks', 'renovatebot/renovate'],
+      groupName: 'renovate',
       matchUpdateTypes: ['patch', 'minor'],
       schedule: ['* 0-4 * * 1'],
       assignees: [],
