@@ -42,6 +42,8 @@ spec:
               value: renovate
             - name: RENOVATE_JOB_TTL_SECONDS
               value: "900"
+            - name: RENOVATE_BOT_LOGIN
+              value: "harry-botter-lumos[bot]"
           ports:
             - containerPort: 8080
               name: http

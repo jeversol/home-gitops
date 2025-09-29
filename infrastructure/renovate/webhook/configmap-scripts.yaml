@@ -33,7 +33,22 @@ data:
 
     EVENT="${x_github_event:-}"
     ACTION=$(printf '%s' "$PAYLOAD" | jq -r '.action // empty')
-    log "parsed event=$EVENT action=$ACTION"
+    SENDER_TYPE=$(printf '%s' "$PAYLOAD" | jq -r '.sender.type // empty')
+    SENDER_LOGIN=$(printf '%s' "$PAYLOAD" | jq -r '.sender.login // ""')
+    log "parsed event=$EVENT action=$ACTION sender=$SENDER_LOGIN type=$SENDER_TYPE"
+
+    case "$SENDER_TYPE" in
+      User|Bot) ;;
+      *)
+        log "sender type $SENDER_TYPE not allowed"
+        exit 0
+        ;;
+    esac
+
+    if [ "$SENDER_LOGIN" = "${RENOVATE_BOT_LOGIN:-harry-botter-lumos[bot]}" ]; then
+      log "ignored sender login $SENDER_LOGIN"
+      exit 0
+    fi
 
     case "$EVENT" in
       issues)
@@ -109,15 +124,6 @@ data:
       log "no checkbox toggled from unchecked to checked"
       exit 0
     fi
-
-    SENDER_TYPE=$(printf '%s' "$PAYLOAD" | jq -r '.sender.type // empty')
-    case "$SENDER_TYPE" in
-      User|Bot) ;;
-      *)
-        log "sender type $SENDER_TYPE not allowed"
-        exit 0
-        ;;
-    esac
 
     API_SERVER="https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}"
     SERVICE_ACCOUNT_TOKEN_PATH="/var/run/secrets/kubernetes.io/serviceaccount/token"
