@@ -14,7 +14,7 @@ RUN apk add --no-cache \
     build-base="${BUILD_BASE_VERSION}"
 
 # renovate: datasource=pypi depName=kubernetes
-ENV PYPI_KUBERNETES_VERSION="33.1.0"
+ENV PYPI_KUBERNETES_VERSION="34.1.0"
 # renovate: datasource=pypi depName=PyJWT
 ENV PYPI_PYJWT_VERSION="2.10.1"
 # renovate: datasource=pypi depName=requests
