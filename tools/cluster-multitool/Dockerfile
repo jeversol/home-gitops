@@ -39,7 +39,7 @@ ENV TALOS_VERSION="v1.11.2"
 # renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
 ENV PYTHON3_VERSION="3.12.11-r0"
 # renovate: datasource=repology depName=alpine_3_22/curl versioning=loose
-ENV CURL_VERSION="8.14.1-r1"
+ENV CURL_VERSION="8.14.1-r2"
 # renovate: datasource=repology depName=alpine_3_22/wget versioning=loose
 ENV WGET_VERSION="1.25.0-r1"
 # renovate: datasource=repology depName=alpine_3_22/ca-certificates versioning=loose
