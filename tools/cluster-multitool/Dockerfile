@@ -43,7 +43,7 @@ ENV CURL_VERSION="8.14.1-r1"
 # renovate: datasource=repology depName=alpine_3_22/wget versioning=loose
 ENV WGET_VERSION="1.25.0-r1"
 # renovate: datasource=repology depName=alpine_3_22/ca-certificates versioning=loose
-ENV CA_CERTIFICATES_VERSION="20250619-r0"
+ENV CA_CERTIFICATES_VERSION="20250911-r0"
 # renovate: datasource=repology depName=alpine_3_22/jq versioning=loose
 ENV JQ_VERSION="1.8.0-r0"
 # renovate: datasource=repology depName=alpine_3_22/yq-go versioning=loose
