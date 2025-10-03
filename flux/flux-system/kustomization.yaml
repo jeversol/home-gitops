@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - gotk-components.yaml
   - gotk-sync.yaml
+  - notification-kustomization.yaml
 patches:
   - patch: |-
       - op: replace
