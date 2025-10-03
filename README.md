@@ -23,7 +23,7 @@ The infrastructure implements:
 - Infrastructure
   - [FluxCD](https://fluxcd.io/) - GitOps continuous delivery
   - [SOPS with age](https://getsops.io) - Secret encryption/decryption
-  - [MetalLB](https://metallb.io) - Load balancer for bare metal
+  - [Cilium](https://cilium.io/) - CNI, network policy, and load balancing for bare metal
   - [Traefik](https://doc.traefik.io/traefik/) - Reverse proxy and ingress controller
   - [cert-manager](https://cert-manager.io) - Automatic TLS certificate management
   - [harry-botter](https://github.com/jeversol/harry-botter) - Certificate expiry monitoring
@@ -31,6 +31,7 @@ The infrastructure implements:
   - [Longhorn](https://longhorn.io) - Distributed block storage
   - [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) - Cloudflare tunnel for secure ingress
   - [external-dns](https://github.com/kubernetes-sigs/external-dns) - Automatic DNS record management
+  - [CloudNative-PG](https://cloudnative-pg.io/) - PostgreSQL operator for Kubernetes
   - [VPA](https://github.com/kubernetes/autoscaler/tree/master/vertical-pod-autoscaler) - Vertical Pod Autoscaler for resource optimization
   - [Descheduler](https://github.com/kubernetes-sigs/descheduler) - Pod rescheduling for better cluster utilization
   - [Node Feature Discovery](https://kubernetes-sigs.github.io/node-feature-discovery/) - Hardware feature detection
@@ -40,15 +41,19 @@ The infrastructure implements:
   - [etcd-backup](https://etcd.io) - Automated etcd backups to S3-compatible storage
   - [flux-webhook](https://fluxcd.io/flux/components/notification/receivers/) - GitHub webhook receiver for Flux
   - [traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth) - OAuth authentication middleware
+  - [Renovate](https://docs.renovatebot.com/) - Automated dependency updates with webhook integration
 - Observability
   - [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
     - [Grafana](https://grafana.com/) - Visualization and dashboards with Auth0 integration
     - [Prometheus](https://prometheus.io/) - Metrics collection and alerting
     - [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) - Alert routing and management
+  - [Thanos](https://thanos.io/) - Long-term storage and querying for Prometheus metrics
+  - [Smartctl Exporter](https://github.com/prometheus-community/smartctl_exporter) - Disk SMART metrics for Prometheus
 - Applications
   - [Tautulli](https://tautulli.com) - Plex monitoring and analytics
   - [Scrutiny](https://github.com/AnalogJ/scrutiny) - Hard drive health monitoring with InfluxDB backend
   - [Homebridge](https://homebridge.io) - HomeKit bridge for smart home integration
+  - [Spoolman](https://github.com/Donkie/Spoolman) - 3D printing filament inventory management
   - **Media Services**
     - [Plex](https://www.plex.tv/) - Media server
     - [Overseerr](https://overseerr.dev/) - Media request management
