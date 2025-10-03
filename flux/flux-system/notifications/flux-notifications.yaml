@@ -1,0 +1,28 @@
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Provider
+metadata:
+    name: discord
+    namespace: flux-system
+spec:
+    type: discord
+    secretRef:
+        name: discord-webhook
+---
+apiVersion: notification.toolkit.fluxcd.io/v1beta3
+kind: Alert
+metadata:
+    name: discord
+    namespace: flux-system
+spec:
+    providerRef:
+        name: discord
+    eventMetadata:
+        summary: Cluster addons impacted
+        env: prod
+        cluster: talos-k8s
+    eventSeverity: error
+    eventSources:
+        - kind: GitRepository
+          name: '*'
+        - kind: Kustomization
+          name: '*'
