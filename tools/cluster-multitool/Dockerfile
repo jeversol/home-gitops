@@ -1,4 +1,4 @@
-FROM alpine:3.22.1 AS builder
+FROM alpine:3.22.2 AS builder
 
 # renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
 ENV PYTHON3_VERSION="3.12.11-r0"
@@ -28,7 +28,7 @@ RUN python3 -m pip install --no-cache-dir --prefix=/opt/deps \
     requests=="${PYPI_REQUESTS_VERSION}" \
     s3cmd=="${PYPI_S3CMD_VERSION}"
 
-FROM alpine:3.22.1
+FROM alpine:3.22.2
 
 # Build environment variables for versions
 # renovate: datasource=github-tags depName=kubernetes/kubernetes versioning=semver
