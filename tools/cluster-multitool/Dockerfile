@@ -1,4 +1,4 @@
-FROM alpine:3.22.2 AS builder
+FROM --platform=linux/amd64 alpine:3.22.2 AS builder
 
 # renovate: datasource=repology depName=alpine_3_22/python3 versioning=loose
 ENV PYTHON3_VERSION="3.12.11-r0"
@@ -6,12 +6,15 @@ ENV PYTHON3_VERSION="3.12.11-r0"
 ENV PIP_VERSION="25.1.1-r0"
 # renovate: datasource=repology depName=alpine_3_22/build-base versioning=loose
 ENV BUILD_BASE_VERSION="0.5-r3"
+# renovate: datasource=repology depName=alpine_3_22/libffi-dev versioning=loose
+ENV LIBFFI_DEV_VERSION="3.4.6-r0"
 
 RUN apk add --no-cache \
     python3="${PYTHON3_VERSION}" \
     py3-pip="${PIP_VERSION}" \
     python3-dev="${PYTHON3_VERSION}" \
-    build-base="${BUILD_BASE_VERSION}"
+    build-base="${BUILD_BASE_VERSION}" \
+    libffi-dev="${LIBFFI_DEV_VERSION}"
 
 # renovate: datasource=pypi depName=kubernetes
 ENV PYPI_KUBERNETES_VERSION="34.1.0"
@@ -28,7 +31,7 @@ RUN python3 -m pip install --no-cache-dir --prefix=/opt/deps \
     requests=="${PYPI_REQUESTS_VERSION}" \
     s3cmd=="${PYPI_S3CMD_VERSION}"
 
-FROM alpine:3.22.2
+FROM --platform=linux/amd64 alpine:3.22.2
 
 # Build environment variables for versions
 # renovate: datasource=github-tags depName=kubernetes/kubernetes versioning=semver
