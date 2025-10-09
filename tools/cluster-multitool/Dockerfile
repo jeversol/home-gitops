@@ -7,7 +7,7 @@ ENV PIP_VERSION="25.1.1-r0"
 # renovate: datasource=repology depName=alpine_3_22/build-base versioning=loose
 ENV BUILD_BASE_VERSION="0.5-r3"
 # renovate: datasource=repology depName=alpine_3_22/libffi-dev versioning=loose
-ENV LIBFFI_DEV_VERSION="3.4.6-r0"
+ENV LIBFFI_DEV_VERSION="3.4.8-r0"
 
 RUN apk add --no-cache \
     python3="${PYTHON3_VERSION}" \
