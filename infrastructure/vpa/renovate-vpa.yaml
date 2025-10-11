@@ -1,0 +1,26 @@
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: renovate-redis-vpa
+  namespace: renovate
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: renovate-redis
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: renovate-webhook-vpa
+  namespace: renovate
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: renovate-webhook
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode

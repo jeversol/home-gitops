@@ -1,0 +1,65 @@
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: thanos-query-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: thanos-query
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: thanos-compact-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: thanos-compact
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: thanos-store-gateway-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: thanos-store-gateway
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: influxdb-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: influxdb
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: smartctl-exporter-vpa
+  namespace: o11y
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: DaemonSet
+    name: smartctl-exporter-prometheus-smartctl-exporter-0
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode

@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - cert-manager-vpa.yaml
   - cloudflare-tunnel-vpa.yaml
+  - cloudnative-pg-vpa.yaml
   - democratic-csi-vpa.yaml
   - external-dns-vpa.yaml
   - flux-vpa.yaml
@@ -11,9 +12,12 @@ resources:
   - longhorn-vpa.yaml
   - media-vpa.yaml
   - node-feature-discovery-vpa.yaml
+  - o11y-vpa.yaml
+  - renovate-vpa.yaml
   - scrutiny-vpa.yaml
   - spoolman-vpa.yaml
   - system-daemonsets-vpa.yaml
   - system-deployments-vpa.yaml
+  - system-upgrade-controller-vpa.yaml
   - traefik-forward-auth-vpa.yaml
   - traefik-vpa.yaml

@@ -1,0 +1,13 @@
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: system-upgrade-controller-vpa
+  namespace: system-upgrade
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: system-upgrade-controller
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
