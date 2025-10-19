@@ -58,6 +58,7 @@
     },
     {
       matchPackageNames: ['ghcr.io/analogj/scrutiny'],
+      groupName: 'scrutiny',
       pinDigests: true,
       separateMinorPatch: true,
     },
