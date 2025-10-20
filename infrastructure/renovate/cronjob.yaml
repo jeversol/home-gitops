@@ -28,7 +28,7 @@ spec:
             fsGroup: 0
           initContainers:
             - name: github-app-token
-              image: renovate/renovate:41.147.0
+              image: renovate/renovate:41.155.2
               imagePullPolicy: IfNotPresent
               command: ["node", "/renovate-bin/github-app-token.js"]
               env:
@@ -62,7 +62,7 @@ spec:
                   type: RuntimeDefault
           containers:
             - name: renovate
-              image: renovate/renovate:41.147.0
+              image: renovate/renovate:41.155.2
               imagePullPolicy: IfNotPresent
               command: ["/bin/bash", "-lc"]
               args:
