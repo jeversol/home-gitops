@@ -141,3 +141,8 @@ spec:
         relabelings:
           - sourceLabels: [__meta_kubernetes_endpoint_node_name]
             targetLabel: node
+    alertmanager:
+      alertmanagerSpec:
+        configSecret: alertmanager-config
+        secrets:
+          - alertmanager-secrets
