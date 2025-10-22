@@ -42,7 +42,6 @@ spec:
               cpu: 25m
               memory: 100Mi
             limits:
-              cpu: 50m
               memory: 150Mi
           securityContext:
             seLinuxOptions:

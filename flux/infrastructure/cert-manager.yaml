@@ -52,7 +52,6 @@ spec:
         cpu: 25m
         memory: 121Mi
       limits:
-        cpu: 25m
         memory: 151Mi
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1

@@ -39,7 +39,6 @@ spec:
           cpu: 100m
           memory: 256Mi
         limits:
-          cpu: 500m
           memory: 1Gi
       
     # Enable Store Gateway for historical data from S3
@@ -55,7 +54,6 @@ spec:
           cpu: 100m
           memory: 256Mi
         limits:
-          cpu: 500m
           memory: 1Gi
     
     # Enable Compactor for block management and downsampling
@@ -75,7 +73,6 @@ spec:
           cpu: 100m
           memory: 256Mi
         limits:
-          cpu: 500m
           memory: 1Gi
     
     # Disable other components

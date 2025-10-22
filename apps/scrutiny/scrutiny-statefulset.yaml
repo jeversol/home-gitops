@@ -44,7 +44,6 @@ spec:
               cpu: 25m
               memory: 104Mi
             limits:
-              cpu: 200m
               memory: 256Mi
           volumeMounts:
             - name: config

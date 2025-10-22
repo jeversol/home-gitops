@@ -73,7 +73,6 @@ spec:
         cpu: 75m
         memory: 64Mi
       limits:
-        cpu: 300m
         memory: 128Mi
     
     tolerations:
