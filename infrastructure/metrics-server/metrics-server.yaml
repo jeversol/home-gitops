@@ -213,7 +213,6 @@ spec:
               cpu: 25m
               memory: 105Mi
             limits:
-              cpu: 100m
               memory: 200Mi
       volumes:
         - name: tmp

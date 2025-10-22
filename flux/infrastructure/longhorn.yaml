@@ -106,7 +106,6 @@ spec:
           cpu: 50m
           memory: 335Mi
         limits:
-          cpu: 250m
           memory: 650Mi
       preUpgradeChecker:
         resources:
@@ -114,5 +113,4 @@ spec:
             cpu: 12m
             memory: 50Mi
           limits:
-            cpu: 13m
             memory: 50Mi
