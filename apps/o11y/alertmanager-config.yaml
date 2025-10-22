@@ -1,0 +1,58 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alertmanager-config
+  namespace: o11y
+type: Opaque
+stringData:
+  alertmanager.yaml: |
+    global:
+      resolve_timeout: 5m
+
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 12h
+      receiver: 'default'
+      routes:
+        # Critical and Warning alerts go to Pushover (phone notifications)
+        - match_re:
+            severity: ^(critical|warning)$
+          receiver: 'pushover'
+          continue: true  # Also send to Discord
+        # All alerts go to Discord for logging
+        - receiver: 'discord'
+          matchers:
+            - alertname=~".+"
+
+    receivers:
+      # Default receiver (does nothing, but required)
+      - name: 'default'
+
+      # Pushover for critical/warning alerts
+      - name: 'pushover'
+        pushover_configs:
+          - user_key_file: /etc/alertmanager/secrets/alertmanager-secrets/pushover-user-key
+            token_file: /etc/alertmanager/secrets/alertmanager-secrets/pushover-api-token
+            priority: '{{ if eq .CommonLabels.severity "critical" }}2{{ else }}1{{ end }}'
+            retry: 30s
+            expire: 3600s
+            title: '{{ .CommonLabels.alertname }}'
+            message: |
+              {{ range .Alerts }}
+              {{ .Annotations.summary }}
+              {{ .Annotations.description }}
+              {{ end }}
+
+      # Discord for all alerts (logging/history)
+      - name: 'discord'
+        discord_configs:
+          - webhook_url_file: /etc/alertmanager/secrets/alertmanager-secrets/discord-webhook-url
+            title: '{{ .CommonLabels.alertname }}'
+            message: |
+              {{ range .Alerts }}
+              **{{ .Labels.severity | toUpper }}**: {{ .Annotations.summary }}
+              {{ .Annotations.description }}
+              {{ end }}

@@ -1,0 +1,70 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: resource-alerts
+  namespace: o11y
+  labels:
+    prometheus: kube-prometheus-stack-prometheus
+    role: alert-rules
+spec:
+  groups:
+    - name: container-resource-alerts
+      interval: 30s
+      rules:
+        # Alert on OOM kills
+        - alert: PodOOMKilled
+          expr: |
+            rate(kube_pod_container_status_restarts_total[5m]) > 0
+            and
+            kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} == 1
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} was OOM killed"
+            description: "Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} was killed due to out of memory. This indicates the memory limit is too low."
+
+        # Alert when a container is consuming excessive CPU (>80% of a full core for extended period)
+        - alert: PodHighCPUUsage
+          expr: |
+            rate(container_cpu_usage_seconds_total{container!="",container!="POD"}[5m]) > 0.8
+          for: 15m
+          labels:
+            severity: info
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} using high CPU"
+            description: "Container {{ $labels.container }} in {{ $labels.namespace }}/{{ $labels.pod }} is using {{ $value | humanizePercentage }} of a CPU core (>80%) for over 15 minutes. This is informational since CPU limits were removed."
+
+        # Alert when node CPU is critically high
+        - alert: NodeCPUSaturation
+          expr: |
+            (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance)) * 100 > 85
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Node {{ $labels.instance }} CPU critically high"
+            description: "Node {{ $labels.instance }} has been running at {{ $value | humanize }}% CPU for over 10 minutes. Check for runaway processes."
+
+        # Alert when node CPU is completely pegged
+        - alert: NodeCPUPegged
+          expr: |
+            (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) by (instance)) * 100 > 95
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Node {{ $labels.instance }} CPU pegged"
+            description: "Node {{ $labels.instance }} has been running at {{ $value | humanize }}% CPU for over 5 minutes. Immediate attention required."
+
+        # Alert when memory usage is critically high (>90% of node capacity)
+        - alert: NodeMemoryPressure
+          expr: |
+            (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Node {{ $labels.instance }} memory pressure"
+            description: "Node {{ $labels.instance }} memory usage is at {{ $value | humanize }}%. Available memory is critically low."
