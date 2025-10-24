@@ -1,0 +1,117 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: loki
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: loki
+  targetNamespace: o11y
+  chart:
+    spec:
+      chart: loki
+      version: "6.40.0"  # renovate: datasource=helm depName=loki registryUrl=https://grafana.github.io/helm-charts
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # Deploy in monolithic mode (single pod)
+    deploymentMode: SingleBinary
+
+    loki:
+      # Loki configuration
+      schemaConfig:
+        configs:
+          - from: "2024-01-01"
+            store: tsdb
+            object_store: s3
+            schema: v13
+            index:
+              prefix: loki_index_
+              period: 24h
+
+      # Ingester configuration
+      ingester:
+        chunk_encoding: snappy
+
+      # Query limits
+      querier:
+        max_concurrent: 4
+
+      # Storage configuration
+      storage:
+        type: s3
+        bucketNames:
+          chunks: loki
+          ruler: loki
+          admin: loki
+        s3:
+          endpoint: nas.i.recompiled.org:3900
+          region: garage
+          secretAccessKey: b6be0bef887bea51d2d9fc4363a90b5c9eeafd133db6672c258588b5708dce9a
+          accessKeyId: GKf4678382d93a069a15ae27e6
+          s3ForcePathStyle: true
+          insecure: false
+
+      # Retention configuration (30 days)
+      limits_config:
+        retention_period: 720h
+
+      # Pattern ingester for log pattern detection
+      pattern_ingester:
+        enabled: true
+
+      # Ruler for alerting (disabled for now)
+      rulerConfig:
+        enable_api: true
+        storage:
+          type: s3
+
+    # Single binary deployment settings
+    singleBinary:
+      replicas: 1
+      persistence:
+        enabled: true
+        storageClass: longhorn
+        size: 10Gi
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 2Gi
+
+    # Zero out other deployment modes
+    backend:
+      replicas: 0
+    read:
+      replicas: 0
+    write:
+      replicas: 0
+
+    # Disable test pods
+    test:
+      enabled: false
+
+    # Disable monitoring (we already have prometheus)
+    monitoring:
+      selfMonitoring:
+        enabled: false
+        grafanaAgent:
+          installOperator: false
+
+    # Disable MinIO (we're using Garage)
+    minio:
+      enabled: false
+
+    # Disable gateway (unnecessary for monolithic mode)
+    gateway:
+      enabled: false

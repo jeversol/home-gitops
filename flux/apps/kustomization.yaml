@@ -7,6 +7,8 @@ resources:
   - o11y.yaml
   - kube-prometheus-stack.yaml
   - thanos.yaml
+  - loki.yaml
+  - alloy.yaml
   - scrutiny.yaml
   - scrutiny-influxdb.yaml
   - helmrepo-influxdata.yaml
