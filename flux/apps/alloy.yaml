@@ -1,0 +1,118 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: alloy
+  targetNamespace: o11y
+  chart:
+    spec:
+      chart: alloy
+      version: "1.2.1"  # renovate: datasource=helm depName=alloy registryUrl=https://grafana.github.io/helm-charts
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    alloy:
+      configMap:
+        content: |
+          // Loki endpoint for writing logs
+          loki.write "default" {
+            endpoint {
+              url = "http://loki.o11y.svc.cluster.local:3100/loki/api/v1/push"
+            }
+          }
+
+          // Discover Kubernetes pods
+          discovery.kubernetes "pods" {
+            role = "pod"
+          }
+
+          // Relabel to add metadata
+          discovery.relabel "pod_logs" {
+            targets = discovery.kubernetes.pods.targets
+
+            // Only keep running pods
+            rule {
+              source_labels = ["__meta_kubernetes_pod_phase"]
+              regex         = "Pending|Succeeded|Failed|Completed"
+              action        = "drop"
+            }
+
+            // Drop pods from kube-system and kube-public
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              regex         = "kube-system|kube-public"
+              action        = "drop"
+            }
+
+            // Add namespace label
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              target_label  = "namespace"
+            }
+
+            // Add pod name label
+            rule {
+              source_labels = ["__meta_kubernetes_pod_name"]
+              target_label  = "pod"
+            }
+
+            // Add container name label
+            rule {
+              source_labels = ["__meta_kubernetes_pod_container_name"]
+              target_label  = "container"
+            }
+
+            // Add node name label
+            rule {
+              source_labels = ["__meta_kubernetes_pod_node_name"]
+              target_label  = "node"
+            }
+
+            // Set the path to the pod logs
+            rule {
+              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_name"]
+              separator     = "/"
+              target_label  = "__path__"
+              replacement   = "/var/log/pods/*$1*/*.log"
+            }
+          }
+
+          // Collect logs from Kubernetes pods
+          loki.source.kubernetes "pods" {
+            targets    = discovery.relabel.pod_logs.output
+            forward_to = [loki.process.pod_logs.receiver]
+          }
+
+          // Process logs to add cluster label
+          loki.process "pod_logs" {
+            stage.static_labels {
+              values = {
+                cluster = "home-k8s",
+              }
+            }
+
+            forward_to = [loki.write.default.receiver]
+          }
+
+      mounts:
+        varlog: true
+
+    controller:
+      type: daemonset
+
+      # Security context
+      securityContext:
+        privileged: true
+        runAsUser: 0

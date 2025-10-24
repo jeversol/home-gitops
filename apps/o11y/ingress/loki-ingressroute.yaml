@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: loki
+  namespace: o11y
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`loki.i.recompiled.org`)
+      kind: Rule
+      services:
+        - name: loki
+          port: 3100
+  tls:
+    certResolver: letsencrypt
