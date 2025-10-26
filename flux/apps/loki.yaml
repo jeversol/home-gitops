@@ -93,6 +93,10 @@ spec:
     ruler:
       enabled: false
 
+    # Disable loki-canary
+    lokiCanary:
+      enabled: false
+
     # Single binary deployment settings
     singleBinary:
       replicas: 1
