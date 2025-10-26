@@ -52,6 +52,10 @@ spec:
     securityContext:
       seccompProfile:
         type: RuntimeDefault
+    ports:
+      web:
+        redirectTo:
+          port: websecure
     providers:
       kubernetesCRD:
         allowCrossNamespace: true
