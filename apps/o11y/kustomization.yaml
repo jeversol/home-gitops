@@ -5,7 +5,7 @@ resources:
   - ingress/
   - grafana-auth0-secret.yaml
   - thanos-storage-secret.yaml
-  - loki-storage-secret.yaml
+  - loki-s3-secret.yaml
   - resource-alerts.yaml
   - alertmanager-secret.yaml
   - alertmanager-config.yaml

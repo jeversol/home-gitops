@@ -27,6 +27,19 @@ spec:
     deploymentMode: SingleBinary
 
     loki:
+      # Environment variables for S3 credentials
+      env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: loki-s3-credentials
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: loki-s3-credentials
+              key: AWS_SECRET_ACCESS_KEY
+
       # Loki configuration
       schemaConfig:
         configs:
@@ -55,9 +68,9 @@ spec:
           admin: loki
         s3:
           endpoint: nas.i.recompiled.org:3900
-          region: garage
-          secretAccessKey: b6be0bef887bea51d2d9fc4363a90b5c9eeafd133db6672c258588b5708dce9a
-          accessKeyId: GKf4678382d93a069a15ae27e6
+          region: us-east-1
+          secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+          accessKeyId: ${AWS_ACCESS_KEY_ID}
           s3ForcePathStyle: true
           insecure: false
 
