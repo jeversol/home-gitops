@@ -30,6 +30,10 @@ spec:
       # Disable multi-tenancy
       auth_enabled: false
 
+      # Common config for monolithic mode
+      commonConfig:
+        replication_factor: 1
+
       # Environment variables for S3 credentials
       env:
         - name: AWS_ACCESS_KEY_ID
@@ -85,15 +89,16 @@ spec:
       pattern_ingester:
         enabled: true
 
-      # Ruler for alerting (disabled for now)
-      rulerConfig:
-        enable_api: true
-        storage:
-          type: s3
+    # Disable ruler component entirely
+    ruler:
+      enabled: false
 
     # Single binary deployment settings
     singleBinary:
       replicas: 1
+      # Enable environment variable expansion in config
+      extraArgs:
+        - -config.expand-env=true
       persistence:
         enabled: true
         storageClass: longhorn
@@ -123,6 +128,12 @@ spec:
         enabled: false
         grafanaAgent:
           installOperator: false
+
+    # Disable caches for true monolithic mode
+    chunksCache:
+      enabled: false
+    resultsCache:
+      enabled: false
 
     # Disable MinIO (we're using Garage)
     minio:
