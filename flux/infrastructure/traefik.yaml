@@ -54,8 +54,11 @@ spec:
         type: RuntimeDefault
     ports:
       web:
-        redirectTo:
-          port: websecure
+        redirections:
+          entryPoint:
+            to: websecure
+            scheme: https
+            permanent: true
     providers:
       kubernetesCRD:
         allowCrossNamespace: true
