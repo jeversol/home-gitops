@@ -16,5 +16,8 @@ spec:
       services:
         - name: kube-prometheus-stack-prometheus
           port: 9090
+      middlewares:
+        - name: basic-auth
+          namespace: traefik
   tls:
     secretName: metrics-tls

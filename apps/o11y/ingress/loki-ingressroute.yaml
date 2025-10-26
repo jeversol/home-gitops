@@ -4,6 +4,9 @@ kind: IngressRoute
 metadata:
   name: loki
   namespace: o11y
+  annotations:
+    external-dns.alpha.kubernetes.io/expose: "true"
+    external-dns.alpha.kubernetes.io/target: traefik.i.recompiled.org
 spec:
   entryPoints:
     - websecure
@@ -13,5 +16,8 @@ spec:
       services:
         - name: loki
           port: 3100
+      middlewares:
+        - name: basic-auth
+          namespace: traefik
   tls:
     certResolver: letsencrypt

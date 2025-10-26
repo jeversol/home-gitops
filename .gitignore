@@ -37,3 +37,4 @@ tools/grafana-mixins/out
 tools/talos-automation/.env
 tools/talos-automation/talosconfig
 tools/talos-automation/talos-automation.tar
+.basic-auth-credentials.txt
