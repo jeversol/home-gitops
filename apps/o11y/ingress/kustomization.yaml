@@ -7,3 +7,5 @@ resources:
   - grafana-tls-cert.yaml
   - thanos-ingressroute.yaml
   - thanos-tls-cert.yaml
+  - loki-ingressroute.yaml
+  - loki-tls-cert.yaml

@@ -6,3 +6,5 @@ resources:
   - traefik-forward-auth-deployment.yaml
   - traefik-forward-auth-service.yaml
   - traefik-forward-auth-middleware.yaml
+  - basic-auth-secret.yaml
+  - basic-auth-middleware.yaml
