@@ -9,6 +9,25 @@ spec:
   storage:
     size: 2Gi
     storageClass: longhorn
+
+  backup:
+    retentionPolicy: 14d
+    barmanObjectStore:
+      destinationPath: "s3://pg-spoolman/spoolman/"
+      endpointURL: "https://nas.i.recompiled.org:3900"
+      s3Credentials:
+        accessKeyId:
+          name: spoolman-postgres-backup
+          key: AWS_ACCESS_KEY_ID
+        secretAccessKey:
+          name: spoolman-postgres-backup
+          key: AWS_SECRET_ACCESS_KEY
+      wal:
+        compression: gzip
+      data:
+        compression: gzip
+      s3Config:
+        pathStyle: true
     
   monitoring:
     enablePodMonitor: true
