@@ -33,19 +33,7 @@ spec:
       # Common config for monolithic mode
       commonConfig:
         replication_factor: 1
-
-      # Environment variables for S3 credentials
-      env:
-        - name: AWS_ACCESS_KEY_ID
-          valueFrom:
-            secretKeyRef:
-              name: loki-s3-credentials
-              key: AWS_ACCESS_KEY_ID
-        - name: AWS_SECRET_ACCESS_KEY
-          valueFrom:
-            secretKeyRef:
-              name: loki-s3-credentials
-              key: AWS_SECRET_ACCESS_KEY
+        path_prefix: /var/loki
 
       # Loki configuration
       schemaConfig:
@@ -66,7 +54,7 @@ spec:
       querier:
         max_concurrent: 4
 
-      # Storage configuration
+      # Storage configuration for single-binary TSDB mode
       storage:
         type: s3
         bucketNames:
@@ -80,6 +68,19 @@ spec:
           accessKeyId: ${AWS_ACCESS_KEY_ID}
           s3ForcePathStyle: true
           insecure: false
+      # storage feeds Helm's helpers; storage_config is the actual Loki block.
+      storage_config:
+        aws:
+          bucketnames: loki
+          endpoint: nas.i.recompiled.org:3900
+          region: us-east-1
+          secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+          access_key_id: ${AWS_ACCESS_KEY_ID}
+          s3forcepathstyle: true
+          insecure: false
+        tsdb_shipper:
+          active_index_directory: /var/loki/index
+          cache_location: /var/loki/cache
 
       # Retention configuration (30 days)
       limits_config:
@@ -88,6 +89,15 @@ spec:
       # Pattern ingester for log pattern detection
       pattern_ingester:
         enabled: true
+
+      # Compactor configuration - REQUIRED for retention to work
+      compactor:
+        working_directory: /var/loki/compactor
+        compaction_interval: 10m
+        retention_enabled: true
+        retention_delete_delay: 2h
+        retention_delete_worker_count: 150
+        delete_request_store: s3
 
     # Disable ruler component entirely
     ruler:
@@ -103,6 +113,10 @@ spec:
       # Enable environment variable expansion in config
       extraArgs:
         - -config.expand-env=true
+      # Inject S3 credentials from secret
+      extraEnvFrom:
+        - secretRef:
+            name: loki-s3-credentials
       persistence:
         enabled: true
         storageClass: longhorn

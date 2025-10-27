@@ -95,12 +95,24 @@ spec:
             forward_to = [loki.process.pod_logs.receiver]
           }
 
-          // Process logs to add cluster label
+          // Process logs to add cluster label and filter noise
           loki.process "pod_logs" {
             stage.static_labels {
               values = {
                 cluster = "home-k8s",
               }
+            }
+
+            // Drop leader election logs
+            stage.drop {
+              expression  = ".*successfully (acquired|renewed) lease.*"
+              drop_counter_reason = "leader_election"
+            }
+
+            // Drop nfd-worker feature discovery logs
+            stage.drop {
+              expression  = ".*(starting feature discovery|feature discovery completed).*"
+              drop_counter_reason = "nfd_worker_noise"
             }
 
             forward_to = [loki.write.default.receiver]
