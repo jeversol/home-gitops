@@ -9,8 +9,9 @@ resources:
   - bambu-spoolman/configmap.yaml
   - bambu-spoolman/secret.yaml
   - bambu-spoolman/pvc.yaml
-  - bambu-spoolman/middleware.yaml
   - bambu-spoolman/deployment.yaml
   - bambu-spoolman/service.yaml
+  - bambu-spoolman/ingressroute.yaml
+  - bambu-spoolman/certificate.yaml
   - ingressroute.yaml
   - certificate.yaml

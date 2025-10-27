@@ -1,12 +1,12 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: spoolman-tls
+  name: bambu-spoolman-tls
   namespace: spoolman
 spec:
-  secretName: spoolman-tls
+  secretName: bambu-spoolman-tls
   issuerRef:
     name: letsencrypt
     kind: ClusterIssuer
   dnsNames:
-    - spoolman.i.recompiled.org
+    - bambu-spoolman.i.recompiled.org
