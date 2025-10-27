@@ -19,8 +19,21 @@ metadata:
   namespace: spoolman
 spec:
   targetRef:
-    apiVersion: postgresql.cnpg.io/v1
-    kind: Cluster
+    apiVersion: apps/v1
+    kind: StatefulSet
     name: spoolman-postgres
+  updatePolicy:
+    updateMode: "Off"  # Recommendation-only mode
+---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: bambu-spoolman-vpa
+  namespace: spoolman
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: bambu-spoolman
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode
