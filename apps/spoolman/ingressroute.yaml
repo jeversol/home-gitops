@@ -12,8 +12,18 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`spoolman.i.recompiled.org`)
+    - match: Host(`spoolman.i.recompiled.org`) && PathPrefix(`/bambu`)
       kind: Rule
+      services:
+        - name: bambu-spoolman
+          port: 8080
+      middlewares:
+        - name: traefik-forward-auth
+          namespace: traefik
+        - name: bambu-strip-prefix
+    - match: Host(`spoolman.i.recompiled.org`) && !PathPrefix(`/bambu`)
+      kind: Rule
+      # Default Spoolman UI
       services:
         - name: spoolman
           port: 8000

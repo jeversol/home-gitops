@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bambu-spoolman-config
+  namespace: spoolman
+data:
+  SPOOLMAN_URL: http://spoolman.spoolman.svc.cluster.local:8000
+  SPOOLMAN_VERIFY: "false"
+  BAMBU_SPOOLMAN_CONFIG: /config

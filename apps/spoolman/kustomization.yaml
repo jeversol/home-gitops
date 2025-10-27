@@ -6,5 +6,11 @@ resources:
   - postgres-cluster.yaml
   - statefulset.yaml
   - service.yaml
+  - bambu-spoolman/configmap.yaml
+  - bambu-spoolman/secret.yaml
+  - bambu-spoolman/pvc.yaml
+  - bambu-spoolman/middleware.yaml
+  - bambu-spoolman/deployment.yaml
+  - bambu-spoolman/service.yaml
   - ingressroute.yaml
   - certificate.yaml
