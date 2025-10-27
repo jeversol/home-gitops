@@ -115,6 +115,12 @@ spec:
               drop_counter_reason = "nfd_worker_noise"
             }
 
+            // Drop noisy snapshot-controller non-leader logs
+            stage.drop {
+              expression  = ".*snapshot-controller.*(lock is held by|failed to acquire lease).*"
+              drop_counter_reason = "snapshot_controller_leader_polling"
+            }
+
             forward_to = [loki.write.default.receiver]
           }
 
