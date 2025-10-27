@@ -3,7 +3,9 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - postgres-secret.yaml
+  - spoolman-postgres-backup-secret.yaml
   - postgres-cluster.yaml
+  - spoolman-postgres-scheduled-backup.yaml
   - statefulset.yaml
   - service.yaml
   - bambu-spoolman/configmap.yaml
