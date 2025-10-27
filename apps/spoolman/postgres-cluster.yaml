@@ -26,8 +26,6 @@ spec:
         compression: gzip
       data:
         compression: gzip
-      s3Config:
-        pathStyle: true
     
   monitoring:
     enablePodMonitor: true
