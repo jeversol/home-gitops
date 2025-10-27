@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bambu-spoolman
+  namespace: spoolman
+  labels:
+    app: bambu-spoolman
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bambu-spoolman
+  template:
+    metadata:
+      labels:
+        app: bambu-spoolman
+    spec:
+      containers:
+        - name: bambu-spoolman
+          image: ghcr.io/mrkirby153/bambu-spoolman:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          envFrom:
+            - configMapRef:
+                name: bambu-spoolman-config
+            - secretRef:
+                name: bambu-spoolman-printer
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: bambu-spoolman-config
