@@ -12,9 +12,37 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`spoolman.i.recompiled.org`)
+    - match: (Host(`spoolman.i.recompiled.org`) && PathPrefix(`/api/`) && Method(`GET`)) || (Host(`spoolman.i.recompiled.org`) && PathPrefix(`/api/`) && Method(`HEAD`)) || (Host(`spoolman.i.recompiled.org`) && PathPrefix(`/api/`) && Method(`OPTIONS`))
+      priority: 100
       kind: Rule
-      # Default Spoolman UI
+      # Read-only API access for anonymous callers
+      services:
+        - name: spoolman
+          port: 8000
+    - match: (Host(`spoolman.i.recompiled.org`) && PathPrefix(`/api/`) && Method(`POST`)) || (Host(`spoolman.i.recompiled.org`) && PathPrefix(`/api/`) && Method(`PUT`)) || (Host(`spoolman.i.recompiled.org`) && PathPrefix(`/api/`) && Method(`PATCH`)) || (Host(`spoolman.i.recompiled.org`) && PathPrefix(`/api/`) && Method(`DELETE`))
+      priority: 90
+      kind: Rule
+      # Authenticated API write operations
+      services:
+        - name: spoolman
+          port: 8000
+      middlewares:
+        - name: traefik-forward-auth
+          namespace: traefik
+    - match: Host(`spoolman.i.recompiled.org`) && PathPrefix(`/api/`)
+      priority: 80
+      kind: Rule
+      # Fallback for any other API verbs, still behind Auth0
+      services:
+        - name: spoolman
+          port: 8000
+      middlewares:
+        - name: traefik-forward-auth
+          namespace: traefik
+    - match: Host(`spoolman.i.recompiled.org`) && !PathPrefix(`/api/`)
+      priority: 50
+      kind: Rule
+      # Authenticated web UI and any other paths
       services:
         - name: spoolman
           port: 8000
