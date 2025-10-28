@@ -32,6 +32,8 @@ spec:
       prometheusSpec:
         retention: 35d
         enableRemoteWriteReceiver: true
+        externalLabels:
+          cluster: talos
         thanos:
           baseImage: quay.io/thanos/thanos
           version: v0.39.2  # renovate: datasource=docker depName=quay.io/thanos/thanos
