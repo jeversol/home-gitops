@@ -109,5 +109,15 @@
       ],
       versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
     },
+    {
+      customType: 'regex',
+      managerFilePatterns: ['^flux/flux-system/flux-instance\\.yaml$'],
+      matchStrings: [
+        'version:\\s+"(?<currentValue>\\d+\\.\\d+)\\.x"',
+      ],
+      datasourceTemplate: 'github-releases',
+      depNameTemplate: 'fluxcd/flux2',
+      extractVersionTemplate: '^v(?<version>\\d+\\.\\d+)',
+    },
   ],
 }
