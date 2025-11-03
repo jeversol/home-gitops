@@ -69,13 +69,9 @@ data:
         ;;
 
       pull_request)
-        if [ "$ACTION" != "edited" ]; then
-          log "ignored pull_request action $ACTION"
-          exit 0
-        fi
-
         PR_BRANCH=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.head.ref // ""')
-        log "pull_request branch=$PR_BRANCH"
+        log "pull_request branch=$PR_BRANCH action=$ACTION"
+
         case "$PR_BRANCH" in
           renovate/*) ;;
           *)
@@ -84,10 +80,27 @@ data:
             ;;
         esac
 
-        NEW_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.body // ""')
-        OLD_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.changes.body.from // ""')
-        if [ -z "$OLD_BODY_TEXT" ]; then
-          log "pull_request change did not include previous body"
+        # Handle PR close/merge events
+        if [ "$ACTION" = "closed" ]; then
+          PR_MERGED=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.merged // false')
+          log "pull_request closed merged=$PR_MERGED"
+          if [ "$PR_MERGED" = "true" ]; then
+            log "renovate PR merged, triggering run"
+            SKIP_CHECKBOX_CHECK="true"
+          else
+            log "ignored pull_request close without merge"
+            exit 0
+          fi
+        elif [ "$ACTION" = "edited" ]; then
+          NEW_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.body // ""')
+          OLD_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.changes.body.from // ""')
+          if [ -z "$OLD_BODY_TEXT" ]; then
+            log "pull_request change did not include previous body"
+            exit 0
+          fi
+          SKIP_CHECKBOX_CHECK="false"
+        else
+          log "ignored pull_request action $ACTION"
           exit 0
         fi
         ;;
@@ -98,31 +111,34 @@ data:
         ;;
     esac
 
-    log "new body length=$(printf '%s' "$NEW_BODY_TEXT" | wc -c) old body length=$(printf '%s' "$OLD_BODY_TEXT" | wc -c)"
+    # Check for checkbox toggle (skip if PR was merged)
+    if [ "${SKIP_CHECKBOX_CHECK:-false}" = "false" ]; then
+      log "new body length=$(printf '%s' "$NEW_BODY_TEXT" | wc -c) old body length=$(printf '%s' "$OLD_BODY_TEXT" | wc -c)"
 
-    if jq -n \
-      --arg old "$OLD_BODY_TEXT" \
-      --arg new "$NEW_BODY_TEXT" \
-      '
-        def lines($t): ($t | split("\n"));
-        def norm($line): ($line | sub("^\\s*"; "") | ascii_downcase);
-        def unchecked($line): norm($line) | test("^(\\-|\\*) \\[ \\]");
-        def checked($line): norm($line) | test("^(\\-|\\*) \\[(x|\\*)\\]");
+      if jq -n \
+        --arg old "$OLD_BODY_TEXT" \
+        --arg new "$NEW_BODY_TEXT" \
+        '
+          def lines($t): ($t | split("\n"));
+          def norm($line): ($line | sub("^\\s*"; "") | ascii_downcase);
+          def unchecked($line): norm($line) | test("^(\\-|\\*) \\[ \\]");
+          def checked($line): norm($line) | test("^(\\-|\\*) \\[(x|\\*)\\]");
 
-        lines($old) as $oldLines |
-        lines($new) as $newLines |
-        ([$oldLines|length, $newLines|length] | min) as $len |
-        any(
-          range(0; $len);
-          ($oldLines[.] // "") as $o |
-          ($newLines[.] // "") as $n |
-          $o != $n and unchecked($o) and checked($n)
-        )
-      ' >/dev/null; then
-      log "checkbox toggled in body"
-    else
-      log "no checkbox toggled from unchecked to checked"
-      exit 0
+          lines($old) as $oldLines |
+          lines($new) as $newLines |
+          ([$oldLines|length, $newLines|length] | min) as $len |
+          any(
+            range(0; $len);
+            ($oldLines[.] // "") as $o |
+            ($newLines[.] // "") as $n |
+            $o != $n and unchecked($o) and checked($n)
+          )
+        ' >/dev/null; then
+        log "checkbox toggled in body"
+      else
+        log "no checkbox toggled from unchecked to checked"
+        exit 0
+      fi
     fi
 
     API_SERVER="https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}"
