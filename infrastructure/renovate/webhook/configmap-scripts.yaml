@@ -80,6 +80,70 @@ data:
             ;;
         esac
 
+        # Handle PR opened/assigned events for notifications
+        if [ "$ACTION" = "opened" ] || [ "$ACTION" = "assigned" ]; then
+          PR_ASSIGNEES=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.assignees | length')
+
+          # Only notify if PR has assignees (manual review required)
+          if [ "$PR_ASSIGNEES" -gt 0 ]; then
+            PR_TITLE=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.title // "Renovate PR"')
+            PR_URL=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.html_url // ""')
+            PR_NUMBER=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.number // ""')
+
+            log "sending notifications for PR #$PR_NUMBER"
+
+            # Send Pushover notification
+            if [ -n "${PUSHOVER_API_TOKEN:-}" ] && [ -n "${PUSHOVER_USER_KEY:-}" ]; then
+              PUSHOVER_RESPONSE=$(curl -sS -w "\n%{http_code}" \
+                --form-string "token=$PUSHOVER_API_TOKEN" \
+                --form-string "user=$PUSHOVER_USER_KEY" \
+                --form-string "title=Renovate PR #$PR_NUMBER" \
+                --form-string "message=$PR_TITLE" \
+                --form-string "url=$PR_URL" \
+                --form-string "url_title=View PR" \
+                --form-string "priority=0" \
+                https://api.pushover.net/1/messages.json 2>&1)
+              PUSHOVER_STATUS=$(echo "$PUSHOVER_RESPONSE" | tail -n1)
+              if [ "$PUSHOVER_STATUS" = "200" ]; then
+                log "pushover notification sent successfully"
+              else
+                log "pushover notification failed with status $PUSHOVER_STATUS"
+              fi
+            else
+              log "pushover credentials not configured, skipping"
+            fi
+
+            # Send Discord notification
+            if [ -n "${DISCORD_WEBHOOK_URL:-}" ]; then
+              DISCORD_MESSAGE=$(jq -n \
+                --arg title "$PR_TITLE" \
+                --arg url "$PR_URL" \
+                --arg number "$PR_NUMBER" \
+                '{
+                  content: ("**Renovate PR #" + $number + "**\n" + $title + "\n" + $url)
+                }')
+
+              DISCORD_RESPONSE=$(curl -sS -w "\n%{http_code}" \
+                -H "Content-Type: application/json" \
+                -d "$DISCORD_MESSAGE" \
+                "$DISCORD_WEBHOOK_URL" 2>&1)
+              DISCORD_STATUS=$(echo "$DISCORD_RESPONSE" | tail -n1)
+              if [ "$DISCORD_STATUS" = "204" ] || [ "$DISCORD_STATUS" = "200" ]; then
+                log "discord notification sent successfully"
+              else
+                log "discord notification failed with status $DISCORD_STATUS"
+              fi
+            else
+              log "discord webhook not configured, skipping"
+            fi
+          else
+            log "PR has no assignees, skipping notifications (auto-merge PR)"
+          fi
+
+          log "notification handling complete"
+          exit 0
+        fi
+
         # Handle PR close/merge events
         if [ "$ACTION" = "closed" ]; then
           PR_MERGED=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.merged // false')

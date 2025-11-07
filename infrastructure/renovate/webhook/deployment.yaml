@@ -36,6 +36,21 @@ spec:
                 secretKeyRef:
                   name: renovate-webhook-secret
                   key: github-secret
+            - name: PUSHOVER_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: renovate-webhook-secret
+                  key: pushover-api-token
+            - name: PUSHOVER_USER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: renovate-webhook-secret
+                  key: pushover-user-key
+            - name: DISCORD_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: renovate-webhook-secret
+                  key: discord-webhook-url
             - name: CRONJOB_NAME
               value: renovate
             - name: CRONJOB_NAMESPACE
