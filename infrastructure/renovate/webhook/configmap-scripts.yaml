@@ -45,13 +45,14 @@ data:
         ;;
     esac
 
-    if [ "$SENDER_LOGIN" = "${RENOVATE_BOT_LOGIN:-harry-botter-lumos[bot]}" ]; then
-      log "ignored sender login $SENDER_LOGIN"
-      exit 0
-    fi
-
     case "$EVENT" in
       issues)
+        # Issue edits should only be processed by users, not the bot
+        if [ "$SENDER_LOGIN" = "${RENOVATE_BOT_LOGIN:-harry-botter-lumos[bot]}" ]; then
+          log "ignored issue edit from bot $SENDER_LOGIN"
+          exit 0
+        fi
+
         if [ "$ACTION" != "edited" ]; then
           log "ignored issue action $ACTION"
           exit 0
@@ -156,6 +157,12 @@ data:
             exit 0
           fi
         elif [ "$ACTION" = "edited" ]; then
+          # Block bot from checkbox toggle logic to prevent false triggers
+          if [ "$SENDER_LOGIN" = "${RENOVATE_BOT_LOGIN:-harry-botter-lumos[bot]}" ]; then
+            log "ignored PR edit from bot $SENDER_LOGIN"
+            exit 0
+          fi
+
           NEW_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.body // ""')
           OLD_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.changes.body.from // ""')
           if [ -z "$OLD_BODY_TEXT" ]; then
