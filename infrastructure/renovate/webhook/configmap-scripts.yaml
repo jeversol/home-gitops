@@ -81,8 +81,8 @@ data:
             ;;
         esac
 
-        # Handle PR opened/assigned events for notifications
-        if [ "$ACTION" = "opened" ] || [ "$ACTION" = "assigned" ]; then
+        # Handle PR opened events for notifications
+        if [ "$ACTION" = "opened" ]; then
           PR_ASSIGNEES=$(printf '%s' "$PAYLOAD" | jq -r '.pull_request.assignees | length')
 
           # Only notify if PR has assignees (manual review required)
