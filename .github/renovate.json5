@@ -20,6 +20,7 @@
       groupName: 'renovate',
       matchUpdateTypes: ['patch', 'minor'],
       schedule: ['* 0-4 * * 1'],
+      automerge: true,
       assignees: [],
     },
     {
