@@ -186,7 +186,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: default-controller-env
-          image: rancher/system-upgrade-controller:v0.17.0  # renovate: datasource=github-releases depName=rancher/system-upgrade-controller
+          image: rancher/system-upgrade-controller:v0.18.0  # renovate: datasource=github-releases depName=rancher/system-upgrade-controller
           imagePullPolicy: IfNotPresent
           name: system-upgrade-controller
           securityContext:
