@@ -41,10 +41,10 @@ spec:
               value: "metrics"
           resources:
             requests:
-              cpu: 25m
-              memory: 104Mi
+              cpu: 10m
+              memory: 25Mi
             limits:
-              memory: 256Mi
+              memory: 75Mi
           volumeMounts:
             - name: config
               mountPath: /opt/scrutiny/config
