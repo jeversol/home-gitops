@@ -27,7 +27,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: flaresolverr
-          image: flaresolverr/flaresolverr:v3.4.4
+          image: flaresolverr/flaresolverr:v3.4.5
           imagePullPolicy: Always
           ports:
             - containerPort: 8191
