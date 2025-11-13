@@ -8,6 +8,7 @@ resources:
   - kube-prometheus-stack.yaml
   - thanos.yaml
   - loki.yaml
+  - mimir.yaml
   - alloy.yaml
   - scrutiny.yaml
   - scrutiny-influxdb.yaml

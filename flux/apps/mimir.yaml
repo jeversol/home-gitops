@@ -1,0 +1,187 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mimir-distributed
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: mimir
+  targetNamespace: o11y
+  chart:
+    spec:
+      chart: mimir-distributed
+      version: "6.0.3"  # renovate: datasource=helm depName=mimir-distributed registryUrl=https://grafana.github.io/helm-charts
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    minio:
+      enabled: false
+
+    global:
+      extraEnvFrom:
+        - secretRef:
+            name: mimir-s3-credentials
+
+    mimir:
+      structuredConfig:
+        multitenancy_enabled: false
+
+        common:
+          storage:
+            backend: s3
+            s3:
+              endpoint: nas.i.recompiled.org:3900
+              region: us-east-1
+              access_key_id: ${AWS_ACCESS_KEY_ID}
+              secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+              insecure: false
+
+        blocks_storage:
+          s3:
+            bucket_name: mimir-blocks
+
+        alertmanager_storage:
+          s3:
+            bucket_name: mimir-alertmanager
+
+        ruler_storage:
+          s3:
+            bucket_name: mimir-ruler
+
+        ingester:
+          ring:
+            replication_factor: 1
+
+        limits:
+          max_global_series_per_user: 250000
+          ingestion_rate: 10000
+          ingestion_burst_size: 20000
+
+    alertmanager:
+      enabled: false
+
+    distributor:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+
+    ingester:
+      replicas: 1
+      persistentVolume:
+        enabled: true
+        storageClass: longhorn
+        size: 10Gi
+      resources:
+        requests:
+          cpu: 500m
+          memory: 1.5Gi
+        limits:
+          memory: 3Gi
+      zoneAwareReplication:
+        enabled: false
+
+    querier:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 250m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+
+    query_frontend:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
+
+    query_scheduler:
+      enabled: true
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+
+    store_gateway:
+      replicas: 1
+      persistentVolume:
+        enabled: true
+        storageClass: longhorn
+        size: 5Gi
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+      zoneAwareReplication:
+        enabled: false
+
+    compactor:
+      replicas: 1
+      persistentVolume:
+        enabled: true
+        storageClass: longhorn
+        size: 20Gi
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+
+    ruler:
+      enabled: false
+
+    overrides_exporter:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+
+    admin-cache:
+      enabled: false
+    chunks-cache:
+      enabled: true
+      replicas: 1
+      allocatedMemory: 512
+    index-cache:
+      enabled: false
+    metadata-cache:
+      enabled: false
+    results-cache:
+      enabled: false
+
+    gateway:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+
+    rollout_operator:
+      enabled: false
