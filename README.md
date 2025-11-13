@@ -42,12 +42,15 @@ The infrastructure implements:
   - [flux-webhook](https://fluxcd.io/flux/components/notification/receivers/) - GitHub webhook receiver for Flux
   - [traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth) - OAuth authentication middleware
   - [Renovate](https://docs.renovatebot.com/) - Automated dependency updates with webhook integration
+  - [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) - Automated Talos OS and Kubernetes updates
 - Observability
   - [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
     - [Grafana](https://grafana.com/) - Visualization and dashboards with Auth0 integration
     - [Prometheus](https://prometheus.io/) - Metrics collection and alerting
     - [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) - Alert routing and management
   - [Thanos](https://thanos.io/) - Long-term storage and querying for Prometheus metrics
+  - [Loki](https://grafana.com/oss/loki/) - Log aggregation with S3 backend and 30-day retention
+  - [Alloy](https://grafana.com/docs/alloy/) - Observability data collector for logs
   - [Smartctl Exporter](https://github.com/prometheus-community/smartctl_exporter) - Disk SMART metrics for Prometheus
 - Applications
   - [Tautulli](https://tautulli.com) - Plex monitoring and analytics
@@ -66,7 +69,8 @@ The infrastructure implements:
 
 - ArgoCD (replaced by FluxCD)
 - external-secrets (replaced by SOPS in FluxCD)
-- VictoriaMetrics/VictoriaLogs/Vector Logs (replaced by kube-prometheus-stack)
+- VictoriaMetrics (replaced by kube-prometheus-stack for metrics)
+- VictoriaLogs/Vector (replaced by Loki/Alloy for logging)
 
 <details> 
 <summary>Replaced ArgoCD with FluxCD</summary>   
