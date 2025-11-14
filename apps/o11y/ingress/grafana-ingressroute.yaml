@@ -14,7 +14,7 @@ spec:
     - kind: Rule
       match: Host(`grafana.i.recompiled.org`)
       services:
-        - name: kube-prometheus-stack-grafana
+        - name: grafana
           port: 80
   tls:
     secretName: grafana-tls
