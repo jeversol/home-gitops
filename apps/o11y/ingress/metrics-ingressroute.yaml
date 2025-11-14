@@ -2,7 +2,7 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: metrics-ingressroute
+  name: metrics
   namespace: o11y
   annotations:
     external-dns.alpha.kubernetes.io/expose: "true"
@@ -14,10 +14,7 @@ spec:
     - match: Host(`metrics.i.recompiled.org`)
       kind: Rule
       services:
-        - name: kube-prometheus-stack-prometheus
-          port: 9090
-      middlewares:
-        - name: basic-auth
-          namespace: traefik
+        - name: mimir-gateway
+          port: 8080
   tls:
     secretName: metrics-tls
