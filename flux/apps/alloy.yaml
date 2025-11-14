@@ -124,6 +124,208 @@ spec:
             forward_to = [loki.write.default.receiver]
           }
 
+          /********************************************
+           * METRICS COLLECTION
+           ********************************************/
+
+          // Mimir remote write endpoint
+          prometheus.remote_write "mimir" {
+            endpoint {
+              url = "http://mimir-gateway.o11y.svc.cluster.local:8080/api/v1/push"
+            }
+          }
+
+          // Export node metrics (replaces node-exporter)
+          prometheus.exporter.unix "node" {
+            set_collectors = ["cpu", "diskstats", "filesystem", "loadavg", "meminfo", "netdev", "uname"]
+          }
+
+          // Scrape local node metrics
+          prometheus.scrape "node_metrics" {
+            targets    = prometheus.exporter.unix.node.targets
+            forward_to = [prometheus.relabel.node_metrics.receiver]
+          }
+
+          // Relabel node metrics to match node-exporter format
+          prometheus.relabel "node_metrics" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              source_labels = ["__address__"]
+              target_label  = "instance"
+            }
+
+            rule {
+              replacement  = env("HOSTNAME")
+              target_label = "node"
+            }
+
+            rule {
+              replacement  = "node-exporter"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Discover Kubernetes nodes for kubelet scraping
+          discovery.kubernetes "nodes" {
+            role = "node"
+          }
+
+          // Scrape kubelet metrics
+          prometheus.scrape "kubelet" {
+            targets    = discovery.kubernetes.nodes.targets
+            scheme     = "https"
+            bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            tls_config {
+              insecure_skip_verify = true
+            }
+            forward_to = [prometheus.relabel.kubelet.receiver]
+          }
+
+          prometheus.relabel "kubelet" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              source_labels = ["__meta_kubernetes_node_name"]
+              target_label  = "node"
+            }
+
+            rule {
+              replacement  = "kubelet"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape cAdvisor metrics from kubelet
+          prometheus.scrape "cadvisor" {
+            targets    = discovery.kubernetes.nodes.targets
+            scheme     = "https"
+            metrics_path = "/metrics/cadvisor"
+            bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            tls_config {
+              insecure_skip_verify = true
+            }
+            forward_to = [prometheus.relabel.cadvisor.receiver]
+          }
+
+          prometheus.relabel "cadvisor" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              source_labels = ["__meta_kubernetes_node_name"]
+              target_label  = "node"
+            }
+
+            rule {
+              replacement  = "cadvisor"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Discover Kubernetes services
+          discovery.kubernetes "services" {
+            role = "service"
+          }
+
+          // Scrape kube-state-metrics
+          prometheus.scrape "kube_state_metrics" {
+            targets = discovery.relabel.kube_state_metrics.output
+            forward_to = [prometheus.relabel.kube_state_metrics_final.receiver]
+          }
+
+          discovery.relabel "kube_state_metrics" {
+            targets = discovery.kubernetes.services.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "kube-state-metrics"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_port_name"]
+              regex         = "http"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_service_name", "__meta_kubernetes_service_port_name"]
+              separator     = ";"
+              regex         = "(.+);(.+);(.+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:8080"
+              action        = "replace"
+            }
+          }
+
+          prometheus.relabel "kube_state_metrics_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "kube-state-metrics"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape smartctl-exporter
+          prometheus.scrape "smartctl_exporter" {
+            targets = discovery.relabel.smartctl_exporter.output
+            forward_to = [prometheus.relabel.smartctl_exporter_final.receiver]
+          }
+
+          discovery.relabel "smartctl_exporter" {
+            targets = discovery.kubernetes.services.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "smartctl-exporter-prometheus-smartctl-exporter"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_service_name"]
+              separator     = ";"
+              regex         = "(.+);(.+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:80"
+              action        = "replace"
+            }
+          }
+
+          prometheus.relabel "smartctl_exporter_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "smartctl-exporter"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
       mounts:
         varlog: true
 
@@ -137,7 +339,7 @@ spec:
 
     resources:
       requests:
-        memory: 450Mi
-        cpu: 20m
+        memory: 512Mi
+        cpu: 100m
       limits:
-        memory: 1Gi
+        memory: 2Gi

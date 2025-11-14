@@ -9,6 +9,7 @@ resources:
   - thanos.yaml
   - loki.yaml
   - mimir.yaml
+  - kube-state-metrics.yaml
   - alloy.yaml
   - scrutiny.yaml
   - scrutiny-influxdb.yaml
