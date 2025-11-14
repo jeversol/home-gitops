@@ -63,8 +63,8 @@ spec:
 
         limits:
           max_global_series_per_user: 250000
-          ingestion_rate: 10000
-          ingestion_burst_size: 20000
+          ingestion_rate: 50000
+          ingestion_burst_size: 100000
 
     alertmanager:
       enabled: false
