@@ -6,7 +6,6 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
-  suspend: true  # Suspended until cutover - PVC currently in use by kube-prometheus-stack
   releaseName: grafana
   targetNamespace: o11y
   chart:
