@@ -264,7 +264,7 @@ spec:
             }
 
             rule {
-              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_service_name", "__meta_kubernetes_service_port_name"]
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace", "__meta_kubernetes_service_port_name"]
               separator     = ";"
               regex         = "(.+);(.+);(.+)"
               target_label  = "__address__"
@@ -303,7 +303,7 @@ spec:
             }
 
             rule {
-              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_service_name"]
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace"]
               separator     = ";"
               regex         = "(.+);(.+)"
               target_label  = "__address__"
