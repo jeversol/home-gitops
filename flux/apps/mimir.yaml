@@ -67,6 +67,9 @@ spec:
           ingestion_burst_size: 100000
           compactor_block_upload_enabled: true  # Enable historical block uploads from Thanos
 
+        ingest_storage:
+          enabled: false  # Disable Kafka-based ingest storage, use classic ingestion path
+
     alertmanager:
       enabled: false
 
