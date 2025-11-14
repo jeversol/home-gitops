@@ -11,6 +11,7 @@ resources:
   - mimir.yaml
   - kube-state-metrics.yaml
   - alloy.yaml
+  - grafana.yaml
   - scrutiny.yaml
   - scrutiny-influxdb.yaml
   - helmrepo-influxdata.yaml

@@ -57,6 +57,7 @@ spec:
       thanosService:
         enabled: true
     grafana:
+      enabled: false  # Scaled down - migrating to standalone Grafana
       deploymentStrategy:
         type: Recreate
       persistence:

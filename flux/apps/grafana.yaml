@@ -1,0 +1,88 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: flux-system
+spec:
+  interval: 30m
+  suspend: true  # Suspended until cutover - PVC currently in use by kube-prometheus-stack
+  releaseName: grafana
+  targetNamespace: o11y
+  chart:
+    spec:
+      chart: grafana
+      version: "10.1.2"  # renovate: datasource=helm depName=grafana registryUrl=https://grafana.github.io/helm-charts
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    replicas: 1
+
+    deploymentStrategy:
+      type: Recreate
+
+    persistence:
+      enabled: true
+      existingClaim: kube-prometheus-stack-grafana
+      size: 10Gi
+
+    envFromSecrets:
+      - name: grafana-auth0-secret
+
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Prometheus
+            uid: prometheus
+            type: prometheus
+            url: http://mimir-gateway.o11y.svc.cluster.local:8080/prometheus
+            access: proxy
+            isDefault: true
+            jsonData:
+              httpMethod: POST
+              timeInterval: 30s
+          - name: Loki
+            uid: loki
+            type: loki
+            url: http://loki.o11y.svc.cluster.local:3100
+            access: proxy
+            jsonData:
+              maxLines: 1000
+
+    grafana.ini:
+      server:
+        root_url: https://grafana.i.recompiled.org
+      auth.generic_oauth:
+        name: Auth0
+        enabled: true
+        client_id: JtRexMDMxdefHYCylMmbW6Zq9ElFXZcE
+        client_secret: $__env{CLIENT_SECRET}
+        scopes: openid profile email
+        auth_url: https://auth.recompiled.org/authorize
+        token_url: https://auth.recompiled.org/oauth/token
+        api_url: https://auth.recompiled.org/userinfo
+        allow_sign_up: true
+        auto_login: false
+        allow_assign_grafana_admin: true
+        role_attribute_path: email == 'joe@recompiled.org' && 'GrafanaAdmin' || 'Viewer'
+      users:
+        auto_assign_org_role: Viewer
+      auth:
+        oauth_auto_login: false
+        disable_login_form: false
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 512Mi
