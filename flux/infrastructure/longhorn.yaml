@@ -85,6 +85,7 @@ spec:
       defaultDataLocality: "best-effort"
       createDefaultDiskLabeledNodes: "true"
       defaultLonghornStaticStorageClass: "longhorn"
+      backupTargetPollInterval: "3h"
       
     # Disable ingress - we'll use Traefik IngressRoute if needed
     ingress:
