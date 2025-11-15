@@ -326,6 +326,51 @@ spec:
             }
           }
 
+          // Scrape Traefik metrics
+          prometheus.scrape "traefik" {
+            targets = discovery.relabel.traefik.output
+            forward_to = [prometheus.relabel.traefik_final.receiver]
+          }
+
+          discovery.relabel "traefik" {
+            targets = discovery.kubernetes.services.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "traefik-metrics"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_port_name"]
+              regex         = "metrics"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace"]
+              separator     = ";"
+              regex         = "(.+);(.+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:9100"
+              action        = "replace"
+            }
+          }
+
+          prometheus.relabel "traefik_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "traefik"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
       mounts:
         varlog: true
 
