@@ -237,6 +237,59 @@ spec:
             }
           }
 
+          // Discover Kubernetes endpoints for API server
+          discovery.kubernetes "endpoints" {
+            role = "endpoints"
+          }
+
+          // Scrape Kubernetes API server
+          prometheus.scrape "apiserver" {
+            targets = discovery.relabel.apiserver.output
+            scheme  = "https"
+            bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            tls_config {
+              ca_file = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+            }
+            forward_to = [prometheus.relabel.apiserver_final.receiver]
+          }
+
+          discovery.relabel "apiserver" {
+            targets = discovery.kubernetes.endpoints.targets
+
+            // Only keep the kubernetes service in default namespace
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "kubernetes"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              regex         = "default"
+              action        = "keep"
+            }
+
+            // Set the metrics path
+            rule {
+              target_label = "__metrics_path__"
+              replacement  = "/metrics"
+            }
+          }
+
+          prometheus.relabel "apiserver_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "apiserver"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
           // Discover Kubernetes services
           discovery.kubernetes "services" {
             role = "service"
