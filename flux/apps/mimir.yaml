@@ -188,6 +188,10 @@ spec:
       enabled: false
 
     kafka:
+      persistence:
+        enabled: true
+        size: 20Gi
+        storageClassName: longhorn-ssd
       extraVolumes:
         - name: kafka-logs
           emptyDir: {}
