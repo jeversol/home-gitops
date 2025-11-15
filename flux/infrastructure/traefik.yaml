@@ -74,6 +74,9 @@ spec:
           secretName: traefik-dashboard-tls
     metrics:
       prometheus:
+        addEntryPointsLabels: true
+        addRoutersLabels: true
+        addServicesLabels: true
         service:
           enabled: true
     service:
