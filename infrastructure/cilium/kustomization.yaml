@@ -6,3 +6,4 @@ resources:
   - hubble-ui-ingressroute.yaml
   - cilium-loadbalancer-pool.yaml
   - cilium-l2-announcements.yaml
+  - kubernetes-api-loadbalancer.yaml
