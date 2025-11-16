@@ -148,6 +148,10 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/name: system-upgrade-controller
         upgrade.cattle.io/controller: system-upgrade-controller
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
     spec:
       affinity:
         nodeAffinity:

@@ -3,6 +3,10 @@ kind: Service
 metadata:
   name: scrutiny
   namespace: o11y
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
 spec:
   selector:
     app: scrutiny

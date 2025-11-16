@@ -99,7 +99,7 @@ spec:
           loki.process "pod_logs" {
             stage.static_labels {
               values = {
-                cluster = "home-k8s",
+                cluster = "talos",
               }
             }
 
@@ -156,7 +156,7 @@ spec:
             }
 
             rule {
-              replacement  = env("HOSTNAME")
+              replacement  = env("K8S_NODE_NAME")
               target_label = "node"
             }
 
@@ -295,6 +295,178 @@ spec:
             role = "service"
           }
 
+          // Generic scrape for annotated services or services exposing a metrics port
+          discovery.relabel "service_metrics" {
+            targets = discovery.kubernetes.services.targets
+
+            // Skip services already scraped explicitly above
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "(kube-state-metrics|smartctl-exporter-prometheus-smartctl-exporter|traefik-metrics|cert-manager|kube-dns|longhorn-backend|cilium-envoy|loki|mimir-(distributor|ingester|querier|query-frontend|compactor|store-gateway|overrides-exporter))"
+              action        = "drop"
+            }
+
+            // Keep anything explicitly annotated for scraping
+            rule {
+              source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_scrape"]
+              regex         = "true"
+              action        = "keep"
+            }
+
+            // Keep ports that look like metrics endpoints
+            rule {
+              source_labels = ["__meta_kubernetes_service_port_name"]
+              regex         = "(metrics|prometheus)"
+              action        = "keep"
+            }
+
+            // Drop everything else
+            rule {
+              action = "drop"
+            }
+
+            // Build address from annotation port (if set) or service port number
+            rule {
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace", "__meta_kubernetes_service_annotation_prometheus_io_port"]
+              regex         = "(.+);(.+);(\\d+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:$3"
+              action        = "replace"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace", "__meta_kubernetes_service_port_number"]
+              regex         = "(.+);(.+);(\\d+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:$3"
+              action        = "replace"
+            }
+
+            // Allow custom path/scheme overrides via annotations
+            rule {
+              source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_path"]
+              regex         = "(.+)"
+              target_label  = "__metrics_path__"
+              action        = "replace"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_scheme"]
+              regex         = "(https?)"
+              target_label  = "__scheme__"
+              action        = "replace"
+            }
+          }
+
+          prometheus.scrape "service_metrics" {
+            targets    = discovery.relabel.service_metrics.output
+            forward_to = [prometheus.relabel.service_metrics_final.receiver]
+          }
+
+          prometheus.relabel "service_metrics_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              target_label  = "service"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              target_label  = "namespace"
+            }
+
+            rule {
+              replacement  = "service-annotations"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape Pods annotated for Prometheus metrics (for workloads without Services)
+          discovery.relabel "pod_annotation_metrics" {
+            targets = discovery.kubernetes.pods.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
+              regex         = "true"
+              action        = "keep"
+            }
+
+            // Drop Flux controllers to avoid double-scrape (handled separately)
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+              regex         = "(source-controller|kustomize-controller|helm-controller|notification-controller)"
+              action        = "drop"
+            }
+
+            // Build address from annotation port or container port
+            rule {
+              source_labels = ["__meta_kubernetes_pod_ip", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
+              regex         = "(.+);(\\d+)"
+              target_label  = "__address__"
+              replacement   = "$1:$2"
+              action        = "replace"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_ip", "__meta_kubernetes_pod_container_port_number"]
+              regex         = "(.+);(\\d+)"
+              target_label  = "__address__"
+              replacement   = "$1:$2"
+              action        = "replace"
+            }
+
+            // Path and scheme overrides
+            rule {
+              source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+              regex         = "(.+)"
+              target_label  = "__metrics_path__"
+              action        = "replace"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scheme"]
+              regex         = "(https?)"
+              target_label  = "__scheme__"
+              action        = "replace"
+            }
+
+            // Set namespace/pod labels
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              target_label  = "namespace"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_name"]
+              target_label  = "pod"
+            }
+          }
+
+          prometheus.scrape "pod_annotation_metrics" {
+            targets    = discovery.relabel.pod_annotation_metrics.output
+            forward_to = [prometheus.relabel.pod_annotation_metrics_final.receiver]
+          }
+
+          prometheus.relabel "pod_annotation_metrics_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "pod-annotations"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
           // Scrape kube-state-metrics
           prometheus.scrape "kube_state_metrics" {
             targets = discovery.relabel.kube_state_metrics.output
@@ -424,11 +596,352 @@ spec:
             }
           }
 
+          // Scrape cert-manager metrics
+          prometheus.scrape "cert_manager" {
+            targets = discovery.relabel.cert_manager.output
+            forward_to = [prometheus.relabel.cert_manager_final.receiver]
+          }
+
+          discovery.relabel "cert_manager" {
+            targets = discovery.kubernetes.services.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "cert-manager"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              regex         = "cert-manager"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace"]
+              separator     = ";"
+              regex         = "(.+);(.+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:9402"
+              action        = "replace"
+            }
+          }
+
+          prometheus.relabel "cert_manager_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "cert-manager"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape CoreDNS metrics
+          prometheus.scrape "coredns" {
+            targets = discovery.relabel.coredns.output
+            forward_to = [prometheus.relabel.coredns_final.receiver]
+          }
+
+          discovery.relabel "coredns" {
+            targets = discovery.kubernetes.services.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "kube-dns"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              regex         = "kube-system"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace"]
+              separator     = ";"
+              regex         = "(.+);(.+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:9153"
+              action        = "replace"
+            }
+          }
+
+          prometheus.relabel "coredns_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "coredns"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Discover Flux controller pods
+          discovery.kubernetes "flux_pods" {
+            role = "pod"
+            namespaces {
+              names = ["flux-system"]
+            }
+          }
+
+          // Scrape Flux controllers metrics
+          prometheus.scrape "flux_controllers" {
+            targets = discovery.relabel.flux_controllers.output
+            forward_to = [prometheus.relabel.flux_controllers_final.receiver]
+          }
+
+          discovery.relabel "flux_controllers" {
+            targets = discovery.kubernetes.flux_pods.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+              regex         = "(source-controller|kustomize-controller|helm-controller|notification-controller)"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_container_port_number"]
+              regex         = "8080"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__address__"]
+              target_label  = "__address__"
+              replacement   = "$1"
+            }
+
+            rule {
+              target_label = "__metrics_path__"
+              replacement  = "/metrics"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+              target_label  = "app"
+            }
+          }
+
+          prometheus.relabel "flux_controllers_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              source_labels = ["app"]
+              target_label  = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape Longhorn metrics
+          prometheus.scrape "longhorn" {
+            targets = discovery.relabel.longhorn.output
+            forward_to = [prometheus.relabel.longhorn_final.receiver]
+          }
+
+          discovery.relabel "longhorn" {
+            targets = discovery.kubernetes.services.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "longhorn-backend"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              regex         = "longhorn"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace"]
+              separator     = ";"
+              regex         = "(.+);(.+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:9500"
+              action        = "replace"
+            }
+          }
+
+          prometheus.relabel "longhorn_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "longhorn"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape Cilium Envoy metrics
+          prometheus.scrape "cilium_envoy" {
+            targets = discovery.relabel.cilium_envoy.output
+            forward_to = [prometheus.relabel.cilium_envoy_final.receiver]
+          }
+
+          discovery.relabel "cilium_envoy" {
+            targets = discovery.kubernetes.services.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "cilium-envoy"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              regex         = "kube-system"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace"]
+              separator     = ";"
+              regex         = "(.+);(.+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:9964"
+              action        = "replace"
+            }
+          }
+
+          prometheus.relabel "cilium_envoy_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "cilium-envoy"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape Mimir components metrics
+          prometheus.scrape "mimir" {
+            targets = discovery.relabel.mimir.output
+            forward_to = [prometheus.relabel.mimir_final.receiver]
+          }
+
+          discovery.relabel "mimir" {
+            targets = discovery.kubernetes.services.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "mimir-(distributor|ingester|querier|query-frontend|compactor|store-gateway|overrides-exporter)"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              regex         = "o11y"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace"]
+              separator     = ";"
+              regex         = "(.+);(.+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:8080"
+              action        = "replace"
+            }
+          }
+
+          prometheus.relabel "mimir_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              target_label  = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape Loki metrics
+          prometheus.scrape "loki" {
+            targets = discovery.relabel.loki.output
+            forward_to = [prometheus.relabel.loki_final.receiver]
+          }
+
+          discovery.relabel "loki" {
+            targets = discovery.kubernetes.services.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "loki"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              regex         = "o11y"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace"]
+              separator     = ";"
+              regex         = "(.+);(.+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:3100"
+              action        = "replace"
+            }
+
+            rule {
+              target_label = "__metrics_path__"
+              replacement  = "/metrics"
+            }
+          }
+
+          prometheus.relabel "loki_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "loki"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
       mounts:
         varlog: true
 
     controller:
       type: daemonset
+
+      env:
+        - name: K8S_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
 
       # Security context
       securityContext:
