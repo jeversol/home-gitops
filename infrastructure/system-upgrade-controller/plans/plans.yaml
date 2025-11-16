@@ -103,6 +103,8 @@ spec:
       - "$(SYSTEM_UPGRADE_NODE_NAME)"
       - "--to"
       - "$(SYSTEM_UPGRADE_PLAN_LATEST_VERSION)"
+      - "--endpoint"
+      - "https://kubernetes.default.svc.cluster.local:443"
     envs:
       - name: TALOSCONFIG
         value: "/etc/talos/talosconfig"
