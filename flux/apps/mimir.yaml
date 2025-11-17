@@ -61,6 +61,7 @@ spec:
             bucket_name: mimir-ruler
 
         ingester:
+          push_grpc_method_enabled: true
           ring:
             replication_factor: 1
 
