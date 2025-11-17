@@ -38,7 +38,7 @@ spec:
     persistence:
       enabled: true
       storageClass: "longhorn"
-      size: 500Mi
+      size: 1Gi
     adminUser:
       organization: "scrutiny"
       bucket: "metrics"
