@@ -49,6 +49,8 @@ spec:
             jsonData:
               httpMethod: POST
               timeInterval: 30s
+              disableRecordingRules: true
+              disableAlertmanager: true
           - name: Loki
             uid: loki
             type: loki
