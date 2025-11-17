@@ -35,6 +35,9 @@ spec:
       structuredConfig:
         multitenancy_enabled: false
 
+        ingest_storage:
+          enabled: false
+
         common:
           storage:
             backend: s3
@@ -188,13 +191,4 @@ spec:
       enabled: false
 
     kafka:
-      persistence:
-        enabled: true
-        size: 20Gi
-        storageClassName: longhorn-ssd
-      extraVolumes:
-        - name: kafka-logs
-          emptyDir: {}
-      extraVolumeMounts:
-        - name: kafka-logs
-          mountPath: /opt/kafka/logs
+      enabled: false
