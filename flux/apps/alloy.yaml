@@ -934,6 +934,14 @@ spec:
       mounts:
         varlog: true
 
+      # Resource requests and limits
+      resources:
+        requests:
+          memory: 512Mi
+          cpu: 100m
+        limits:
+          memory: 2Gi
+
     controller:
       type: daemonset
 
@@ -947,10 +955,3 @@ spec:
       securityContext:
         privileged: true
         runAsUser: 0
-
-    resources:
-      requests:
-        memory: 512Mi
-        cpu: 100m
-      limits:
-        memory: 2Gi
