@@ -24,6 +24,13 @@
       assignees: [],
     },
     {
+      matchPackageNames: ['gitguardian/ggshield'],
+      matchManagers: ['pre-commit'],
+      matchUpdateTypes: ['patch', 'minor'],
+      automerge: true,
+      assignees: [],
+    },
+    {
       matchManagers: ['github-actions'],
       automerge: true,
       matchUpdateTypes: ['patch', 'minor'],
