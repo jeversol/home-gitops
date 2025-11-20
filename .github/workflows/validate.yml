@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 10  # Increased for more comprehensive validation
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Install additional tools
         run: |
