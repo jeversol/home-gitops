@@ -151,8 +151,8 @@ spec:
             forward_to = [prometheus.remote_write.mimir.receiver]
 
             rule {
-              source_labels = ["__address__"]
-              target_label  = "instance"
+              replacement  = env("K8S_NODE_NAME")
+              target_label = "instance"
             }
 
             rule {
