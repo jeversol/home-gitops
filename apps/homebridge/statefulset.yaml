@@ -42,10 +42,10 @@ spec:
               mountPath: /homebridge
           resources:
             requests:
-              cpu: 35m
+              cpu: 55m
               memory: 587Mi
             limits:
-              memory: 702Mi
+              memory: 800Mi
           livenessProbe:
             httpGet:
               path: /
