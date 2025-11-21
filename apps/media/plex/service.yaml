@@ -5,14 +5,11 @@ metadata:
   namespace: media
   labels:
     app: plex
-  annotations:
-    io.cilium/lb-ipam-ips: "192.168.1.241"
 spec:
-  type: LoadBalancer
-  externalTrafficPolicy: Local
+  type: ClusterIP
   ports:
     - port: 32400
-      targetPort: http
+      targetPort: 32400
       protocol: TCP
       name: http
   selector:

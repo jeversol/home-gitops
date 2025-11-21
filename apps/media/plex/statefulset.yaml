@@ -17,6 +17,8 @@ spec:
       labels:
         app: plex
     spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
       automountServiceAccountToken: false
       nodeSelector:
         kubernetes.io/hostname: k8s-node1
@@ -24,6 +26,7 @@ spec:
         runAsUser: 1029
         runAsGroup: 65537
         fsGroup: 65537
+        fsGroupChangePolicy: "OnRootMismatch"
         seccompProfile:
           type: RuntimeDefault
       containers:
