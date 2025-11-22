@@ -43,6 +43,8 @@ spec:
               mountPath: /config
             - name: media-storage
               mountPath: /media
+            - name: transcode-temp
+              mountPath: /transcode
           resources:
             requests:
               cpu: 150m
@@ -83,6 +85,8 @@ spec:
         - name: media-storage
           persistentVolumeClaim:
             claimName: media-storage
+        - name: transcode-temp
+          emptyDir: {}
   volumeClaimTemplates:
     - metadata:
         name: config
