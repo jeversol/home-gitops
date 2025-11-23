@@ -7,9 +7,9 @@ metadata:
     app.kubernetes.io/name: renovate
     app.kubernetes.io/part-of: renovate
 spec:
-  schedule: "3 * * * *"
+  schedule: "3 0/3 * * *"
   concurrencyPolicy: Forbid
-  successfulJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 3
   jobTemplate:
     spec:
