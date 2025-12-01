@@ -151,12 +151,12 @@ spec:
             forward_to = [prometheus.remote_write.mimir.receiver]
 
             rule {
-              replacement  = env("K8S_NODE_NAME")
+              replacement  = env("HOSTNAME")
               target_label = "instance"
             }
 
             rule {
-              replacement  = env("K8S_NODE_NAME")
+              replacement  = env("HOSTNAME")
               target_label = "node"
             }
 
@@ -944,12 +944,6 @@ spec:
 
     controller:
       type: daemonset
-
-      env:
-        - name: K8S_NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: spec.nodeName
 
       # Security context
       securityContext:
