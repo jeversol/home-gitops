@@ -137,7 +137,7 @@ spec:
 
           // Export node metrics (replaces node-exporter)
           prometheus.exporter.unix "node" {
-            set_collectors = ["cpu", "diskstats", "filesystem", "loadavg", "meminfo", "netdev", "uname"]
+            set_collectors = ["cpu", "cpufreq", "diskstats", "filefd", "filesystem", "loadavg", "meminfo", "netdev", "netstat", "stat", "time", "timex", "uname"]
           }
 
           // Scrape local node metrics
