@@ -161,6 +161,11 @@ spec:
             }
 
             rule {
+              replacement  = env("HOSTNAME")
+              target_label = "nodename"
+            }
+
+            rule {
               replacement  = "node-exporter"
               target_label = "job"
             }
