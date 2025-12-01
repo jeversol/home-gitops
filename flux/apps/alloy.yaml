@@ -181,9 +181,19 @@ spec:
             role = "node"
           }
 
+          // Relabel to add node label BEFORE scraping
+          discovery.relabel "nodes_relabeled" {
+            targets = discovery.kubernetes.nodes.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_node_name"]
+              target_label  = "node"
+            }
+          }
+
           // Scrape kubelet metrics
           prometheus.scrape "kubelet" {
-            targets    = discovery.kubernetes.nodes.targets
+            targets    = discovery.relabel.nodes_relabeled.output
             scheme     = "https"
             bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
             tls_config {
@@ -194,11 +204,6 @@ spec:
 
           prometheus.relabel "kubelet" {
             forward_to = [prometheus.remote_write.mimir.receiver]
-
-            rule {
-              source_labels = ["__meta_kubernetes_node_name"]
-              target_label  = "node"
-            }
 
             rule {
               replacement  = "kubelet"
@@ -213,7 +218,7 @@ spec:
 
           // Scrape cAdvisor metrics from kubelet
           prometheus.scrape "cadvisor" {
-            targets    = discovery.kubernetes.nodes.targets
+            targets    = discovery.relabel.nodes_relabeled.output
             scheme     = "https"
             metrics_path = "/metrics/cadvisor"
             bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
@@ -225,11 +230,6 @@ spec:
 
           prometheus.relabel "cadvisor" {
             forward_to = [prometheus.remote_write.mimir.receiver]
-
-            rule {
-              source_labels = ["__meta_kubernetes_node_name"]
-              target_label  = "node"
-            }
 
             rule {
               replacement  = "cadvisor"
