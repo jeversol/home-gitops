@@ -42,7 +42,7 @@ spec:
               mountPath: /homebridge
           resources:
             requests:
-              cpu: 55m
+              cpu: 150m
               memory: 587Mi
             limits:
               memory: 800Mi
