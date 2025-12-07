@@ -155,7 +155,14 @@ spec:
           memory: 1Gi
 
     ruler:
-      enabled: false
+      enabled: true
+      replicas: 1
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
 
     overrides_exporter:
       replicas: 1
