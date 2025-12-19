@@ -1,0 +1,91 @@
+version: v1alpha1
+debug: false
+persist: true
+machine:
+  type: controlplane
+  certSANs: []
+  kubelet:
+    image: ghcr.io/siderolabs/kubelet:v1.34.2
+    defaultRuntimeSeccompProfileEnabled: true
+    disableManifestsDirectory: true
+  network: {}
+  install:
+    disk: /dev/sda
+    image: factory.talos.dev/metal-installer-secureboot/e4c7ed26ef2d006f7ba724d895f7f8909cf430b68beb7826e25bcd5300cfd1ac:v1.11.1
+    wipe: false
+  registries: {}
+  features:
+    rbac: true
+    stableHostname: true
+    apidCheckExtKeyUsage: true
+    diskQuotaSupport: true
+    kubePrism:
+      enabled: true
+      port: 7445
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: true
+  nodeLabels:
+    node.kubernetes.io/exclude-from-external-load-balancers: ""
+cluster:
+  network:
+    dnsDomain: cluster.local
+    podSubnets:
+      - 10.244.0.0/16
+      - fd00:10:244::/48
+    serviceSubnets:
+      - 10.96.0.0/12
+      - fd00:10:96::/112
+  apiServer:
+    image: registry.k8s.io/kube-apiserver:v1.34.2
+    certSANs:
+      - 192.168.1.235
+      - 192.168.1.221
+      - 192.168.1.222
+      - 192.168.1.223
+      - k8s-node1.i.recompiled.org
+      - k8s-node2.i.recompiled.org
+      - k8s-node3.i.recompiled.org
+      - talos.i.recompiled.org
+    disablePodSecurityPolicy: true
+    extraArgs:
+      service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/108
+    admissionControl:
+      - name: PodSecurity
+        configuration:
+          apiVersion: pod-security.admission.config.k8s.io/v1alpha1
+          defaults:
+            audit: restricted
+            audit-version: latest
+            enforce: baseline
+            enforce-version: latest
+            warn: restricted
+            warn-version: latest
+          exemptions:
+            namespaces:
+              - kube-system
+            runtimeClasses: []
+            usernames: []
+          kind: PodSecurityConfiguration
+    auditPolicy:
+      apiVersion: audit.k8s.io/v1
+      kind: Policy
+      rules:
+        - level: Metadata
+  controllerManager:
+    image: registry.k8s.io/kube-controller-manager:v1.34.2
+    extraArgs:
+      cluster-cidr: 10.244.0.0/16,fd00:10:244::/48
+      service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/112
+  proxy:
+    image: registry.k8s.io/kube-proxy:v1.34.2
+  scheduler:
+    image: registry.k8s.io/kube-scheduler:v1.34.2
+  discovery:
+    enabled: true
+    registries:
+      kubernetes:
+        disabled: true
+      service: {}
+  extraManifests: []
+  inlineManifests: []
