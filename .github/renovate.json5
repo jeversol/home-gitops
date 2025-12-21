@@ -92,6 +92,7 @@
     },
     {
       matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl'],
+      matchFileNames: ['tools/cluster/base-controlplane.yaml'],
       groupName: 'talos',
       minimumReleaseAge: '3 days',
       automerge: false,
@@ -160,6 +161,16 @@
         '\\s+image:\\s+(?<depName>[^:]+):v(?<currentValue>\\d+\\.\\d+\\.\\d+)',
       ],
       datasourceTemplate: 'docker',
+      versioningTemplate: 'semver',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: ['^tools/cluster/base-controlplane\\.yaml$'],
+      matchStrings: [
+        'image:\\s+factory\\.talos\\.dev/[^:]+:v(?<currentValue>\\d+\\.\\d+\\.\\d+)',
+      ],
+      datasourceTemplate: 'github-tags',
+      depNameTemplate: 'siderolabs/talos',
       versioningTemplate: 'semver',
     },
   ],
