@@ -5,7 +5,7 @@
   },
   kubernetes: {
     managerFilePatterns: ['**/*.{yaml,yml}'],
-    ignorePaths: ['**/kustomization.{yaml,yml}', 'flux/flux-system/gotk*.{yaml,yml}'],
+    ignorePaths: ['**/kustomization.{yaml,yml}', 'flux/flux-system/gotk*.{yaml,yml}', 'tools/cluster/base-controlplane.yaml'],
   },
   extends: [
     'config:recommended',
@@ -80,7 +80,7 @@
       pinDigests: true,
       matchUpdateTypes: ['patch', 'minor', 'digest'],
       automerge: true,
-      automergeSchedule: ['* 5-8 * * *'],
+      schedule: ['* 5-8 * * *'],
       assignees: [],
     },
     {
@@ -92,7 +92,6 @@
     },
     {
       matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl'],
-      matchFileNames: ['tools/cluster/base-controlplane.yaml'],
       groupName: 'talos',
       minimumReleaseAge: '3 days',
       automerge: false,
@@ -115,6 +114,7 @@
         'registry.k8s.io/kube-controller-manager',
         'registry.k8s.io/kube-proxy',
         'registry.k8s.io/kube-scheduler',
+        'kubernetes/kubernetes',
       ],
       groupName: 'kubernetes-components',
       allowedVersions: '/^v1\\.34\\./',
@@ -141,6 +141,7 @@
       managerFilePatterns: ['/infrastructure/system-upgrade-controller/plans/plans\\.yaml/'],
       matchStrings: [
         'version:\\s*(?<currentValue>\\S+)\\s*#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?',
+        '#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?\\s+image:\\s+(?<registry>\\S+)/(?<image>\\S+):(?<currentValue>\\S+)',
       ],
       versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
     },
@@ -158,7 +159,7 @@
       customType: 'regex',
       managerFilePatterns: ['^tools/cluster/base-controlplane\\.yaml$'],
       matchStrings: [
-        '\\s+image:\\s+(?<depName>[^:]+):v(?<currentValue>\\d+\\.\\d+\\.\\d+)',
+        '\\s+image:\\s+(?<depName>(?:ghcr\\.io|registry\\.k8s\\.io)/[^:]+):v(?<currentValue>\\d+\\.\\d+\\.\\d+)',
       ],
       datasourceTemplate: 'docker',
       versioningTemplate: 'semver',
