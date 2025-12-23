@@ -106,7 +106,7 @@
     // 2. Update allowedVersions below to match supported k8s versions
     //    Example: Talos 1.11.x supports k8s 1.34.x only -> '/^v1\\.34\\./'
     //    Example: Talos 1.12.x might support k8s 1.34.x and 1.35.x -> '/^v1\\.(34|35)\\./'
-    // 3. Current: Talos 1.11.x supports Kubernetes 1.34.x
+    // 3. Current: Talos 1.11.x supports Kubernetes 1.30.x, 1.31.x, 1.32.x, 1.33.x, 1.34.x
     {
       matchPackageNames: [
         'ghcr.io/siderolabs/kubelet',
@@ -117,7 +117,7 @@
         'kubernetes/kubernetes',
       ],
       groupName: 'kubernetes-components',
-      allowedVersions: '/^v1\\.34\\./',
+      allowedVersions: '/^v1\.(30|31|32|33|34)\./',
       minimumReleaseAge: '7 days',
       automerge: false,
       assignees: ['jeversol'],
