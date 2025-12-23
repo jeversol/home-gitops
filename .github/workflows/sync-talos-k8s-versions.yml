@@ -126,7 +126,7 @@ jobs:
                           print(f"    Cell value: {cell_text}")
 
                           # Extract Kubernetes versions (1.30+)
-                          k8s_matches = re.findall(r'\\b1\\.(\\d+)(?:\\.\\d+)?\\b', cell_text)
+                          k8s_matches = re.findall(r'\b1\.(\d+)(?:\.d+)?\b', cell_text)
                           k8s_versions = [v for v in k8s_matches if int(v) >= 30]
 
                           if k8s_versions:
@@ -170,7 +170,7 @@ jobs:
                   print("Searching release notes for Kubernetes versions...")
 
                   # Look for patterns like "Kubernetes 1.35" or "k8s v1.35"
-                  k8s_matches = re.findall(r'[Kk]ubernetes.*?v?1\\.(\\d+)', body)
+                  k8s_matches = re.findall(r'[Kk]ubernetes.*?v?1\.(\d+)', body)
                   if k8s_matches:
                       supported_k8s_versions.update(k8s_matches)
                       print(f"Found in release notes: {k8s_matches}")
