@@ -1,0 +1,303 @@
+name: Sync Talos-Kubernetes Version Constraints
+
+on:
+  # Run when changes are pushed to main (e.g., when a Talos PR is merged)
+  push:
+    branches:
+      - main
+    paths:
+      - 'tools/cluster/base-controlplane.yaml'
+      - 'infrastructure/system-upgrade-controller/plans/plans.yaml'
+
+  # Also run on a schedule to catch any drift
+  schedule:
+    - cron: '0 12 * * 1'  # Monday at noon UTC
+
+  # Allow manual triggering
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-k8s-constraints:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml beautifulsoup4 requests lxml
+
+      - name: Extract current Talos version and update constraints
+        id: update
+        run: |
+          python3 << 'PYTHON_SCRIPT'
+          import yaml
+          import re
+          import requests
+          from bs4 import BeautifulSoup
+          import json
+          import sys
+          import os
+
+          # Extract Talos version from base-controlplane.yaml
+          with open('tools/cluster/base-controlplane.yaml', 'r') as f:
+              config = yaml.safe_load(f)
+
+          # Get Talos version from factory installer image
+          factory_image = config['machine']['install']['image']
+          talos_version_match = re.search(r':v(\d+\.\d+)\.\d+$', factory_image)
+
+          if not talos_version_match:
+              print("ERROR: Could not extract Talos version from factory image")
+              sys.exit(1)
+
+          talos_minor = talos_version_match.group(1)  # e.g., "1.12"
+          print(f"Current Talos version: v{talos_minor}.x")
+
+          # Fetch Talos support matrix for the cluster's current version
+          # This ensures we check the matrix for the version actually running
+          matrix_url = f"https://www.talos.dev/v{talos_minor}/introduction/support-matrix/"
+          print(f"Fetching support matrix from: {matrix_url}")
+
+          supported_k8s_versions = set()
+
+          try:
+              print("Fetching support matrix HTML...")
+              response = requests.get(matrix_url, timeout=10)
+              response.raise_for_status()
+              print(f"HTTP {response.status_code} - Got {len(response.content)} bytes")
+
+              # Parse the HTML support matrix
+              soup = BeautifulSoup(response.content, 'lxml')
+
+              # Look for tables containing version information
+              tables = soup.find_all('table')
+              print(f"Found {len(tables)} table(s) in the page")
+
+              for idx, table in enumerate(tables):
+                  rows = table.find_all('tr')
+                  print(f"  Table {idx+1}: {len(rows)} rows")
+
+                  # Parse header row to find which column is our Talos version
+                  header_row = rows[0] if rows else None
+                  talos_column_idx = None
+
+                  if header_row:
+                      headers = header_row.find_all(['th', 'td'])
+                      print(f"  Headers found: {[h.get_text().strip() for h in headers]}")
+
+                      # Find column for our Talos version (e.g., "1.11")
+                      for i, header in enumerate(headers):
+                          header_text = header.get_text().strip()
+                          if header_text == talos_minor or header_text == f"v{talos_minor}":
+                              talos_column_idx = i
+                              print(f"  Found Talos {talos_minor} column at index {i}")
+                              break
+
+                  if talos_column_idx is None:
+                      print(f"  Could not find column for Talos {talos_minor}")
+                      continue
+
+                  # Now find the row where first column mentions "Kubernetes"
+                  for row_idx, row in enumerate(rows[1:], 1):  # Skip header row
+                      cells = row.find_all(['td', 'th'])
+                      if not cells:
+                          continue
+
+                      # Check if first cell is about Kubernetes
+                      first_cell = cells[0].get_text().strip().lower()
+                      if 'kubernetes' not in first_cell and 'k8s' not in first_cell:
+                          continue
+
+                      print(f"  Row {row_idx}: '{cells[0].get_text().strip()}' (Kubernetes row)")
+
+                      # Get the value from our Talos column
+                      if talos_column_idx < len(cells):
+                          cell_text = cells[talos_column_idx].get_text().strip()
+                          print(f"    Cell value: {cell_text}")
+
+                          # Extract Kubernetes versions (1.30+)
+                          k8s_matches = re.findall(r'\\b1\\.(\\d+)(?:\\.\\d+)?\\b', cell_text)
+                          k8s_versions = [v for v in k8s_matches if int(v) >= 30]
+
+                          if k8s_versions:
+                              supported_k8s_versions.update(k8s_versions)
+                              print(f"    Found k8s versions: {k8s_versions}")
+                          else:
+                              print(f"    No valid k8s versions found in: {cell_text}")
+
+              if supported_k8s_versions:
+                  print("Parsed support matrix successfully")
+              else:
+                  print("WARNING: Could not find specific versions in support matrix")
+
+          except requests.RequestException as e:
+              print(f"WARNING: Failed to fetch support matrix: {e}")
+              print("Trying fallback: GitHub releases API...")
+
+              try:
+                  gh_url = "https://api.github.com/repos/siderolabs/talos/releases"
+                  print(f"GitHub API: {gh_url}")
+
+                  gh_response = requests.get(gh_url, timeout=10)
+                  gh_response.raise_for_status()
+                  releases = gh_response.json()
+
+                  # Find the latest release for this minor version
+                  target_release = None
+                  for release in releases:
+                      if release['tag_name'].startswith(f"v{talos_minor}."):
+                          target_release = release
+                          break
+
+                  if not target_release:
+                      print(f"ERROR: Could not find release for v{talos_minor}")
+                      raise Exception("No matching release found")
+
+                  print(f"Found release: {target_release['tag_name']}")
+
+                  # Parse release notes for Kubernetes version
+                  body = target_release['body']
+                  print("Searching release notes for Kubernetes versions...")
+
+                  # Look for patterns like "Kubernetes 1.35" or "k8s v1.35"
+                  k8s_matches = re.findall(r'[Kk]ubernetes.*?v?1\\.(\\d+)', body)
+                  if k8s_matches:
+                      supported_k8s_versions.update(k8s_matches)
+                      print(f"Found in release notes: {k8s_matches}")
+                  else:
+                      print("ERROR: Could not find Kubernetes versions in release notes")
+                      raise Exception("No K8s versions found in release notes")
+
+              except Exception as e2:
+                  print(f"ERROR: GitHub API also failed: {e2}")
+                  print("ERROR: Cannot determine supported Kubernetes versions")
+                  print("Please check https://www.talos.dev/latest/introduction/support-matrix/ manually")
+                  sys.exit(1)
+
+          # Convert to sorted list
+          supported_k8s_versions = sorted(list(supported_k8s_versions))
+          print(f"Supported Kubernetes versions: {supported_k8s_versions}")
+
+          # Generate the allowedVersions regex
+          if len(supported_k8s_versions) == 1:
+              allowed_versions = f"/^v1\\.{supported_k8s_versions[0]}\\./"
+          else:
+              versions_str = '|'.join(supported_k8s_versions)
+              allowed_versions = f"/^v1\\.({versions_str})\\./"
+
+          print(f"Generated allowedVersions constraint: {allowed_versions}")
+
+          # Read current renovate.json5
+          with open('.github/renovate.json5', 'r') as f:
+              renovate_content = f.read()
+
+          # Find and update the allowedVersions constraint
+          # Look for the kubernetes-components group
+          pattern = r"(groupName:\s*['\"]kubernetes-components['\"],[\s\S]*?allowedVersions:\s*)['\"]([^'\"]+)['\"]"
+
+          current_match = re.search(pattern, renovate_content)
+          if not current_match:
+              print("ERROR: Could not find kubernetes-components allowedVersions in renovate.json5")
+              sys.exit(1)
+
+          current_constraint = current_match.group(2)
+          print(f"Current constraint: {current_constraint}")
+
+          if current_constraint == allowed_versions.strip("'\""):
+              print("✓ Constraint is already up to date!")
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write("CHANGED=false\n")
+              sys.exit(0)
+
+          # Update the constraint
+          new_content = re.sub(
+              pattern,
+              rf"\1'{allowed_versions}'",
+              renovate_content
+          )
+
+          # Also update the comment that says "Current: Talos X.Y.x supports Kubernetes X.Z.x"
+          comment_pattern = r"(//\s*3\.\s*Current:.*?)Talos \d+\.\d+\.x supports Kubernetes.*"
+          new_comment = f"Talos {talos_minor}.x supports Kubernetes {', '.join([f'1.{v}.x' for v in supported_k8s_versions])}"
+          new_content = re.sub(
+              comment_pattern,
+              rf"\1{new_comment}",
+              new_content
+          )
+
+          # Write updated renovate.json5
+          with open('.github/renovate.json5', 'w') as f:
+              f.write(new_content)
+
+          print("✓ Updated renovate.json5")
+
+          # Output for PR creation
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"CHANGED=true\n")
+              f.write(f"TALOS_VERSION={talos_minor}\n")
+              f.write(f"K8S_VERSIONS={','.join(supported_k8s_versions)}\n")
+              f.write(f"ALLOWED_VERSIONS={allowed_versions}\n")
+
+          PYTHON_SCRIPT
+
+      - name: Create Pull Request
+        if: steps.update.outputs.CHANGED == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            chore(renovate): update k8s constraint for Talos ${{ steps.update.outputs.TALOS_VERSION }}
+
+            Auto-generated by sync-talos-k8s-versions workflow
+          branch: auto/update-k8s-constraint
+          delete-branch: true
+          title: 'chore(renovate): Update Kubernetes version constraint for Talos ${{ steps.update.outputs.TALOS_VERSION }}'
+          body: |
+            ## Automated Kubernetes Version Constraint Update
+
+            This PR was automatically generated based on the current Talos version in the cluster configuration.
+
+            ### Changes
+            - **Talos version:** v${{ steps.update.outputs.TALOS_VERSION }}.x
+            - **Supported Kubernetes versions:** ${{ steps.update.outputs.K8S_VERSIONS }}
+            - **New constraint:** `${{ steps.update.outputs.ALLOWED_VERSIONS }}`
+
+            ### What this does
+            Updates the `allowedVersions` constraint in `.github/renovate.json5` to allow Renovate to create PRs for Kubernetes versions that are supported by the current Talos version.
+
+            ### Verification
+            - [ ] Confirm versions match the [Talos support matrix](https://www.talos.dev/v${{ steps.update.outputs.TALOS_VERSION }}/introduction/support-matrix/)
+            - [ ] Review the generated regex constraint
+
+            ### Generated by
+            Workflow: `sync-talos-k8s-versions.yml`
+            Trigger: ${{ github.event_name }}
+
+            ---
+            🤖 This is an automated PR. Review carefully before merging!
+          labels: |
+            renovate
+            automation
+            dependencies
+          assignees: jeversol
+
+      - name: Summary
+        run: |
+          if [ "${{ steps.update.outputs.CHANGED }}" == "true" ]; then
+            echo "✓ Created PR to update Kubernetes constraint"
+            echo "  Talos: v${{ steps.update.outputs.TALOS_VERSION }}.x"
+            echo "  K8s: ${{ steps.update.outputs.K8S_VERSIONS }}"
+            echo "  Constraint: ${{ steps.update.outputs.ALLOWED_VERSIONS }}"
+          else
+            echo "✓ Constraint is already up to date"
+          fi
