@@ -61,6 +61,15 @@ spec:
       replicas: 1
       logs:
         type: "emptyDir"
+      extraVolumes: |
+        - name: s3-credential
+          secret:
+            secretName: seaweedfs-s3-credential
+      extraVolumeMounts: |
+        - name: s3-credential
+          mountPath: /etc/seaweedfs/credential.toml
+          subPath: credential.toml
+          readOnly: true
       ingress:
         enabled: true
         className: traefik
