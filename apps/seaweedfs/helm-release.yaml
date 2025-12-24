@@ -22,40 +22,46 @@ spec:
       
     master:
       replicas: 1
-      persistence:
-        enabled: true
-        size: 10Gi
-        storageClass: longhorn
+      data:
+        type: "persistentVolumeClaim"
+        size: "10Gi"
+        storageClass: "longhorn"
+      logs:
+        type: "emptyDir"
 
     filer:
       replicas: 2
-      persistence:
-        enabled: false # Using Postgres
+      data:
+        type: "emptyDir" # Metadata is in Postgres
+      logs:
+        type: "emptyDir"
       postgres:
         enabled: true
         # Connect to the CNPG cluster
-        # format: postgres://<user>:<pass>@<service>:5432/<db>?sslmode=require
         hostname: seaweedfs-metadata-rw.seaweedfs.svc
         database: seaweedfs
         user: app
-        # We need to reference the secret created by CNPG
         passwordSecretName: seaweedfs-postgres-credentials
         passwordSecretKey: password
 
     volume:
       replicas: 1
-      persistence:
-        enabled: true
-        size: 3Ti
-        storageClass: democratic-iscsi
-      # Bind to host network? No, use service.
+      dataDirs:
+        - name: data1
+          type: "persistentVolumeClaim"
+          size: "3Ti"
+          storageClass: "democratic-iscsi"
+      logs:
+        type: "emptyDir"
       
     s3:
       enabled: true
       replicas: 1
+      logs:
+        type: "emptyDir"
       ingress:
         enabled: true
-        ingressClassName: traefik
+        className: traefik
         annotations:
           external-dns.alpha.kubernetes.io/expose: "true"
           external-dns.alpha.kubernetes.io/target: traefik.i.recompiled.org
