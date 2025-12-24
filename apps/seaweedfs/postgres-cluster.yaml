@@ -1,0 +1,27 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: seaweedfs-metadata
+  namespace: seaweedfs
+spec:
+  instances: 2
+  
+  storage:
+    size: 5Gi
+    storageClass: longhorn
+
+  # Backup is disabled to avoid circular dependency
+  # as this DB powers the S3 storage.
+  # backup:
+  #   retentionPolicy: 14d
+  #   barmanObjectStore: ...
+    
+  monitoring:
+    enablePodMonitor: true
+    
+  bootstrap:
+    initdb:
+      database: seaweedfs
+      owner: app
+      secret:
+        name: seaweedfs-postgres-credentials

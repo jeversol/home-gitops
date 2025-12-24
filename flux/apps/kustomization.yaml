@@ -15,3 +15,5 @@ resources:
   - homebridge.yaml
   - media.yaml
   - spoolman.yaml
+  - helmrepo-seaweedfs.yaml
+  - seaweedfs.yaml

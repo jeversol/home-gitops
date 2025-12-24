@@ -1,0 +1,79 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: seaweedfs
+  namespace: seaweedfs
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: seaweedfs
+      version: "4.0.404" # renovate: datasource=helm depName=seaweedfs registryUrl=https://seaweedfs.github.io/seaweedfs/helm
+      sourceRef:
+        kind: HelmRepository
+        name: seaweedfs
+        namespace: flux-system
+  values:
+    image:
+      tag: "4.04"
+    
+    global:
+      replication: "000" # Single copy (relying on RAID)
+      
+    master:
+      replicas: 1
+      persistence:
+        enabled: true
+        size: 10Gi
+        storageClass: longhorn
+
+    filer:
+      replicas: 2
+      persistence:
+        enabled: false # Using Postgres
+      postgres:
+        enabled: true
+        # Connect to the CNPG cluster
+        # format: postgres://<user>:<pass>@<service>:5432/<db>?sslmode=require
+        hostname: seaweedfs-metadata-rw.seaweedfs.svc
+        database: seaweedfs
+        user: app
+        # We need to reference the secret created by CNPG
+        passwordSecretName: seaweedfs-postgres-credentials
+        passwordSecretKey: password
+
+    volume:
+      replicas: 1
+      persistence:
+        enabled: true
+        size: 3Ti
+        storageClass: democratic-iscsi
+      # Bind to host network? No, use service.
+      
+    s3:
+      enabled: true
+      replicas: 1
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+          external-dns.alpha.kubernetes.io/expose: "true"
+          external-dns.alpha.kubernetes.io/target: traefik.i.recompiled.org
+          cert-manager.io/cluster-issuer: letsencrypt-production
+        hosts:
+          - host: s3.i.recompiled.org
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - secretName: s3-tls
+            hosts:
+              - s3.i.recompiled.org
+
+    # Disable internal database options
+    mysql:
+      enabled: false
+    redis:
+      enabled: false
+    postgresql:
+      enabled: false
