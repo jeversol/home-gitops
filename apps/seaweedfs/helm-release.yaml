@@ -51,11 +51,13 @@ spec:
           type: "persistentVolumeClaim"
           size: "3Ti"
           storageClass: "democratic-iscsi"
+          maxVolumes: 1000
       logs:
         type: "emptyDir"
       
     s3:
       enabled: true
+      enableAuth: true
       replicas: 1
       logs:
         type: "emptyDir"
