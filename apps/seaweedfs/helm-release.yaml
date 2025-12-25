@@ -1,0 +1,122 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: seaweedfs
+  namespace: seaweedfs
+spec:
+  interval: 30m
+  releaseName: seaweedfs
+  targetNamespace: seaweedfs
+  chart:
+    spec:
+      chart: seaweedfs
+      version: 4.0.404 
+      sourceRef:
+        kind: HelmRepository
+        name: seaweedfs
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    # Global settings
+    global:
+      replicationPlacement: "000"  # No replication, data protected by Synology RAID-5
+      loggingLevel: 2  # warn level (1=debug, 2=info, 3=warn, 4=error)
+      imagePullPolicy: IfNotPresent
+
+    # Master server configuration (single instance)
+    master:
+      replicas: 1
+      port: 9333
+      grpcPort: 19333
+      metricsPort: 9327
+      defaultReplication: "000"
+      volumeSizeLimitMB: 1000
+
+      # Persistent storage for master metadata
+      data:
+        type: "persistentVolumeClaim"
+        size: "5Gi"
+        storageClass: "longhorn"
+
+      logs:
+        type: "emptyDir"
+
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+    # Volume server (single server with 3Ti from Synology)
+    volume:
+      replicas: 1
+      port: 8080
+      grpcPort: 18080
+      metricsPort: 9327
+      index: "memory"  # In-memory index for fast O(1) lookups
+
+      # Single 3Ti iSCSI volume from Synology RAID-5
+      dataDirs:
+        - name: data
+          type: "persistentVolumeClaim"
+          size: "3Ti"
+          storageClass: "democratic-iscsi"
+          maxVolumes: 0  # No limit on volumes
+
+      logs:
+        type: "emptyDir"
+
+      resources:
+        requests:
+          cpu: 200m
+          memory: 1Gi
+        limits:
+          cpu: 2000m
+          memory: 4Gi
+
+    # Filer configuration (single instance with LevelDB)
+    filer:
+      replicas: 1
+      port: 8888
+      grpcPort: 18888
+      metricsPort: 9327
+      defaultReplicaPlacement: "000"
+
+      # LevelDB backend (embedded, default)
+      extraEnvironmentVars:
+        WEED_LEVELDB2_ENABLED: "true"
+
+      # Storage for LevelDB data
+      data:
+        type: "persistentVolumeClaim"
+        size: "2Gi"
+        storageClass: "longhorn"
+
+      logs:
+        type: "emptyDir"
+
+      # Enable S3 on filer
+      s3:
+        enabled: true
+        port: 8333
+        enableAuth: true
+        existingConfigSecret: "seaweedfs-s3-config"
+
+      resources:
+        requests:
+          cpu: 100m
+          memory: 512Mi
+        limits:
+          cpu: 500m
+          memory: 2Gi
+
+    # S3 gateway (single instance, stateless)
+    s3:
+      enabled: false  # Using filer S3 instead of separate gateway
