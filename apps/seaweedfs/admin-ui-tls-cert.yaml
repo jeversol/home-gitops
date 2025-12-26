@@ -1,0 +1,14 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: seaweedfs-tls
+  namespace: seaweedfs
+spec:
+  commonName: seaweedfs.i.recompiled.org
+  dnsNames:
+    - seaweedfs.i.recompiled.org
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+  secretName: seaweedfs-tls

@@ -7,3 +7,8 @@ resources:
   - s3-ingressroute.yaml
   - s3-tls-cert.yaml
   - vpa.yaml
+  # Admin UI
+  - admin-ui-secret.yaml
+  - admin-ui-deployment.yaml
+  - admin-ui-tls-cert.yaml
+  - admin-ui-ingressroute.yaml
