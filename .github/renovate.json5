@@ -6,7 +6,6 @@
   kubernetes: {
     managerFilePatterns: ['**/*.{yaml,yml}'],
     ignorePaths: ['**/kustomization.{yaml,yml}', 'flux/flux-system/gotk*.{yaml,yml}'],
-    ignoreDeps: ['factory.talos.dev/metal-installer-secureboot/e4c7ed26ef2d006f7ba724d895f7f8909cf430b68beb7826e25bcd5300cfd1ac'],
   },
   extends: [
     'config:recommended',
@@ -126,6 +125,11 @@
     {
       matchPackageNames: ['kubernetes-sigs/node-feature-discovery'],
       overrideDatasource: 'github-releases',
+    },
+    {
+      matchPackageNames: ['factory.talos.dev/metal-installer-secureboot/e4c7ed26ef2d006f7ba724d895f7f8909cf430b68beb7826e25bcd5300cfd1ac'],
+      matchManagers: ['kubernetes'],
+      enabled: false,
     },
   ],
   customManagers: [
