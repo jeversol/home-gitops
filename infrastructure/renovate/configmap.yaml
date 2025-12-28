@@ -18,3 +18,5 @@ data:
   CONTAINERBASE_IGNORED_TOOLS: "elixir"
   RENOVATE_GIT_AUTHOR: Harry Botter Lumos <214727849+harry-botter-lumos[bot]@users.noreply.github.com>
   RENOVATE_USERNAME: harry-botter-lumos[bot]
+  RENOVATE_ALLOWED_POST_UPGRADE_COMMANDS: |
+    ["^\\./.renovate/update-k8s-constraints\\.sh [0-9]+\\.[0-9]+$"]

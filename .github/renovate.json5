@@ -96,6 +96,13 @@
       minimumReleaseAge: '3 days',
       automerge: false,
       assignees: ['jeversol'],
+      postUpgradeTasks: {
+        commands: [
+          './.renovate/update-k8s-constraints.sh {{{newMajor}}}.{{{newMinor}}}'
+        ],
+        fileFilters: ['.github/renovate.json5'],
+        executionMode: 'branch'
+      }
     },
     // IMPORTANT: Kubernetes Component Version Management
     // The kubernetes-components group tracks k8s control plane images in tools/cluster/base-controlplane.yaml.
