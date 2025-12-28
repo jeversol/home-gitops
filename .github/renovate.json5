@@ -5,7 +5,7 @@
   },
   kubernetes: {
     managerFilePatterns: ['**/*.{yaml,yml}'],
-    ignorePaths: ['**/kustomization.{yaml,yml}', 'flux/flux-system/gotk*.{yaml,yml}', 'tools/cluster/base-controlplane.yaml'],
+    ignorePaths: ['**/kustomization.{yaml,yml}', 'flux/flux-system/gotk*.{yaml,yml}'],
   },
   extends: [
     'config:recommended',

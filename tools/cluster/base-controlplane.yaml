@@ -50,6 +50,7 @@ cluster:
     disablePodSecurityPolicy: true
     extraArgs:
       service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/108
+      etcd-servers: https://127.0.0.1:2379  # Fix for K8s #134080: bypass DNS lookup of localhost
     admissionControl:
       - name: PodSecurity
         configuration:
