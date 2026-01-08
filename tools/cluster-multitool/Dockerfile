@@ -28,7 +28,7 @@ FROM alpine:3.23.2
 # renovate: datasource=github-tags depName=kubernetes/kubernetes versioning=semver
 ENV KUBERNETES_VERSION="v1.35.0"
 # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
-ENV TALOS_VERSION="v1.12.0"
+ENV TALOS_VERSION="v1.12.1"
 
 RUN apk add --upgrade --no-cache \
     python3 \
