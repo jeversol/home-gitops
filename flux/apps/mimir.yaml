@@ -67,8 +67,9 @@ spec:
 
         limits:
           max_global_series_per_user: 500000
-          ingestion_rate: 50000
-          ingestion_burst_size: 100000
+          ingestion_rate: 200000
+          ingestion_burst_size: 400000
+          out_of_order_time_window: 10m
           compactor_block_upload_enabled: true  # Enable historical block uploads from Thanos
 
     alertmanager:
