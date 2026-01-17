@@ -85,6 +85,9 @@ cluster:
     image: registry.k8s.io/kube-proxy:v1.35.0
   scheduler:
     image: registry.k8s.io/kube-scheduler:v1.35.0
+  etcd:
+    extraArgs:
+      listen-metrics-urls: http://0.0.0.0:2381
   discovery:
     enabled: true
     registries:

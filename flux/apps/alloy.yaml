@@ -49,10 +49,25 @@ spec:
               action        = "drop"
             }
 
-            // Drop pods from kube-system and kube-public
+            // Drop pods from kube-public
             rule {
               source_labels = ["__meta_kubernetes_namespace"]
-              regex         = "kube-system|kube-public"
+              regex         = "kube-public"
+              action        = "drop"
+            }
+
+            // Mark 'keep' for important kube-system apps
+            rule {
+              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_label_k8s_app", "__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+              regex         = "kube-system;.*(cilium|kube-dns|hubble|etcd|kube-apiserver|kube-scheduler|kube-controller-manager).*"
+              target_label  = "__tmp_keep_system_log"
+              replacement   = "true"
+            }
+
+            // Drop kube-system logs that are NOT marked as important
+            rule {
+              source_labels = ["__meta_kubernetes_namespace", "__tmp_keep_system_log"]
+              regex         = "kube-system;(?:$|false)"
               action        = "drop"
             }
 
@@ -126,7 +141,7 @@ spec:
 
           /********************************************
            * METRICS COLLECTION
-           ********************************************/
+           ********************************************/ 
 
           // Mimir remote write endpoint
           prometheus.remote_write "mimir" {
@@ -338,7 +353,7 @@ spec:
             // Build address from annotation port (if set) or service port number
             rule {
               source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace", "__meta_kubernetes_service_annotation_prometheus_io_port"]
-              regex         = "(.+);(.+);(\\d+)"
+              regex         = "(.+);(.+);(\d+)"
               target_label  = "__address__"
               replacement   = "$1.$2.svc.cluster.local:$3"
               action        = "replace"
@@ -346,7 +361,7 @@ spec:
 
             rule {
               source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace", "__meta_kubernetes_service_port_number"]
-              regex         = "(.+);(.+);(\\d+)"
+              regex         = "(.+);(.+);(\d+)"
               target_label  = "__address__"
               replacement   = "$1.$2.svc.cluster.local:$3"
               action        = "replace"
@@ -417,7 +432,7 @@ spec:
             // Build address from annotation port or container port
             rule {
               source_labels = ["__meta_kubernetes_pod_ip", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
-              regex         = "(.+);(\\d+)"
+              regex         = "(.+);(\d+)"
               target_label  = "__address__"
               replacement   = "$1:$2"
               action        = "replace"
@@ -425,7 +440,7 @@ spec:
 
             rule {
               source_labels = ["__meta_kubernetes_pod_ip", "__meta_kubernetes_pod_container_port_number"]
-              regex         = "(.+);(\\d+)"
+              regex         = "(.+);(\d+)"
               target_label  = "__address__"
               replacement   = "$1:$2"
               action        = "replace"
@@ -471,6 +486,115 @@ spec:
               target_label = "job"
             }
 
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape Cilium Agent
+          prometheus.scrape "cilium_agent" {
+            targets = discovery.relabel.cilium_agent.output
+            forward_to = [prometheus.relabel.cilium_agent_final.receiver]
+          }
+
+          discovery.relabel "cilium_agent" {
+            targets = discovery.kubernetes.pods.targets
+
+            // Keep pods with k8s-app=cilium
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_k8s_app"]
+              regex         = "cilium"
+              action        = "keep"
+            }
+
+            // Set address to pod IP:9962
+            rule {
+              source_labels = ["__meta_kubernetes_pod_ip"]
+              target_label  = "__address__"
+              replacement   = "$1:9962"
+            }
+          }
+
+          prometheus.relabel "cilium_agent_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "cilium-agent"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape Cilium Operator
+          prometheus.scrape "cilium_operator" {
+            targets = discovery.relabel.cilium_operator.output
+            forward_to = [prometheus.relabel.cilium_operator_final.receiver]
+          }
+
+          discovery.relabel "cilium_operator" {
+            targets = discovery.kubernetes.pods.targets
+
+            // Keep pods with io.cilium/app=operator
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_io_cilium_app"]
+              regex         = "operator"
+              action        = "keep"
+            }
+
+            // Set address to pod IP:6942
+            rule {
+              source_labels = ["__meta_kubernetes_pod_ip"]
+              target_label  = "__address__"
+              replacement   = "$1:6942"
+            }
+          }
+
+          prometheus.relabel "cilium_operator_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "cilium-operator"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape Etcd (Requires listen-metrics-urls: http://0.0.0.0:2381 in Talos config)
+          prometheus.scrape "etcd" {
+            targets    = discovery.relabel.etcd.output
+            scheme     = "http"
+            forward_to = [prometheus.relabel.etcd_final.receiver]
+          }
+
+          discovery.relabel "etcd" {
+            targets = discovery.kubernetes.pods.targets
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_component"]
+              regex         = "etcd"
+              action        = "keep"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_ip"]
+              target_label  = "__address__"
+              replacement   = "$1:2381"
+            }
+          }
+
+          prometheus.relabel "etcd_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+            rule {
+              replacement  = "etcd"
+              target_label = "job"
+            }
             rule {
               replacement  = "talos"
               target_label = "cluster"
