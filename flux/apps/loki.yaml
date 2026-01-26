@@ -54,7 +54,6 @@ spec:
       querier:
         max_concurrent: 4
 
-      # Storage configuration for single-binary TSDB mode
       storage:
         type: s3
         bucketNames:
@@ -68,17 +67,15 @@ spec:
           accessKeyId: ${AWS_ACCESS_KEY_ID}
           s3ForcePathStyle: true
           insecure: false
-
-      structuredConfig:
-        ruler_storage:
+        use_thanos_objstore: true
+        object_store:
+          type: s3
           s3:
             endpoint: nas.i.recompiled.org:3900
             region: us-east-1
-            secret_access_key: ${AWS_SECRET_ACCESS_KEY}
             access_key_id: ${AWS_ACCESS_KEY_ID}
-            s3forcepathstyle: true
+            secret_access_key: ${AWS_SECRET_ACCESS_KEY}
             insecure: false
-            bucketnames: loki
 
       storage_config:
         tsdb_shipper:
@@ -102,9 +99,9 @@ spec:
         retention_delete_worker_count: 150
         delete_request_store: s3
 
-    # Disable ruler component entirely
     ruler:
-      enabled: false
+      enabled: true
+      replicas: 0
 
     # Disable loki-canary
     lokiCanary:
