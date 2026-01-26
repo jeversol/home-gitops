@@ -68,16 +68,19 @@ spec:
           accessKeyId: ${AWS_ACCESS_KEY_ID}
           s3ForcePathStyle: true
           insecure: false
-      # storage feeds Helm's helpers; storage_config is the actual Loki block.
-      storage_config:
-        aws:
-          bucketnames: loki
+
+      rulerStorage:
+        type: s3
+        s3:
           endpoint: nas.i.recompiled.org:3900
           region: us-east-1
-          secret_access_key: ${AWS_SECRET_ACCESS_KEY}
-          access_key_id: ${AWS_ACCESS_KEY_ID}
-          s3forcepathstyle: true
+          secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+          accessKeyId: ${AWS_ACCESS_KEY_ID}
+          s3ForcePathStyle: true
           insecure: false
+          bucketnames: loki
+
+      storage_config:
         tsdb_shipper:
           active_index_directory: /var/loki/index
           cache_location: /var/loki/cache
