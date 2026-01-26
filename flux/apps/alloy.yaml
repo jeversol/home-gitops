@@ -353,7 +353,7 @@ spec:
             // Build address from annotation port (if set) or service port number
             rule {
               source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace", "__meta_kubernetes_service_annotation_prometheus_io_port"]
-              regex         = "(.+);(.+);(\d+)"
+              regex         = "(.+);(.+);(\\d+)"
               target_label  = "__address__"
               replacement   = "$1.$2.svc.cluster.local:$3"
               action        = "replace"
@@ -361,7 +361,7 @@ spec:
 
             rule {
               source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace", "__meta_kubernetes_service_port_number"]
-              regex         = "(.+);(.+);(\d+)"
+              regex         = "(.+);(.+);(\\d+)"
               target_label  = "__address__"
               replacement   = "$1.$2.svc.cluster.local:$3"
               action        = "replace"
@@ -432,7 +432,7 @@ spec:
             // Build address from annotation port or container port
             rule {
               source_labels = ["__meta_kubernetes_pod_ip", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
-              regex         = "(.+);(\d+)"
+              regex         = "(.+);(\\d+)"
               target_label  = "__address__"
               replacement   = "$1:$2"
               action        = "replace"
@@ -440,7 +440,7 @@ spec:
 
             rule {
               source_labels = ["__meta_kubernetes_pod_ip", "__meta_kubernetes_pod_container_port_number"]
-              regex         = "(.+);(\d+)"
+              regex         = "(.+);(\\d+)"
               target_label  = "__address__"
               replacement   = "$1:$2"
               action        = "replace"
