@@ -91,6 +91,11 @@
       assignees: [],
     },
     {
+      matchPackageNames: ['longhorn'],
+      matchDatasources: ['helm'],
+      changelogUrl: 'https://github.com/longhorn/longhorn/releases',
+    },
+    {
       matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl'],
       groupName: 'talos',
       minimumReleaseAge: '3 days',
