@@ -21,7 +21,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: homebridge
-          image: homebridge/homebridge:2026-01-25
+          image: homebridge/homebridge:2026-02-01
           env:
             - name: TZ
               value: "America/New_York"
