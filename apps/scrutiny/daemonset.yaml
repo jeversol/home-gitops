@@ -26,7 +26,7 @@ spec:
           effect: NoSchedule
       containers:
         - name: scrutiny-collector
-          image: ghcr.io/analogj/scrutiny:master-collector@sha256:8fef11eec8b5233c36e48469923f6c5057c6caf9f4d4834a0413ac06879df4b1
+          image: ghcr.io/analogj/scrutiny:master-collector@sha256:1794212417df0ed01337c7962bb85d1b6041e222a4053c0f78446991dd31375f
           securityContext:
             privileged: true
             runAsUser: 0
