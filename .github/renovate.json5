@@ -96,6 +96,11 @@
       changelogUrl: 'https://github.com/longhorn/longhorn/releases',
     },
     {
+      matchPackageNames: ['cilium'],
+      matchDatasources: ['helm'],
+      minimumReleaseAge: '7 days',
+    },
+    {
       matchPackageNames: ['csi-driver-nfs'],
       matchDatasources: ['helm'],
       changelogUrl: 'https://github.com/kubernetes-csi/csi-driver-nfs/releases',
