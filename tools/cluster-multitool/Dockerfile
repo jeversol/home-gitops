@@ -10,7 +10,7 @@ RUN apk add --no-cache \
 # renovate: datasource=pypi depName=kubernetes
 ENV PYPI_KUBERNETES_VERSION="35.0.0"
 # renovate: datasource=pypi depName=PyJWT
-ENV PYPI_PYJWT_VERSION="2.10.1"
+ENV PYPI_PYJWT_VERSION="2.11.0"
 # renovate: datasource=pypi depName=requests
 ENV PYPI_REQUESTS_VERSION="2.32.5"
 # renovate: datasource=pypi depName=s3cmd
