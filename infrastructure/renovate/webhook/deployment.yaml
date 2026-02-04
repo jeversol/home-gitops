@@ -28,7 +28,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: webhook
-          image: docker.io/ncarlier/webhookd:1.20.2-distrib
+          image: docker.io/ncarlier/webhookd:1.21.0-distrib
           imagePullPolicy: IfNotPresent
           env:
             - name: GITHUB_SECRET
