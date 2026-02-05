@@ -1,5 +1,5 @@
 ---
-apiVersion: cilium.io/v2
+apiVersion: cilium.io/v2alpha1
 kind: CiliumL2AnnouncementPolicy
 metadata:
   name: cilium-l2-policy
@@ -12,7 +12,7 @@ spec:
         values:
           - plex
 ---
-apiVersion: cilium.io/v2
+apiVersion: cilium.io/v2alpha1
 kind: CiliumL2AnnouncementPolicy
 metadata:
   name: plex-l2-policy
