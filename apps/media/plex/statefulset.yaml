@@ -47,7 +47,7 @@ spec:
               mountPath: /transcode
           resources:
             requests:
-              cpu: 400m
+              cpu: 1 
               memory: 2.5Gi
               gpu.intel.com/i915: 1
             limits:
