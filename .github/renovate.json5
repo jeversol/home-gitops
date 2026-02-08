@@ -71,19 +71,6 @@
       separateMinorPatch: true,
     },
     {
-      matchPackageNames: [
-        'ghcr.io/home-operations/plex',
-        'ghcr.io/home-operations/sonarr',
-        'ghcr.io/home-operations/radarr',
-        'ghcr.io/home-operations/prowlarr',
-      ],
-      pinDigests: true,
-      matchUpdateTypes: ['patch', 'minor', 'digest'],
-      automerge: true,
-      schedule: ['* 5-8 * * *'],
-      assignees: [],
-    },
-    {
       matchPackageNames: ['kube-prometheus-stack'],
       matchDatasources: ['helm'],
       matchUpdateTypes: ['patch', 'minor'],

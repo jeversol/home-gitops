@@ -29,8 +29,8 @@ spec:
           type: RuntimeDefault
       containers:
         - name: plex
-          image: ghcr.io/home-operations/plex:rolling@sha256:fa62165df48d04e9a418805951e903f831dec0e0601f4dc4245f9948d7fd719b
-          imagePullPolicy: Always
+          image: ghcr.io/home-operations/plex:1.43.0.10467
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 32400
               name: http
