@@ -66,9 +66,15 @@
     },
     {
       matchPackageNames: ['ghcr.io/analogj/scrutiny'],
+      matchCurrentValue: '/-web$/',
+      versioning: 'regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-web$',
       groupName: 'scrutiny',
-      pinDigests: true,
-      separateMinorPatch: true,
+    },
+    {
+      matchPackageNames: ['ghcr.io/analogj/scrutiny'],
+      matchCurrentValue: '/-collector$/',
+      versioning: 'regex:^v?(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)-collector$',
+      groupName: 'scrutiny',
     },
     {
       matchPackageNames: ['kube-prometheus-stack'],
