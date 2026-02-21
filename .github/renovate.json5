@@ -52,13 +52,6 @@
       assignees: [],
     },
     {
-      matchPackageNames: ['ghcr.io/jeversol/cluster-multitool'],
-      matchUpdateTypes: ['digest', 'pin'],
-      pinDigests: true,
-      automerge: true,
-      assignees: [],
-    },
-    {
       matchDatasources: ['docker'],
       matchPackageNames: ['homebridge/homebridge'],
       versioning: 'regex:^(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$',
@@ -129,7 +122,6 @@
         'registry.k8s.io/kube-controller-manager',
         'registry.k8s.io/kube-proxy',
         'registry.k8s.io/kube-scheduler',
-        'kubernetes/kubernetes',
       ],
       groupName: 'kubernetes-components',
       allowedVersions: '/^v1\.(30|31|32|33|34|35)\./',
