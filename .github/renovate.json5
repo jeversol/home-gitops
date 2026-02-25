@@ -10,6 +10,7 @@
   extends: [
     'config:recommended',
     ':enablePreCommit',
+    'mergeConfidence:all-badges',
   ],
   automerge: false,
   timezone: 'America/Indiana/Indianapolis',
