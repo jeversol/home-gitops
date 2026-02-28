@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: bambu-spoolman
-          image: ghcr.io/mrkirby153/bambu-spoolman:latest
+          image: ghcr.io/mrkirby153/bambu-spoolman:1.2.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
