@@ -15,7 +15,7 @@ This serves as a learning environment for cloud-native technologies and GitOps p
 The infrastructure implements:
 - Complete GitOps workflow with FluxCD
 - Production security practices (SOPS encryption, cert-manager, OAuth)
-- Comprehensive observability (Prometheus, Grafana, Alerting)
+- Comprehensive observability (Mimir, Grafana, Loki, Alerting)
 - Storage orchestration (Longhorn, democratic-csi)
 - Advanced Kubernetes features (VPA, descheduler, node feature discovery)
 
@@ -44,13 +44,11 @@ The infrastructure implements:
   - [Renovate](https://docs.renovatebot.com/) - Automated dependency updates with webhook integration
   - [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) - Automated Talos OS and Kubernetes updates
 - Observability
-  - [kube-prometheus-stack](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
-    - [Grafana](https://grafana.com/) - Visualization and dashboards with Auth0 integration
-    - [Prometheus](https://prometheus.io/) - Metrics collection and alerting
-    - [Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/) - Alert routing and management
-  - [Thanos](https://thanos.io/) - Long-term storage and querying for Prometheus metrics
+  - [Grafana](https://grafana.com/) - Visualization and dashboards with Auth0 integration
+  - [Mimir](https://grafana.com/oss/mimir/) - Long-term metrics storage, querying, and alerting
   - [Loki](https://grafana.com/oss/loki/) - Log aggregation with S3 backend and 30-day retention
-  - [Alloy](https://grafana.com/docs/alloy/) - Observability data collector for logs
+  - [Alloy](https://grafana.com/docs/alloy/) - Observability data collector for logs and metrics
+  - [kube-state-metrics](https://github.com/kubernetes/kube-state-metrics) - Kubernetes object metrics
   - [Smartctl Exporter](https://github.com/prometheus-community/smartctl_exporter) - Disk SMART metrics for Prometheus
 - Applications
   - [Tautulli](https://tautulli.com) - Plex monitoring and analytics
@@ -71,6 +69,8 @@ The infrastructure implements:
 - external-secrets (replaced by SOPS in FluxCD)
 - VictoriaMetrics (replaced by kube-prometheus-stack for metrics)
 - VictoriaLogs/Vector (replaced by Loki/Alloy for logging)
+- kube-prometheus-stack / Prometheus / Alertmanager (replaced by Mimir for metrics and alerting)
+- Thanos (replaced by Mimir for long-term metrics storage)
 
 <details> 
 <summary>Replaced ArgoCD with FluxCD</summary>   
