@@ -29,6 +29,8 @@ machine:
     node.kubernetes.io/exclude-from-external-load-balancers: ""
 cluster:
   network:
+    cni:
+      name: none
     dnsDomain: cluster.local
     podSubnets:
       - 10.244.0.0/16
@@ -82,6 +84,7 @@ cluster:
       cluster-cidr: 10.244.0.0/16,fd00:10:244::/48
       service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/112
   proxy:
+    disabled: true
     image: registry.k8s.io/kube-proxy:v1.35.1
   scheduler:
     image: registry.k8s.io/kube-scheduler:v1.35.1
