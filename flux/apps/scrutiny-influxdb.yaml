@@ -9,7 +9,7 @@ spec:
   releaseName: scrutiny-influxdb
   targetNamespace: o11y
   driftDetection:
-    mode: warn
+    mode: enabled
     ignore:
       - paths: ["/spec/replicas"]
         target:
