@@ -29,3 +29,35 @@ data:
         ignore: true
       - device: /dev/sdj
         ignore: true
+      - device: /dev/sdk
+        ignore: true
+      - device: /dev/sdl
+        ignore: true
+      - device: /dev/sdm
+        ignore: true
+      - device: /dev/sdn
+        ignore: true
+      - device: /dev/sdo
+        ignore: true
+      - device: /dev/sdp
+        ignore: true
+      - device: /dev/sdq
+        ignore: true
+      - device: /dev/sdr
+        ignore: true
+      - device: /dev/sds
+        ignore: true
+      - device: /dev/sdt
+        ignore: true
+      - device: /dev/sdu
+        ignore: true
+      - device: /dev/sdv
+        ignore: true
+      - device: /dev/sdw
+        ignore: true
+      - device: /dev/sdx
+        ignore: true
+      - device: /dev/sdy
+        ignore: true
+      - device: /dev/sdz
+        ignore: true
