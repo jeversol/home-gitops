@@ -16,7 +16,7 @@ spec:
       kind: Rule
       services:
         - name: bambu-spoolman
-          port: 8080
+          port: 3000
       middlewares:
         - name: traefik-forward-auth
           namespace: traefik

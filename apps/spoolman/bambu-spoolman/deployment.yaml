@@ -22,7 +22,7 @@ spec:
           image: ghcr.io/mrkirby153/bambu-spoolman:2.0.0
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 80
+            - containerPort: 3000
               name: http
           envFrom:
             - configMapRef:
