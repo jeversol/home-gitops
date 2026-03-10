@@ -26,6 +26,7 @@ spec:
       retries: 3
   values:
     alloy:
+      storagePath: /var/lib/alloy
       configMap:
         content: |
           // Loki endpoint for writing logs
@@ -1069,6 +1070,9 @@ spec:
 
       mounts:
         varlog: true
+        extra:
+          - name: alloy-storage
+            mountPath: /var/lib/alloy
 
       # Resource requests and limits
       resources:
@@ -1080,6 +1084,13 @@ spec:
 
     controller:
       type: daemonset
+
+      volumes:
+        extra:
+          - name: alloy-storage
+            hostPath:
+              path: /var/lib/alloy
+              type: DirectoryOrCreate
 
       # Security context
       securityContext:
