@@ -47,8 +47,6 @@ spec:
                   type: RuntimeDefault
           restartPolicy: OnFailure
           serviceAccountName: harry-botter
-          imagePullSecrets:
-            - name: ghcr-secret
           volumes:
             - name: script
               configMap:
