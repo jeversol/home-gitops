@@ -107,16 +107,6 @@ spec:
                 path: /spec/revisionHistoryLimit
                 value: 5
   values:
-    preUpgradeChecker:
-      upgradeVersionCheck: false  # Required to apply hotfix images without triggering downgrade check
-
-    image:
-      longhorn:
-        manager:
-          tag: v1.11.0-hotfix-1  # Hotfix for gRPC connection leak (instance manager memory leak)
-        instanceManager:
-          tag: v1.11.0-hotfix-1
-
     # Longhorn storage class (not default - keep democratic-iscsi as default)
     defaultClass: false
     storageClass:
