@@ -135,6 +135,10 @@
       overrideDatasource: 'github-releases',
     },
     {
+      matchPackageNames: ['kubernetes-sigs/external-dns'],
+      overrideDatasource: 'github-releases',
+    },
+    {
       matchPackageNames: ['factory.talos.dev/metal-installer-secureboot/e4c7ed26ef2d006f7ba724d895f7f8909cf430b68beb7826e25bcd5300cfd1ac'],
       matchManagers: ['kubernetes'],
       enabled: false,
