@@ -2,6 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - helmrepo-grafana.yaml
+  - helmrepo-grafana-community.yaml
   - helmrepo-prometheus-community.yaml
   - o11y.yaml
   - loki.yaml

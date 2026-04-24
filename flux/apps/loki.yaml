@@ -11,10 +11,10 @@ spec:
   chart:
     spec:
       chart: loki
-      version: "6.55.0"  # renovate: datasource=helm depName=loki registryUrl=https://grafana.github.io/helm-charts
+      version: "6.55.0"  # renovate: datasource=helm depName=loki registryUrl=https://grafana-community.github.io/helm-charts
       sourceRef:
         kind: HelmRepository
-        name: grafana
+        name: grafana-community
         namespace: flux-system
   driftDetection:
     mode: enabled
