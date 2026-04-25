@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - daemonset.yaml
   - node-feature-rules.yaml
+  - platform-labeling-rules.yaml

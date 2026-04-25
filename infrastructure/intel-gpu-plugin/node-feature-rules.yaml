@@ -1,7 +1,7 @@
 apiVersion: nfd.k8s-sigs.io/v1alpha1
 kind: NodeFeatureRule
 metadata:
-  name: intel-gpu-nfd-rules
+  name: intel-dp-devices
 spec:
   rules:
     - name: "intel.gpu"
@@ -10,9 +10,22 @@ spec:
       matchFeatures:
         - feature: pci.device
           matchExpressions:
-            vendor:
-              op: In
-              value: ["8086"]
-            class:
-              op: In
-              value: ["0300", "0380"]
+            vendor: {op: In, value: ["8086"]}
+            class: {op: In, value: ["0300", "0380"]}
+      matchAny:
+        - matchFeatures:
+            - feature: kernel.loadedmodule
+              matchExpressions:
+                i915: {op: Exists}
+        - matchFeatures:
+            - feature: kernel.enabledmodule
+              matchExpressions:
+                i915: {op: Exists}
+        - matchFeatures:
+            - feature: kernel.loadedmodule
+              matchExpressions:
+                xe: {op: Exists}
+        - matchFeatures:
+            - feature: kernel.enabledmodule
+              matchExpressions:
+                xe: {op: Exists}

@@ -11,3 +11,4 @@ patches:
       kind: Namespace
       name: node-feature-discovery
     path: namespace-patch.yaml
+  - path: remove-cpu-limits-patch.yaml

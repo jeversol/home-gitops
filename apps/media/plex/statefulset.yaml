@@ -18,8 +18,15 @@ spec:
         app: plex
     spec:
       automountServiceAccountToken: false
-      nodeSelector:
-        kubernetes.io/hostname: k8s-node1
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: gpu.intel.com/device-id.0300-46d4.present
+                    operator: In
+                    values:
+                      - "true"
       securityContext:
         runAsUser: 1029
         runAsGroup: 65537
