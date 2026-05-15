@@ -26,7 +26,7 @@ FROM alpine:3.23.4
 
 # Build environment variables for versions
 # renovate: datasource=docker depName=registry.k8s.io/kube-apiserver versioning=semver
-ENV KUBERNETES_VERSION="v1.35.3"
+ENV KUBERNETES_VERSION="v1.36.1"
 # renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
 ENV TALOS_VERSION="v1.13.0"
 
