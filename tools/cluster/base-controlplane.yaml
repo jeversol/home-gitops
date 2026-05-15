@@ -5,7 +5,7 @@ machine:
   type: controlplane
   certSANs: []
   kubelet:
-    image: ghcr.io/siderolabs/kubelet:v1.35.3
+    image: ghcr.io/siderolabs/kubelet:v1.36.1
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
   network: {}
@@ -39,7 +39,7 @@ cluster:
       - 10.96.0.0/12
       - fd00:10:96::/112
   apiServer:
-    image: registry.k8s.io/kube-apiserver:v1.35.3
+    image: registry.k8s.io/kube-apiserver:v1.36.1
     certSANs:
       - 192.168.1.235
       - 192.168.1.221
@@ -79,15 +79,15 @@ cluster:
       rules:
         - level: Metadata
   controllerManager:
-    image: registry.k8s.io/kube-controller-manager:v1.35.3
+    image: registry.k8s.io/kube-controller-manager:v1.36.1
     extraArgs:
       cluster-cidr: 10.244.0.0/16,fd00:10:244::/48
       service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/112
   proxy:
     disabled: true
-    image: registry.k8s.io/kube-proxy:v1.35.3
+    image: registry.k8s.io/kube-proxy:v1.36.1
   scheduler:
-    image: registry.k8s.io/kube-scheduler:v1.35.3
+    image: registry.k8s.io/kube-scheduler:v1.36.1
   etcd:
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381

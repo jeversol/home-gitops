@@ -80,7 +80,7 @@ metadata:
   labels:
     upgrade-type: kubernetes
 spec:
-  version: v1.35.3  # renovate: datasource=docker depName=registry.k8s.io/kube-apiserver versioning=semver
+  version: v1.36.1  # renovate: datasource=docker depName=registry.k8s.io/kube-apiserver versioning=semver
   concurrency: 1
   exclusive: false
   nodeSelector:
