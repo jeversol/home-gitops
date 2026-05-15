@@ -122,7 +122,7 @@ def fetch_support_matrix_html(talos_minor):
     Returns:
         set: Set of supported Kubernetes minor versions (as strings, e.g., {"30", "31", "32"})
     """
-    matrix_url = f"https://www.talos.dev/v{talos_minor}/introduction/support-matrix/"
+    matrix_url = f"https://docs.siderolabs.com/talos/v{talos_minor}/getting-started/support-matrix"
     print(f"Fetching support matrix from: {matrix_url}")
 
     try:
