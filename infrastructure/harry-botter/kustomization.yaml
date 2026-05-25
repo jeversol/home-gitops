@@ -10,5 +10,4 @@ resources:
   - role.yaml
   - rolebinding.yaml
   - github-app-secret.yaml
-  - ghcr-secret.yaml
   - cronjob.yaml
