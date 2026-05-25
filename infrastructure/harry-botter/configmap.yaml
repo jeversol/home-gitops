@@ -52,7 +52,7 @@ data:
     def should_warn(expiry_date):
         today = date.today()
         delta = (expiry_date - today).days
-        return 0 <= delta <= DAYS_WARNING
+        return delta <= DAYS_WARNING
 
     def find_existing_issue(session, repo, token, title):
         url = f"https://api.github.com/repos/{repo}/issues"
@@ -124,17 +124,28 @@ data:
                 print(f"{metadata.namespace}/{metadata.name}: expires on {expiry_date} (not within window), skipping")
                 continue
 
-            issue_title = f"chore(secrets): {metadata.namespace}/{metadata.name} expires soon"
+            today = date.today()
+            already_expired = expiry_date < today
+            if already_expired:
+                issue_title = f"chore(secrets): {metadata.namespace}/{metadata.name} has expired"
+            else:
+                issue_title = f"chore(secrets): {metadata.namespace}/{metadata.name} expires soon"
             existing_issue = find_existing_issue(session, GITHUB_REPO, gh_token, issue_title)
 
             if existing_issue:
                 print(f"{metadata.namespace}/{metadata.name}: issue already exists — #{existing_issue['number']}")
                 continue
 
-            issue_body = (
-                f"The Kubernetes Secret `{metadata.name}` in namespace `{metadata.namespace}` is set to expire on {expiry_date}.\n"
-                f"\n**Note**: {note}\n\nPlease rotate the secret before it expires."
-            )
+            if already_expired:
+                issue_body = (
+                    f"The Kubernetes Secret `{metadata.name}` in namespace `{metadata.namespace}` expired on {expiry_date}.\n"
+                    f"\n**Note**: {note}\n\nThis secret is past its expiry date and should be rotated immediately."
+                )
+            else:
+                issue_body = (
+                    f"The Kubernetes Secret `{metadata.name}` in namespace `{metadata.namespace}` is set to expire on {expiry_date}.\n"
+                    f"\n**Note**: {note}\n\nPlease rotate the secret before it expires."
+                )
 
             try:
                 issue = create_issue(session, GITHUB_REPO, gh_token, issue_title, issue_body)
