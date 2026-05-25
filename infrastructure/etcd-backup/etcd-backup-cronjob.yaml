@@ -55,8 +55,6 @@ spec:
                   memory: 128Mi
                 limits:
                   memory: 256Mi
-          imagePullSecrets:
-            - name: ghcr-secret
           volumes:
             - name: talos-config
               secret:
