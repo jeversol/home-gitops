@@ -52,6 +52,15 @@
       automerge: true,
       assignees: [],
     },
+    // kubernetes-client/python 36.0.0 regression: load_incluster_config() sets
+    // api_key['authorization'] but auth_settings() expects api_key['BearerToken'],
+    // causing all in-cluster API calls to 401. Remove once 36.x.x is patched.
+    // Upstream issues: kubernetes-client/python#2584, #2591, #2592
+    {
+      matchPackageNames: ['kubernetes'],
+      matchDatasources: ['pypi'],
+      allowedVersions: '!=36.0.0',
+    },
     {
       matchDatasources: ['docker'],
       matchPackageNames: ['homebridge/homebridge'],
