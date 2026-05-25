@@ -7,13 +7,13 @@ RUN apk add --no-cache \
     build-base \
     libffi-dev
 
-# renovate: datasource=pypi depName=kubernetes
+# renovate: datasource=pypi depName=kubernetes versioning=pep440
 ENV PYPI_KUBERNETES_VERSION="35.0.0"
-# renovate: datasource=pypi depName=PyJWT
+# renovate: datasource=pypi depName=PyJWT versioning=pep440
 ENV PYPI_PYJWT_VERSION="2.13.0"
-# renovate: datasource=pypi depName=requests
+# renovate: datasource=pypi depName=requests versioning=pep440
 ENV PYPI_REQUESTS_VERSION="2.34.2"
-# renovate: datasource=pypi depName=s3cmd
+# renovate: datasource=pypi depName=s3cmd versioning=pep440
 ENV PYPI_S3CMD_VERSION="2.4.0"
 
 RUN python3 -m pip install --no-cache-dir --prefix=/opt/deps \
