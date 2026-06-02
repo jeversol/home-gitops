@@ -42,7 +42,6 @@ The infrastructure implements:
   - [flux-webhook](https://fluxcd.io/flux/components/notification/receivers/) - GitHub webhook receiver for Flux
   - [traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth) - OAuth authentication middleware
   - [Renovate](https://docs.renovatebot.com/) - Automated dependency updates with webhook integration
-  - [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) - Automated Talos OS and Kubernetes updates
 - Observability
   - [Grafana](https://grafana.com/) - Visualization and dashboards with Auth0 integration
   - [Mimir](https://grafana.com/oss/mimir/) - Long-term metrics storage, querying, and alerting

@@ -164,15 +164,6 @@
     },
     {
       customType: 'regex',
-      managerFilePatterns: ['/infrastructure/system-upgrade-controller/plans/plans\\.yaml/'],
-      matchStrings: [
-        'version:\\s*(?<currentValue>\\S+)\\s*#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?',
-        '#\\s*renovate:\\s*datasource=(?<datasource>\\S+)\\s+depName=(?<depName>\\S+)(?:\\s+versioning=(?<versioning>\\S+))?\\s+image:\\s+(?<registry>\\S+)/(?<image>\\S+):(?<currentValue>\\S+)',
-      ],
-      versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
-    },
-    {
-      customType: 'regex',
       managerFilePatterns: ['^flux/flux-system/flux-instance\\.yaml$'],
       matchStrings: [
         'version:\\s+"(?<currentValue>\\d+\\.\\d+)\\.x"',

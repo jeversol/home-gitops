@@ -22,8 +22,6 @@ resources:
   - node-feature-discovery.yaml
   - renovate.yaml
   - smartctl-exporter.yaml
-  - system-upgrade-controller.yaml
-  - system-upgrade-controller-plans.yaml
   - traefik.yaml
   - traefik-config.yaml
   - vpa.yaml

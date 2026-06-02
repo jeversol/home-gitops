@@ -18,6 +18,5 @@ resources:
   - spoolman-vpa.yaml
   - system-daemonsets-vpa.yaml
   - system-deployments-vpa.yaml
-  - system-upgrade-controller-vpa.yaml
   - traefik-forward-auth-vpa.yaml
   - traefik-vpa.yaml
