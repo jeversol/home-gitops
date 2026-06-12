@@ -48,8 +48,10 @@ RUN apk add --upgrade --no-cache \
 # Copy Python dependencies from builder
 COPY --from=builder /opt/deps /usr/local
 
-# Set Python path to include /usr/local packages
-ENV PYTHONPATH=/usr/local/lib/python3.12/site-packages
+# Create a stable symlink so PYTHONPATH doesn't need to change when Python upgrades
+RUN PYVER=$(python3 -c "import sys; v=sys.version_info; print(f'{v.major}.{v.minor}')") && \
+    ln -sf /usr/local/lib/python${PYVER}/site-packages /usr/local/lib/python-site
+ENV PYTHONPATH=/usr/local/lib/python-site
 
 # Install talosctl
 RUN wget -q https://github.com/siderolabs/talos/releases/download/${TALOS_VERSION}/talosctl-linux-amd64 -O /usr/local/bin/talosctl \
