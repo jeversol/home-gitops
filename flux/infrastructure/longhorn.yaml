@@ -131,6 +131,7 @@ spec:
       createDefaultDiskLabeledNodes: "true"
       defaultLonghornStaticStorageClass: "longhorn"
       backupTargetPollInterval: "3h"
+      nodeDrainPolicy: "allow-if-replica-is-stopped"
       
     # Disable ingress - we'll use Traefik IngressRoute if needed
     ingress:
