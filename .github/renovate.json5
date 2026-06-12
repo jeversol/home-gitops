@@ -201,21 +201,5 @@
       depNameTemplate: 'siderolabs/talos',
       versioningTemplate: 'semver',
     },
-    {
-      customType: 'regex',
-      managerFilePatterns: ['/infrastructure/tuppr/talos-upgrade\\.yaml/'],
-      matchStrings: [
-        'datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s*\\n\\s+version: v?(?<currentValue>[\\d.]+)',
-      ],
-      versioningTemplate: 'semver',
-    },
-    {
-      customType: 'regex',
-      managerFilePatterns: ['/infrastructure/tuppr/kubernetes-upgrade\\.yaml/'],
-      matchStrings: [
-        'datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s*\\n\\s+version: v?(?<currentValue>[\\d.]+)',
-      ],
-      versioningTemplate: 'semver',
-    },
   ],
 }
