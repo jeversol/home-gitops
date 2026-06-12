@@ -23,10 +23,10 @@ The infrastructure implements:
 - Infrastructure
   - [FluxCD](https://fluxcd.io/) - GitOps continuous delivery
   - [SOPS with age](https://getsops.io) - Secret encryption/decryption
-  - [Cilium](https://cilium.io/) - CNI, network policy, and load balancing for bare metal
+  - [Cilium](https://cilium.io/) - CNI, network policy, load balancing for bare metal, and Hubble network observability UI
   - [Traefik](https://doc.traefik.io/traefik/) - Reverse proxy and ingress controller
   - [cert-manager](https://cert-manager.io) - Automatic TLS certificate management
-  - [harry-botter](https://github.com/jeversol/harry-botter) - Certificate expiry monitoring
+  - [harry-botter](https://github.com/jeversol/harry-botter) - Kubernetes secret expiry monitoring with GitHub issue alerts
   - [democratic-csi](https://github.com/democratic-csi/democratic-csi) - Synology iSCSI storage integration
   - [Longhorn](https://longhorn.io) - Distributed block storage
   - [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) - Cloudflare tunnel for secure ingress

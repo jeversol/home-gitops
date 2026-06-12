@@ -24,5 +24,6 @@ resources:
   - smartctl-exporter.yaml
   - traefik.yaml
   - traefik-config.yaml
+  - tuppr.yaml
   - vpa.yaml
   - vpa-resources.yaml

@@ -63,7 +63,6 @@ Talos uses a layered configuration system where patches are applied on top of a 
 talosctl apply-config --nodes <node-ip> \
   --file ../talos/secrets.yaml \
   --config-patch @tools/cluster/base-controlplane.yaml \
-  --config-patch @tools/cluster/bare-metal.yaml \
   --config-patch @tools/cluster/<node-specific>.yaml
 ```
 
@@ -74,7 +73,6 @@ talosctl apply-config --nodes <node-ip> \
 talosctl apply-config --nodes 192.168.1.221 \
   --file ../talos/secrets.yaml \
   --config-patch @tools/cluster/base-controlplane.yaml \
-  --config-patch @tools/cluster/bare-metal.yaml \
   --config-patch @tools/cluster/k8s-node1.yaml
 ```
 
@@ -83,7 +81,6 @@ talosctl apply-config --nodes 192.168.1.221 \
 talosctl apply-config --nodes 192.168.1.222 \
   --file ../talos/secrets.yaml \
   --config-patch @tools/cluster/base-controlplane.yaml \
-  --config-patch @tools/cluster/bare-metal.yaml \
   --config-patch @tools/cluster/k8s-node2.yaml
 ```
 
@@ -92,7 +89,6 @@ talosctl apply-config --nodes 192.168.1.222 \
 talosctl apply-config --nodes 192.168.1.223 \
   --file ../talos/secrets.yaml \
   --config-patch @tools/cluster/base-controlplane.yaml \
-  --config-patch @tools/cluster/bare-metal.yaml \
   --config-patch @tools/cluster/k8s-node3.yaml
 ```
 
@@ -104,12 +100,9 @@ for node in 192.168.1.221 192.168.1.222 192.168.1.223; do
   talosctl apply-config --nodes $node \
     --file ../talos/secrets.yaml \
     --config-patch @tools/cluster/base-controlplane.yaml \
-    --config-patch @tools/cluster/bare-metal.yaml \
     --config-patch @tools/cluster/k8s-node${node##*.}.yaml
 done
 ```
-
-Note: The node number extraction in the loop above works because node IPs end in .221, .222, .223 and node files are named k8s-node1.yaml, k8s-node2.yaml, k8s-node3.yaml. Adjust if this pattern changes.
 
 ## Version Management
 
@@ -153,7 +146,7 @@ When upgrading Talos to a new minor version (e.g., 1.11.x → 1.12.x):
    }
    ```
 
-3. **Upgrade Talos** on all nodes using system-upgrade-controller or manual talosctl commands
+3. **Upgrade Talos** on all nodes by bumping `spec.talos.version` in `infrastructure/tuppr/talos-upgrade.yaml` and letting tuppr handle the rolling upgrade via GitOps
 
 4. **Upgrade Kubernetes** (if desired) by merging Renovate PRs for new k8s versions
 

@@ -102,7 +102,7 @@
       changelogUrl: 'https://github.com/kubernetes-csi/csi-driver-nfs/releases',
     },
     {
-      matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl'],
+      matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl', 'ghcr.io/siderolabs/installer'],
       groupName: 'talos',
       minimumReleaseAge: '3 days',
       automerge: false,
@@ -154,6 +154,14 @@
     },
   ],
   customManagers: [
+    {
+      customType: 'regex',
+      managerFilePatterns: ['**/*.{yaml,yml}'],
+      matchStrings: [
+        '#\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+depName=(?<depName>.*?)\\s*\\n\\s+version:\\s*v?(?<currentValue>[\\d.]+)',
+      ],
+      versioningTemplate: 'semver',
+    },
     {
       customType: 'regex',
       managerFilePatterns: ['/tools/cluster-multitool/Dockerfile/'],

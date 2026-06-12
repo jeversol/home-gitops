@@ -1,0 +1,61 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: home-operations
+  namespace: flux-system
+spec:
+  interval: 30m
+  url: oci://ghcr.io/home-operations/charts
+  type: oci
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tuppr
+  namespace: flux-system
+spec:
+  targetNamespace: system-upgrade
+  interval: 30m
+  releaseName: tuppr
+  driftDetection:
+    mode: enabled
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  chart:
+    spec:
+      chart: tuppr
+      version: "0.2.5"
+      sourceRef:
+        kind: HelmRepository
+        name: home-operations
+  values:
+    controller:
+      metrics:
+        annotations:
+          prometheus.io/scrape: "true"
+    monitoring:
+      prometheusRule:
+        enabled: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: tuppr-config
+  namespace: flux-system
+spec:
+  interval: 30m
+  path: ./infrastructure/tuppr
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  prune: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age

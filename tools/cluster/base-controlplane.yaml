@@ -25,6 +25,12 @@ machine:
     hostDNS:
       enabled: true
       forwardKubeDNSToHost: true
+    kubernetesTalosAPIAccess:
+      enabled: true
+      allowedRoles:
+        - os:admin
+      allowedKubernetesNamespaces:
+        - system-upgrade
   nodeLabels:
     node.kubernetes.io/exclude-from-external-load-balancers: ""
 cluster:
