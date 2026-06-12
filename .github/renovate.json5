@@ -116,7 +116,10 @@
       }
     },
     // IMPORTANT: Kubernetes Component Version Management
-    // The kubernetes-components group tracks k8s control plane images in tools/cluster/base-controlplane.yaml.
+    // The kubernetes-components group tracks k8s versions in:
+    //   - tools/cluster/base-controlplane.yaml (component images for manual apply-config)
+    //   - infrastructure/tuppr/kubernetes-upgrade.yaml (tuppr KubernetesUpgrade target)
+    //   - tools/cluster-multitool/Dockerfile (kubectl binary)
     // The allowedVersions constraint is tied to the Talos support matrix.
     //
     // When upgrading Talos to a new minor version:
@@ -130,7 +133,6 @@
         'ghcr.io/siderolabs/kubelet',
         'registry.k8s.io/kube-apiserver',
         'registry.k8s.io/kube-controller-manager',
-        'registry.k8s.io/kube-proxy',
         'registry.k8s.io/kube-scheduler',
       ],
       groupName: 'kubernetes-components',
@@ -197,6 +199,22 @@
       ],
       datasourceTemplate: 'github-tags',
       depNameTemplate: 'siderolabs/talos',
+      versioningTemplate: 'semver',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: ['/infrastructure/tuppr/talos-upgrade\\.yaml/'],
+      matchStrings: [
+        'datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s*\\n\\s+version: v?(?<currentValue>[\\d.]+)',
+      ],
+      versioningTemplate: 'semver',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: ['/infrastructure/tuppr/kubernetes-upgrade\\.yaml/'],
+      matchStrings: [
+        'datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s*\\n\\s+version: v?(?<currentValue>[\\d.]+)',
+      ],
       versioningTemplate: 'semver',
     },
   ],

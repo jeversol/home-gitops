@@ -91,7 +91,6 @@ cluster:
       service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/112
   proxy:
     disabled: true
-    image: registry.k8s.io/kube-proxy:v1.36.1
   scheduler:
     image: registry.k8s.io/kube-scheduler:v1.36.1
   etcd:
