@@ -6,7 +6,7 @@ metadata:
 spec:
   talos:
     # renovate: datasource=github-tags depName=siderolabs/talos
-    version: v1.13.3
+    version: v1.13.4
   policy:
     placement: soft
   drain:
