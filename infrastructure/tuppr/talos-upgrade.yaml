@@ -9,8 +9,7 @@ spec:
     version: v1.13.4
   policy:
     placement: soft
-  drain:
-    enabled: true
+    nodrain: true
   parallelism: 1
   healthChecks:
     - apiVersion: v1
