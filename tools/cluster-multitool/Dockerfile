@@ -1,4 +1,4 @@
-FROM alpine:3.24.0 AS builder
+FROM alpine:3.24.1 AS builder
 
 RUN apk add --no-cache \
     python3 \
@@ -22,7 +22,7 @@ RUN python3 -m pip install --no-cache-dir --prefix=/opt/deps \
     requests=="${PYPI_REQUESTS_VERSION}" \
     s3cmd=="${PYPI_S3CMD_VERSION}"
 
-FROM alpine:3.24.0
+FROM alpine:3.24.1
 
 # Build environment variables for versions
 # renovate: datasource=docker depName=registry.k8s.io/kube-apiserver versioning=semver
