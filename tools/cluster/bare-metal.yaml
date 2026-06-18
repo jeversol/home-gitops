@@ -4,7 +4,11 @@ customization:
             - siderolabs/btrfs
             - siderolabs/drbd
             - siderolabs/i915
+            - siderolabs/intel-ice-firmware
             - siderolabs/intel-ucode
             - siderolabs/iscsi-tools
+            - siderolabs/nut-client
+            - siderolabs/nvme-cli
             - siderolabs/realtek-firmware
             - siderolabs/util-linux-tools
+            - siderolabs/xe
