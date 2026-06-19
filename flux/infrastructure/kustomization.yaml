@@ -20,6 +20,8 @@ resources:
   - nfs-csi-driver.yaml
   - nfs-csi.yaml
   - node-feature-discovery.yaml
+  - piraeus-config.yaml
+  - piraeus.yaml
   - renovate.yaml
   - smartctl-exporter.yaml
   - traefik.yaml

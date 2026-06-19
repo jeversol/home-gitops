@@ -1,0 +1,14 @@
+apiVersion: piraeus.io/v1
+kind: LinstorSatelliteConfiguration
+metadata:
+  name: lvm-storage-pool
+  namespace: piraeus-datastore
+spec:
+  storagePools:
+    - name: pool1
+      lvmThinPool:
+        volumeGroup: linstor-vg
+        thinPool: linstor-thinpool
+      source:
+        hostDevices:
+          - /dev/disk/by-partlabel/r-linstor-pool
