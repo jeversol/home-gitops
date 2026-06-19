@@ -13,8 +13,8 @@ spec:
     - match: Host(`linstor.i.recompiled.org`)
       kind: Rule
       services:
-        - name: linstor-gui
-          port: 80
+        - name: linstor-controller
+          port: 3370
       middlewares:
         - name: traefik-forward-auth
           namespace: traefik
