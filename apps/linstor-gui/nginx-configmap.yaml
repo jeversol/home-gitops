@@ -12,8 +12,8 @@ data:
         location / {
             try_files $uri $uri/ /index.html;
         }
-        location /api {
-            proxy_pass http://linstor-controller.piraeus-datastore.svc.cluster.local:3370;
+        location /api/ {
+            proxy_pass http://linstor-controller.piraeus-datastore.svc.cluster.local:3370/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
         }
