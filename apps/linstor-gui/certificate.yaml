@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: linstor-tls
+  namespace: piraeus-datastore
+spec:
+  commonName: linstor.i.recompiled.org
+  secretName: linstor-tls
+  dnsNames:
+    - linstor.i.recompiled.org
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt

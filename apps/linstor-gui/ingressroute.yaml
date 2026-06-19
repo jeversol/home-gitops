@@ -1,0 +1,22 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: linstor-gui
+  namespace: piraeus-datastore
+  annotations:
+    external-dns.alpha.kubernetes.io/expose: "true"
+    external-dns.alpha.kubernetes.io/target: traefik.i.recompiled.org
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`linstor.i.recompiled.org`)
+      kind: Rule
+      services:
+        - name: linstor-gui
+          port: 80
+      middlewares:
+        - name: traefik-forward-auth
+          namespace: traefik
+  tls:
+    secretName: linstor-tls

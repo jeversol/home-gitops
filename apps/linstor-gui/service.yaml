@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: linstor-gui
+  namespace: piraeus-datastore
+spec:
+  selector:
+    app: linstor-gui
+  ports:
+    - port: 80
+      targetPort: 80

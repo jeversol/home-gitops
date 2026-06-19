@@ -14,5 +14,6 @@ resources:
   - scrutiny-influxdb.yaml
   - helmrepo-influxdata.yaml
   - homebridge.yaml
+  - linstor-gui.yaml
   - media.yaml
   - spoolman.yaml
