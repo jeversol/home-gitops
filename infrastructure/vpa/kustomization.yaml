@@ -4,7 +4,6 @@ resources:
   - cert-manager-vpa.yaml
   - cloudflare-tunnel-vpa.yaml
   - cloudnative-pg-vpa.yaml
-  - democratic-csi-vpa.yaml
   - external-dns-vpa.yaml
   - flux-vpa.yaml
   - homebridge-vpa.yaml
