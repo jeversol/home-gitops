@@ -23,8 +23,31 @@ machine:
           - bind
           - rshared
           - rw
+  kernel:
+    modules:
+      - name: drbd
+        parameters:
+          - usermode_helper=disabled
+      - name: drbd_transport_tcp
+      - name: dm-thin-pool
   install:
     disk: /dev/nvme0n1
     wipe: false
 cluster:
   allowSchedulingOnControlPlanes: true
+---
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: EPHEMERAL
+provisioning:
+  maxSize: 50GiB
+  grow: false
+---
+apiVersion: v1alpha1
+kind: RawVolumeConfig
+name: linstor-pool
+provisioning:
+  diskSelector:
+    match: system_disk
+  minSize: 10GiB
+  grow: true
