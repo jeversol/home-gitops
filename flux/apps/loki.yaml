@@ -121,7 +121,7 @@ spec:
             name: loki-s3-credentials
       persistence:
         enabled: true
-        storageClass: longhorn
+        storageClass: linstor-r3
         size: 10Gi
       resources:
         requests:
