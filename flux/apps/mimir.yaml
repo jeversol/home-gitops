@@ -90,7 +90,7 @@ spec:
       replicas: 1
       persistentVolume:
         enabled: true
-        storageClass: longhorn
+        storageClass: linstor-r3
         size: 15Gi
       resources:
         requests:
@@ -133,7 +133,7 @@ spec:
       replicas: 1
       persistentVolume:
         enabled: true
-        storageClass: longhorn
+        storageClass: linstor-r3
         size: 5Gi
       resources:
         requests:
@@ -148,7 +148,7 @@ spec:
       replicas: 1
       persistentVolume:
         enabled: true
-        storageClass: longhorn
+        storageClass: linstor-r3
         size: 20Gi
       resources:
         requests:
