@@ -37,7 +37,7 @@ spec:
     fullnameOverride: influxdb
     persistence:
       enabled: true
-      storageClass: "longhorn"
+      storageClass: "linstor-r3"
       size: 1Gi
     adminUser:
       organization: "scrutiny"
