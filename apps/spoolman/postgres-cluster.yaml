@@ -8,7 +8,7 @@ spec:
   
   storage:
     size: 2Gi
-    storageClass: longhorn
+    storageClass: linstor-r3
 
   backup:
     retentionPolicy: 14d
