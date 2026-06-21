@@ -35,67 +35,59 @@ spec:
         namespace: flux-system
       interval: 12h
   values:
-    # Run every 6 hours
     schedule: "0 */6 * * *"
-    
-    # Use Prometheus for actual resource utilization
-    metricsProviders:
-      - source: Prometheus
-        prometheus:
-          url: http://kube-prometheus-stack-prometheus.o11y.svc.cluster.local:9090
-    
-    # Descheduling strategies
+
+    deschedulerPolicyAPIVersion: "descheduler/v1alpha2"
     deschedulerPolicy:
-      strategies:
-        # Move pods from overloaded nodes to underutilized ones
-        LowNodeUtilization:
-          enabled: true
-          params:
-            nodeResourceUtilizationThresholds:
-              # Nodes below these thresholds are underutilized
-              thresholds:
-                cpu: 15
-                memory: 15
-              # Nodes above these thresholds are overutilized  
-              targetThresholds:
-                cpu: 80
-                memory: 80
-        
-        # Consolidate pods when cluster utilization is low
-        HighNodeUtilization:
-          enabled: true
-          params:
-            nodeResourceUtilizationThresholds:
-              # Target utilization for consolidation
-              thresholds:
-                cpu: 50
-                memory: 50
-        
-        # Spread duplicate pods across nodes
-        RemoveDuplicates:
-          enabled: true
-          
-        # Remove pods that violate topology spread constraints
-        RemovePodsViolatingTopologySpreadConstraint:
-          enabled: true
-          
-        # Remove pods with too many restarts
-        RemovePodsHavingTooManyRestarts:
-          enabled: true
-          params:
-            podsHavingTooManyRestarts:
-              podRestartThreshold: 100
-              includingInitContainers: true
-    
-    # Resource limits for the descheduler pod
+      profiles:
+        - name: default
+          pluginConfig:
+            - name: DefaultEvictor
+              args:
+                podProtections:
+                  defaultDisabled:
+                    - PodsWithLocalStorage
+            - name: LowNodeUtilization
+              args:
+                thresholds:
+                  cpu: 55
+                  memory: 55
+                targetThresholds:
+                  cpu: 65
+                  memory: 65
+                  pods: 80
+            - name: RemoveDuplicates
+            - name: RemovePodsViolatingTopologySpreadConstraint
+            - name: RemovePodsHavingTooManyRestarts
+              args:
+                podRestartThreshold: 100
+                includingInitContainers: true
+            - name: RemovePodsViolatingNodeAffinity
+              args:
+                nodeAffinityType:
+                  - requiredDuringSchedulingIgnoredDuringExecution
+            - name: RemovePodsViolatingNodeTaints
+            - name: RemovePodsViolatingInterPodAntiAffinity
+          plugins:
+            balance:
+              enabled:
+                - RemoveDuplicates
+                - RemovePodsViolatingTopologySpreadConstraint
+                - LowNodeUtilization
+            deschedule:
+              enabled:
+                - RemovePodsHavingTooManyRestarts
+                - RemovePodsViolatingNodeTaints
+                - RemovePodsViolatingNodeAffinity
+                - RemovePodsViolatingInterPodAntiAffinity
+
     resources:
       requests:
         cpu: 100m
         memory: 128Mi
       limits:
         memory: 256Mi
-        
-    # Pod disruption budget
+
     podDisruptionBudget:
       enabled: true
       maxUnavailable: 1
