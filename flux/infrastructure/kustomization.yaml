@@ -14,7 +14,6 @@ resources:
   - harry-botter.yaml
   - helmrepo-cowboysysop.yaml
   - intel-gpu-plugin.yaml
-  - longhorn.yaml
   - metrics-server.yaml
   - nfs-csi-driver.yaml
   - nfs-csi.yaml

@@ -14,15 +14,6 @@ machine:
         routes:
           - network: 0.0.0.0/0
             gateway: 192.168.1.1
-  kubelet:
-    extraMounts:
-      - destination: /var/lib/longhorn
-        type: bind
-        source: /var/lib/longhorn
-        options:
-          - bind
-          - rshared
-          - rw
   kernel:
     modules:
       - name: drbd

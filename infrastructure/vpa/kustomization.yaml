@@ -8,7 +8,6 @@ resources:
   - flux-vpa.yaml
   - homebridge-vpa.yaml
   - kube-prometheus-stack-vpa.yaml
-  - longhorn-vpa.yaml
   - media-vpa.yaml
   - node-feature-discovery-vpa.yaml
   - o11y-vpa.yaml
