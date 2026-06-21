@@ -10,4 +10,4 @@ volumeBindingMode: WaitForFirstConsumer
 reclaimPolicy: Delete
 parameters:
   linstor.csi.linbit.com/storagePool: pool1
-  linstor.csi.linbit.com/placementCount: "2"
+  linstor.csi.linbit.com/placementCount: "3"
