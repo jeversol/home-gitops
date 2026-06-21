@@ -55,7 +55,6 @@ spec:
                 targetThresholds:
                   cpu: 65
                   memory: 65
-                  pods: 80
             - name: RemoveDuplicates
             - name: RemovePodsViolatingTopologySpreadConstraint
             - name: RemovePodsHavingTooManyRestarts
