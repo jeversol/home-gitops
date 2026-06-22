@@ -155,7 +155,7 @@ spec:
     resultsCache:
       enabled: false
 
-    # Disable MinIO (we're using Garage)
+    # Disable MinIO (using external S3)
     minio:
       enabled: false
 
