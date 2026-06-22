@@ -13,7 +13,7 @@ spec:
   path: ./apps/scrutiny
   prune: true
   components:
-    - ../components/volsync
+    - ../../components/volsync
   wait: true
   decryption:
     provider: sops
