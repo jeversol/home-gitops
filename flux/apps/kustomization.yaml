@@ -16,4 +16,10 @@ resources:
   - homebridge.yaml
   - linstor-gui.yaml
   - media.yaml
+  - media-overseerr.yaml
+  - media-plex.yaml
+  - media-prowlarr.yaml
+  - media-radarr.yaml
+  - media-sonarr.yaml
+  - media-tautulli.yaml
   - spoolman.yaml

@@ -5,9 +5,3 @@ resources:
   - namespace.yaml
   - pvc.yaml
   - flaresolverr
-  - prowlarr
-  - overseerr
-  - radarr
-  - sonarr
-  - tautulli
-  - plex
