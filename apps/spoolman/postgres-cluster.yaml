@@ -5,7 +5,8 @@ metadata:
   namespace: spoolman
 spec:
   instances: 1
-  
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.5
+
   storage:
     size: 2Gi
     storageClass: linstor-r3
