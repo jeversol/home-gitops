@@ -12,19 +12,8 @@ spec:
     name: flux-system
   path: ./apps/scrutiny
   prune: true
-  components:
-    - ../../components/volsync
   wait: true
   decryption:
     provider: sops
     secretRef:
       name: sops-age
-  postBuild:
-    substituteFrom:
-      - kind: Secret
-        name: volsync-s3-credentials
-    substitute:
-      APP: scrutiny
-      VOLSYNC_CLAIM: config-scrutiny-0
-      VOLSYNC_SCHEDULE: "0 6 * * *"
-      VOLSYNC_NAMESPACE: o11y

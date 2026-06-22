@@ -10,8 +10,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  components:
-    - ../../../components/volsync
   dependsOn:
     - name: spoolman
   timeout: 5m
@@ -19,12 +17,3 @@ spec:
     provider: sops
     secretRef:
       name: sops-age
-  postBuild:
-    substituteFrom:
-      - kind: Secret
-        name: volsync-s3-credentials
-    substitute:
-      APP: bambu-spoolman
-      VOLSYNC_CLAIM: bambu-spoolman-config
-      VOLSYNC_SCHEDULE: "0 2 * * *"
-      VOLSYNC_NAMESPACE: spoolman

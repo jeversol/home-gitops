@@ -10,8 +10,6 @@ spec:
   sourceRef:
     kind: GitRepository
     name: flux-system
-  components:
-    - ../../../components/volsync
   dependsOn:
     - name: media
   timeout: 5m
@@ -19,12 +17,3 @@ spec:
     provider: sops
     secretRef:
       name: sops-age
-  postBuild:
-    substituteFrom:
-      - kind: Secret
-        name: volsync-s3-credentials
-    substitute:
-      APP: sonarr
-      VOLSYNC_CLAIM: config-sonarr-0
-      VOLSYNC_SCHEDULE: "0 4 * * *"
-      VOLSYNC_NAMESPACE: media
