@@ -31,8 +31,22 @@ spec:
     enablePodMonitor: true
     
   bootstrap:
-    initdb:
-      database: spoolman
-      owner: spoolman
-      secret:
-        name: spoolman-postgres-credentials
+    recovery:
+      source: spoolman-postgres
+
+  externalClusters:
+    - name: spoolman-postgres
+      barmanObjectStore:
+        destinationPath: "s3://pg-spoolman/spoolman/"
+        endpointURL: "https://nas.i.recompiled.org:3900"
+        s3Credentials:
+          accessKeyId:
+            name: spoolman-postgres-backup
+            key: AWS_ACCESS_KEY_ID
+          secretAccessKey:
+            name: spoolman-postgres-backup
+            key: AWS_SECRET_ACCESS_KEY
+        wal:
+          compression: gzip
+        data:
+          compression: gzip
