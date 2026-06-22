@@ -1,0 +1,19 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: ${APP}
+spec:
+  sourcePVC: ${VOLSYNC_CLAIM}
+  trigger:
+    schedule: "${VOLSYNC_SCHEDULE}"
+  restic:
+    repository: volsync-secret-${APP}
+    copyMethod: Snapshot
+    volumeSnapshotClassName: linstor-csi-snapclass
+    storageClassName: linstor-r3
+    cacheCapacity: 1Gi
+    cacheStorageClassName: linstor-r3
+    retain:
+      daily: 7
+      weekly: 4
+      monthly: 3

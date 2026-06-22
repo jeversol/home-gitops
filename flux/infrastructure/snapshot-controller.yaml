@@ -1,0 +1,44 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: snapshot-controller-config
+  namespace: flux-system
+spec:
+  interval: 30m
+  path: ./infrastructure/snapshot-controller
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  dependsOn:
+    - name: piraeus-config
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: snapshot-controller
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: snapshot-controller
+  targetNamespace: snapshot-controller
+  driftDetection:
+    mode: enabled
+  dependsOn:
+    - name: piraeus-operator
+  chart:
+    spec:
+      chart: snapshot-controller
+      version: "5.1.1"
+      sourceRef:
+        kind: HelmRepository
+        name: piraeus-charts
+        namespace: flux-system
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3

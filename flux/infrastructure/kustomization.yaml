@@ -20,6 +20,9 @@ resources:
   - node-feature-discovery.yaml
   - piraeus-config.yaml
   - piraeus.yaml
+  - snapshot-controller.yaml
+  - volsync.yaml
+  - volsync-credentials.yaml
   - renovate.yaml
   - smartctl-exporter.yaml
   - traefik.yaml
