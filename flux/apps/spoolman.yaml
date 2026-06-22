@@ -26,3 +26,4 @@ spec:
       APP: spoolman
       VOLSYNC_CLAIM: data-spoolman-0
       VOLSYNC_SCHEDULE: "0 2 * * *"
+      VOLSYNC_NAMESPACE: spoolman

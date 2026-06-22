@@ -27,3 +27,4 @@ spec:
       APP: tautulli
       VOLSYNC_CLAIM: config-tautulli-0
       VOLSYNC_SCHEDULE: "0 5 * * *"
+      VOLSYNC_NAMESPACE: media

@@ -27,3 +27,4 @@ spec:
       APP: scrutiny
       VOLSYNC_CLAIM: config-scrutiny-0
       VOLSYNC_SCHEDULE: "0 6 * * *"
+      VOLSYNC_NAMESPACE: o11y

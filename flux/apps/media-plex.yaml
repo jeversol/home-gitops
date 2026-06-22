@@ -27,3 +27,4 @@ spec:
       APP: plex
       VOLSYNC_CLAIM: config-plex-0
       VOLSYNC_SCHEDULE: "0 3 * * *"
+      VOLSYNC_NAMESPACE: media

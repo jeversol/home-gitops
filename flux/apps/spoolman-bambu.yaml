@@ -27,3 +27,4 @@ spec:
       APP: bambu-spoolman
       VOLSYNC_CLAIM: bambu-spoolman-config
       VOLSYNC_SCHEDULE: "0 2 * * *"
+      VOLSYNC_NAMESPACE: spoolman

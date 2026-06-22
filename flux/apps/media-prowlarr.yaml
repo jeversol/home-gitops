@@ -27,3 +27,4 @@ spec:
       APP: prowlarr
       VOLSYNC_CLAIM: config-prowlarr-0
       VOLSYNC_SCHEDULE: "0 5 * * *"
+      VOLSYNC_NAMESPACE: media

@@ -27,3 +27,4 @@ spec:
       APP: sonarr
       VOLSYNC_CLAIM: config-sonarr-0
       VOLSYNC_SCHEDULE: "0 4 * * *"
+      VOLSYNC_NAMESPACE: media

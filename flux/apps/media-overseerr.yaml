@@ -27,3 +27,4 @@ spec:
       APP: overseerr
       VOLSYNC_CLAIM: config-overseerr-0
       VOLSYNC_SCHEDULE: "0 5 * * *"
+      VOLSYNC_NAMESPACE: media

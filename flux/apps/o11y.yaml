@@ -24,3 +24,4 @@ spec:
       APP: grafana
       VOLSYNC_CLAIM: kube-prometheus-stack-grafana
       VOLSYNC_SCHEDULE: "0 6 * * *"
+      VOLSYNC_NAMESPACE: o11y

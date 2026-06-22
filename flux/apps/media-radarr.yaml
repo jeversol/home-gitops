@@ -27,3 +27,4 @@ spec:
       APP: radarr
       VOLSYNC_CLAIM: config-radarr-0
       VOLSYNC_SCHEDULE: "0 4 * * *"
+      VOLSYNC_NAMESPACE: media
