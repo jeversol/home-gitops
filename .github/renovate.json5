@@ -94,7 +94,6 @@
     {
       matchPackageNames: ['cilium'],
       matchDatasources: ['helm'],
-      minimumReleaseAge: '7 days',
     },
     {
       matchPackageNames: ['csi-driver-nfs'],
@@ -104,7 +103,6 @@
     {
       matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl', 'ghcr.io/siderolabs/installer'],
       groupName: 'talos',
-      minimumReleaseAge: '3 days',
       automerge: false,
       assignees: ['jeversol'],
       postUpgradeTasks: {
@@ -137,7 +135,6 @@
       ],
       groupName: 'kubernetes-components',
       allowedVersions: '/^v1\.(31|32|33|34|35|36)\./',
-      minimumReleaseAge: '7 days',
       automerge: false,
       assignees: ['jeversol'],
     },
