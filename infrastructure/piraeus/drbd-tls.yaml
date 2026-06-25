@@ -1,0 +1,8 @@
+apiVersion: piraeus.io/v1
+kind: LinstorSatelliteConfiguration
+metadata:
+  name: drbd-tls
+  namespace: piraeus-datastore
+spec:
+  internalTLS:
+    tlsHandshakeDaemon: true

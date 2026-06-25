@@ -78,3 +78,8 @@ spec:
   values:
     storageClass:
       enabled: false
+    createInternalTLS: "cert-manager"
+    linstorCluster:
+      properties:
+        - name: DrbdOptions/Net/tls
+          value: "yes"

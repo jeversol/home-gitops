@@ -5,3 +5,4 @@ resources:
   - talos-override.yaml
   - storage-pool.yaml
   - storageclasses.yaml
+  - drbd-tls.yaml
