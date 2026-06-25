@@ -1,8 +1,11 @@
 apiVersion: piraeus.io/v1
 kind: LinstorSatelliteConfiguration
 metadata:
-  name: drbd-tls
+  name: tls-handshake-daemon
   namespace: piraeus-datastore
 spec:
   internalTLS:
     tlsHandshakeDaemon: true
+    certManager:
+      kind: Issuer
+      name: linstor-cluster-internal-ca
