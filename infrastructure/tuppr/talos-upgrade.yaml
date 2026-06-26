@@ -10,6 +10,7 @@ spec:
   policy:
     placement: soft
     nodrain: true
+    stage: true
   parallelism: 1
   healthChecks:
     - apiVersion: v1
