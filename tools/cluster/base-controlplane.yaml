@@ -89,6 +89,7 @@ cluster:
     extraArgs:
       cluster-cidr: 10.244.0.0/16,fd00:10:244::/48
       service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/112
+      terminated-pod-gc-threshold: "10"
   proxy:
     disabled: true
   scheduler:
