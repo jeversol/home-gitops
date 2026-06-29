@@ -1,0 +1,21 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: spoolman-postgres-store
+  namespace: spoolman
+spec:
+  retentionPolicy: "14d"
+  configuration:
+    destinationPath: "s3://pg-spoolman/spoolman/"
+    endpointURL: "https://nas.i.recompiled.org:3900"
+    s3Credentials:
+      accessKeyId:
+        name: spoolman-postgres-backup
+        key: AWS_ACCESS_KEY_ID
+      secretAccessKey:
+        name: spoolman-postgres-backup
+        key: AWS_SECRET_ACCESS_KEY
+    wal:
+      compression: gzip
+    data:
+      compression: gzip

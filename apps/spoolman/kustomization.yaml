@@ -4,6 +4,7 @@ resources:
   - namespace.yaml
   - postgres-secret.yaml
   - spoolman-postgres-backup-secret.yaml
+  - postgres-objectstore.yaml
   - postgres-cluster.yaml
   - spoolman-postgres-scheduled-backup.yaml
   - statefulset.yaml

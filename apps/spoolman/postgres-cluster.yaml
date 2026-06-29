@@ -11,43 +11,23 @@ spec:
     size: 2Gi
     storageClass: linstor-r3
 
-  backup:
-    retentionPolicy: 14d
-    barmanObjectStore:
-      destinationPath: "s3://pg-spoolman/spoolman/"
-      endpointURL: "https://nas.i.recompiled.org:3900"
-      s3Credentials:
-        accessKeyId:
-          name: spoolman-postgres-backup
-          key: AWS_ACCESS_KEY_ID
-        secretAccessKey:
-          name: spoolman-postgres-backup
-          key: AWS_SECRET_ACCESS_KEY
-      wal:
-        compression: gzip
-      data:
-        compression: gzip
-    
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: spoolman-postgres-store
+
   monitoring:
     enablePodMonitor: true
-    
+
   bootstrap:
     recovery:
       source: spoolman-postgres
 
   externalClusters:
     - name: spoolman-postgres
-      barmanObjectStore:
-        destinationPath: "s3://pg-spoolman/spoolman/"
-        endpointURL: "https://nas.i.recompiled.org:3900"
-        s3Credentials:
-          accessKeyId:
-            name: spoolman-postgres-backup
-            key: AWS_ACCESS_KEY_ID
-          secretAccessKey:
-            name: spoolman-postgres-backup
-            key: AWS_SECRET_ACCESS_KEY
-        wal:
-          compression: gzip
-        data:
-          compression: gzip
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: spoolman-postgres-store
+          serverName: spoolman-postgres
