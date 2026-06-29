@@ -4,7 +4,7 @@ metadata:
   name: spoolman-postgres-daily
   namespace: spoolman
 spec:
-  schedule: "30 3 * * *"
+  schedule: "0 30 3 * * *"
   backupOwnerReference: self
   cluster:
     name: spoolman-postgres
