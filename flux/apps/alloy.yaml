@@ -1068,6 +1068,51 @@ spec:
             }
           }
 
+          // Scrape LINSTOR controller metrics (storage pool capacity, volume/resource state)
+          prometheus.scrape "linstor" {
+            targets = discovery.relabel.linstor.output
+            forward_to = [prometheus.relabel.linstor_final.receiver]
+          }
+
+          discovery.relabel "linstor" {
+            targets = discovery.kubernetes.services.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name"]
+              regex         = "linstor-controller"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              regex         = "piraeus-datastore"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_service_name", "__meta_kubernetes_namespace"]
+              separator     = ";"
+              regex         = "(.+);(.+)"
+              target_label  = "__address__"
+              replacement   = "$1.$2.svc.cluster.local:3370"
+              action        = "replace"
+            }
+          }
+
+          prometheus.relabel "linstor_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "linstor"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
       mounts:
         varlog: true
         extra:
