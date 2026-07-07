@@ -34,3 +34,12 @@ spec:
   values:
     # Minimal values - operator should adopt existing resources
     watchAllNamespaces: false
+    web:
+      config:
+        baseURL: https://flux.i.recompiled.org
+        authentication:
+          type: Anonymous
+          anonymous:
+            username: flux
+            groups:
+              - flux-web-admin
