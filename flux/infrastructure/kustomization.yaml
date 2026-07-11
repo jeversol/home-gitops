@@ -26,5 +26,6 @@ resources:
   - traefik.yaml
   - traefik-config.yaml
   - tuppr.yaml
+  - volsync.yaml
   - vpa.yaml
   - vpa-resources.yaml
