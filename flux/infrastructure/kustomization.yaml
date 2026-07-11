@@ -22,6 +22,7 @@ resources:
   - piraeus.yaml
   - renovate.yaml
   - smartctl-exporter.yaml
+  - snapshot-controller.yaml
   - traefik.yaml
   - traefik-config.yaml
   - tuppr.yaml

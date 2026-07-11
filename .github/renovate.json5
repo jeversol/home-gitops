@@ -143,6 +143,10 @@
       overrideDatasource: 'github-releases',
     },
     {
+      matchPackageNames: ['kubernetes-csi/external-snapshotter'],
+      overrideDatasource: 'github-releases',
+    },
+    {
       matchPackageNames: ['kubernetes-sigs/external-dns'],
       overrideDatasource: 'github-releases',
     },
