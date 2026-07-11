@@ -6,3 +6,4 @@ resources:
   - ingressroute.yaml
   - certificate.yaml
   - volsync-secret.yaml
+  - volsync-replicationsource.yaml
