@@ -10,7 +10,7 @@ spec:
   restic:
     repository: overseerr-volsync-restic
     copyMethod: Clone
-    storageClassName: linstor-r3
+    storageClassName: linstor-r1
     pruneIntervalDays: 7
     retain:
       daily: 7
