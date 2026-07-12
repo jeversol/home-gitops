@@ -1,0 +1,25 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: volsync-backups
+  namespace: flux-system
+spec:
+  interval: 1h
+  path: ./apps/volsync
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: true
+  timeout: 5m
+  dependsOn:
+    - name: volsync-vars
+    - name: media
+    - name: o11y
+    - name: homebridge
+    - name: spoolman
+  postBuild:
+    substituteFrom:
+      - kind: Secret
+        name: volsync-restic-shared-vars
+        optional: false

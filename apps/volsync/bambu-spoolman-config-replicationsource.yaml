@@ -1,0 +1,17 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: bambu-spoolman-config
+  namespace: spoolman
+spec:
+  sourcePVC: bambu-spoolman-config
+  trigger:
+    schedule: "0 8 * * *"
+  restic:
+    repository: bambu-spoolman-config-volsync-restic
+    copyMethod: Clone
+    storageClassName: linstor-r3
+    pruneIntervalDays: 7
+    retain:
+      daily: 7
+      weekly: 4

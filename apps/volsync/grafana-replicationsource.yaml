@@ -1,0 +1,21 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: grafana
+  namespace: o11y
+spec:
+  sourcePVC: kube-prometheus-stack-grafana
+  trigger:
+    schedule: "0 7 * * *"
+  restic:
+    repository: grafana-volsync-restic
+    copyMethod: Clone
+    storageClassName: linstor-r3
+    pruneIntervalDays: 7
+    retain:
+      daily: 7
+      weekly: 4
+    moverSecurityContext:
+      runAsUser: 472
+      runAsGroup: 472
+      fsGroup: 472

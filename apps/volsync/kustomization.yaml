@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - sonarr-secret.yaml
+  - sonarr-replicationsource.yaml
+  - tautulli-secret.yaml
+  - tautulli-replicationsource.yaml
+  - radarr-secret.yaml
+  - radarr-replicationsource.yaml
+  - plex-secret.yaml
+  - plex-replicationsource.yaml
+  - prowlarr-secret.yaml
+  - prowlarr-replicationsource.yaml
+  - overseerr-secret.yaml
+  - overseerr-replicationsource.yaml
+  - homebridge-secret.yaml
+  - homebridge-replicationsource.yaml
+  - scrutiny-secret.yaml
+  - scrutiny-replicationsource.yaml
+  - influxdb-secret.yaml
+  - influxdb-replicationsource.yaml
+  - grafana-secret.yaml
+  - grafana-replicationsource.yaml
+  - spoolman-secret.yaml
+  - spoolman-replicationsource.yaml
+  - bambu-spoolman-config-secret.yaml
+  - bambu-spoolman-config-replicationsource.yaml

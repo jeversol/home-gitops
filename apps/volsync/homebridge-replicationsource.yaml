@@ -1,0 +1,17 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: homebridge
+  namespace: homebridge
+spec:
+  sourcePVC: storage-homebridge-0
+  trigger:
+    schedule: "30 5 * * *"
+  restic:
+    repository: homebridge-volsync-restic
+    copyMethod: Clone
+    storageClassName: linstor-r3
+    pruneIntervalDays: 7
+    retain:
+      daily: 7
+      weekly: 4

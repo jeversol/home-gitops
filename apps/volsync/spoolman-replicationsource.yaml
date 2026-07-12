@@ -1,0 +1,21 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: spoolman
+  namespace: spoolman
+spec:
+  sourcePVC: data-spoolman-0
+  trigger:
+    schedule: "30 7 * * *"
+  restic:
+    repository: spoolman-volsync-restic
+    copyMethod: Clone
+    storageClassName: linstor-r3
+    pruneIntervalDays: 7
+    retain:
+      daily: 7
+      weekly: 4
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
