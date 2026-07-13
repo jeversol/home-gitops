@@ -8,7 +8,7 @@ RUN apk add --no-cache \
     libffi-dev
 
 # renovate: datasource=pypi depName=kubernetes versioning=pep440
-ENV PYPI_KUBERNETES_VERSION="36.0.2"
+ENV PYPI_KUBERNETES_VERSION="36.0.3"
 # renovate: datasource=pypi depName=PyJWT versioning=pep440
 ENV PYPI_PYJWT_VERSION="2.13.0"
 # renovate: datasource=pypi depName=requests versioning=pep440
