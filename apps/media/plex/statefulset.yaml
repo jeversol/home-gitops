@@ -36,7 +36,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: plex
-          image: ghcr.io/home-operations/plex:1.43.2.10687
+          image: ghcr.io/home-operations/plex:1.43.3.10828
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 32400
