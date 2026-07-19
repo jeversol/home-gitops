@@ -26,7 +26,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: radarr
-          image: ghcr.io/home-operations/radarr:6.3.0.10514
+          image: ghcr.io/home-operations/radarr:6.4.0.10523
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 7878
