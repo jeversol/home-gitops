@@ -13,22 +13,25 @@ This repo manages my home kubernetes cluster using Flux.
 This serves as a learning environment for cloud-native technologies and GitOps practices. The focus is on implementing production-ready infrastructure patterns, security practices, and operational complexity using real-world workloads.
 
 The infrastructure implements:
-- Complete GitOps workflow with FluxCD
+- Complete GitOps workflow with FluxCD (via the Flux Operator)
 - Production security practices (SOPS encryption, cert-manager, OAuth)
 - Comprehensive observability (Mimir, Grafana, Loki, Alerting)
-- Storage orchestration (Longhorn, democratic-csi)
+- Storage orchestration (Piraeus/LINSTOR, NFS CSI, Volsync backups)
 - Advanced Kubernetes features (VPA, descheduler, node feature discovery)
+- Automated Talos and Kubernetes upgrades
 
 ## Deployed and Migrated Services:
 - Infrastructure
-  - [FluxCD](https://fluxcd.io/) - GitOps continuous delivery
+  - [FluxCD](https://fluxcd.io/) via [Flux Operator](https://github.com/controlplaneio-fluxcd/flux-operator) - GitOps continuous delivery, with a web UI
   - [SOPS with age](https://getsops.io) - Secret encryption/decryption
   - [Cilium](https://cilium.io/) - CNI, network policy, load balancing for bare metal, and Hubble network observability UI
   - [Traefik](https://doc.traefik.io/traefik/) - Reverse proxy and ingress controller
   - [cert-manager](https://cert-manager.io) - Automatic TLS certificate management
   - [harry-botter](https://github.com/jeversol/harry-botter) - Kubernetes secret expiry monitoring with GitHub issue alerts
-  - [democratic-csi](https://github.com/democratic-csi/democratic-csi) - Synology iSCSI storage integration
-  - [Longhorn](https://longhorn.io) - Distributed block storage
+  - [Piraeus/LINSTOR](https://github.com/piraeusdatastore/piraeus-operator) - Distributed block storage (DRBD-backed), with a LINSTOR GUI
+  - [NFS CSI Driver](https://github.com/kubernetes-csi/csi-driver-nfs) - NFS storage support
+  - [Snapshot Controller](https://github.com/kubernetes-csi/external-snapshotter) - CSI volume snapshot support
+  - [Volsync](https://volsync.readthedocs.io/) - Automated PVC backup/restore for stateful apps
   - [cloudflared](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/) - Cloudflare tunnel for secure ingress
   - [external-dns](https://github.com/kubernetes-sigs/external-dns) - Automatic DNS record management
   - [CloudNative-PG](https://cloudnative-pg.io/) - PostgreSQL operator for Kubernetes
@@ -36,7 +39,7 @@ The infrastructure implements:
   - [Descheduler](https://github.com/kubernetes-sigs/descheduler) - Pod rescheduling for better cluster utilization
   - [Node Feature Discovery](https://kubernetes-sigs.github.io/node-feature-discovery/) - Hardware feature detection
   - [Intel GPU Plugin](https://intel.github.io/intel-device-plugins-for-kubernetes/) - Intel GPU resource management
-  - [NFS CSI Driver](https://github.com/kubernetes-csi/csi-driver-nfs) - NFS storage support
+  - [tuppr](https://github.com/home-operations/tuppr) - Automated Talos and Kubernetes version upgrades
   - [metrics-server](https://github.com/kubernetes-sigs/metrics-server) - Cluster resource metrics API
   - [etcd-backup](https://etcd.io) - Automated etcd backups to S3-compatible storage
   - [flux-webhook](https://fluxcd.io/flux/components/notification/receivers/) - GitHub webhook receiver for Flux
@@ -53,7 +56,7 @@ The infrastructure implements:
   - [Tautulli](https://tautulli.com) - Plex monitoring and analytics
   - [Scrutiny](https://github.com/AnalogJ/scrutiny) - Hard drive health monitoring with InfluxDB backend
   - [Homebridge](https://homebridge.io) - HomeKit bridge for smart home integration
-  - [Spoolman](https://github.com/Donkie/Spoolman) - 3D printing filament inventory management
+  - [Spoolman](https://github.com/Donkie/Spoolman) - 3D printing filament inventory management, with automatic Bambu printer filament tracking
   - **Media Services**
     - [Plex](https://www.plex.tv/) - Media server
     - [Overseerr](https://overseerr.dev/) - Media request management
@@ -62,28 +65,3 @@ The infrastructure implements:
     - [Prowlarr](https://prowlarr.com/) - Indexer manager
     - [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr) - Web scraping helper for media automation
 
-### Deployed but backed out and replaced
-
-- ArgoCD (replaced by FluxCD)
-- external-secrets (replaced by SOPS in FluxCD)
-- VictoriaMetrics (replaced by kube-prometheus-stack for metrics)
-- VictoriaLogs/Vector (replaced by Loki/Alloy for logging)
-- kube-prometheus-stack / Prometheus / Alertmanager (replaced by Mimir for metrics and alerting)
-- Thanos (replaced by Mimir for long-term metrics storage)
-
-<details> 
-<summary>Replaced ArgoCD with FluxCD</summary>   
-
-I originally started out using Flux for GitOps as it had a lower learning curve. When I decided to switch from k8s on Ubuntu to a Talos Linux cluster, I decided to also use Argo, because it has broad adoption in the enterprise landscape. 
-
-Initially, it was going well. I got a good flow of being able to test my deployments before committing them, dealing with some issues, etc. However, it completely collapsed after converting to a 3 node cluster.
-
-After upgrading the cluster from 1 control-plane and 1 worker to 3 control-plane nodes, I started having permissions issues internally... logging into the webui as admin and trying to drill into an application would kick me back to the login page. 
-  
-Using ChatGPT to help drill through some diagnostic steps, it appeard to be some sort of service account and token issue. Deleting argocd from the k8s cluster and reinstalling it from scratch wouldn't fix it. A workaround involved creating a custom service account, generating a token for it, extracting the jwt token and giving it to a Secret.
-
-Honestly, this felt too painful. I had spent hours ruling out SSO, RBAC, a broken Redis cache, problems with the ArgoCD HA deployment versus non-HA. ChatGPT suggested a bootstrapping script that created the secret and all of that, but then it said "Oh, that token is only good for 1 hour. Do you want a token that lasts a year?" 
-
-That was when I decided it was too much and went back to Flux.  
-
-</details>
