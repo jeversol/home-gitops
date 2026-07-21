@@ -11,7 +11,7 @@ machine:
   network: {}
   install:
     disk: /dev/sda
-    image: factory.talos.dev/metal-installer-secureboot/2a8f860e85d68f135547fc38658c80da66a43f019fa47dcf943191534a88bcc7:v1.13.6
+    image: factory.talos.dev/metal-installer-secureboot/2a8f860e85d68f135547fc38658c80da66a43f019fa47dcf943191534a88bcc7:v1.13.7
     wipe: false
   registries: {}
   features:
