@@ -26,7 +26,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: sonarr
-          image: ghcr.io/home-operations/sonarr:4.0.18.2978
+          image: ghcr.io/home-operations/sonarr:4.0.19.2991
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8989
