@@ -13,13 +13,32 @@ spec:
     name: flux-system
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: OCIRepository
 metadata:
   name: cloudnative-pg
   namespace: flux-system
 spec:
   interval: 24h
-  url: https://cloudnative-pg.github.io/charts
+  url: oci://ghcr.io/cloudnative-pg/charts/cloudnative-pg
+  ref:
+    tag: "0.29.0"
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: plugin-barman-cloud
+  namespace: flux-system
+spec:
+  interval: 24h
+  url: oci://ghcr.io/cloudnative-pg/charts/plugin-barman-cloud
+  ref:
+    tag: "0.7.0"
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -30,14 +49,10 @@ spec:
   interval: 30m
   releaseName: cloudnative-pg
   targetNamespace: cloudnative-pg
-  chart:
-    spec:
-      chart: cloudnative-pg
-      version: "0.29.0"
-      sourceRef:
-        kind: HelmRepository
-        name: cloudnative-pg
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: cloudnative-pg
+    namespace: flux-system
   install:
     createNamespace: true
     remediation:
@@ -66,14 +81,10 @@ spec:
   interval: 30m
   releaseName: cnpg-plugin-barman-cloud
   targetNamespace: cloudnative-pg
-  chart:
-    spec:
-      chart: plugin-barman-cloud
-      version: "0.7.0"
-      sourceRef:
-        kind: HelmRepository
-        name: cloudnative-pg
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: plugin-barman-cloud
+    namespace: flux-system
   dependsOn:
     - name: cloudnative-pg
       namespace: flux-system

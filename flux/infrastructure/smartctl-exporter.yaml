@@ -1,4 +1,18 @@
 ---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: prometheus-smartctl-exporter
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: oci://ghcr.io/prometheus-community/charts/prometheus-smartctl-exporter
+  ref:
+    tag: "0.17.1"
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -8,14 +22,10 @@ spec:
   interval: 30m
   releaseName: smartctl-exporter
   targetNamespace: o11y
-  chart:
-    spec:
-      chart: prometheus-smartctl-exporter
-      version: "0.17.1"  # renovate: datasource=helm depName=prometheus-smartctl-exporter registryUrl=https://prometheus-community.github.io/helm-charts
-      sourceRef:
-        kind: HelmRepository
-        name: prometheus-community
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: prometheus-smartctl-exporter
+    namespace: flux-system
   install:
     createNamespace: false
     remediation:

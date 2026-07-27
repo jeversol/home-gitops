@@ -1,12 +1,17 @@
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: OCIRepository
 metadata:
   name: traefik
   namespace: flux-system
 spec:
   interval: 30m
-  url: https://helm.traefik.io/traefik
+  url: oci://ghcr.io/traefik/helm/traefik
+  ref:
+    tag: "41.0.2"
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -25,13 +30,10 @@ spec:
   releaseName: traefik
   driftDetection:
     mode: disabled
-  chart:
-    spec:
-      chart: traefik
-      sourceRef:
-        kind: HelmRepository
-        name: traefik
-      version: "41.0.2"
+  chartRef:
+    kind: OCIRepository
+    name: traefik
+    namespace: flux-system
   values:
     securityContext:
       seccompProfile:

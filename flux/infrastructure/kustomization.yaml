@@ -12,7 +12,6 @@ resources:
   - external-dns.yaml
   - flux-webhook.yaml
   - harry-botter.yaml
-  - helmrepo-cowboysysop.yaml
   - intel-gpu-plugin.yaml
   - metrics-server.yaml
   - nfs-csi-driver.yaml

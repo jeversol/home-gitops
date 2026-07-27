@@ -1,23 +1,31 @@
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: OCIRepository
 metadata:
   name: piraeus-operator
   namespace: flux-system
 spec:
-  type: oci
   interval: 24h
-  url: oci://ghcr.io/piraeusdatastore/piraeus-operator
+  url: oci://ghcr.io/piraeusdatastore/piraeus-operator/piraeus
+  ref:
+    tag: "2.10.8"
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: OCIRepository
 metadata:
-  name: piraeus-charts
+  name: linstor-cluster
   namespace: flux-system
 spec:
-  type: oci
   interval: 24h
-  url: oci://ghcr.io/piraeusdatastore/helm-charts
+  url: oci://ghcr.io/piraeusdatastore/helm-charts/linstor-cluster
+  ref:
+    tag: "1.1.1"
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -30,14 +38,10 @@ spec:
   targetNamespace: piraeus-datastore
   driftDetection:
     mode: enabled
-  chart:
-    spec:
-      chart: piraeus
-      version: "2.10.8"
-      sourceRef:
-        kind: HelmRepository
-        name: piraeus-operator
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: piraeus-operator
+    namespace: flux-system
   install:
     createNamespace: true
     remediation:
@@ -61,14 +65,10 @@ spec:
     - name: piraeus-operator
   driftDetection:
     mode: enabled
-  chart:
-    spec:
-      chart: linstor-cluster
-      version: "1.1.1"
-      sourceRef:
-        kind: HelmRepository
-        name: piraeus-charts
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: linstor-cluster
+    namespace: flux-system
   install:
     remediation:
       retries: 3
