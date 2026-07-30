@@ -35,6 +35,8 @@ spec:
             - --cookie-secure=true
             - --upstream=static://200
             - --reverse-proxy=true
+            - --trusted-proxy-ip=10.244.0.0/16
+            - --trusted-proxy-ip=fd00:10:244::/48
             - --set-xauthrequest=true
             - --skip-provider-button=true
             - --http-address=0.0.0.0:4180
