@@ -1,0 +1,11 @@
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: traefik-forward-auth
+  namespace: traefik
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: traefik-forward-auth

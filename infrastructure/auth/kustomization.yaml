@@ -8,3 +8,4 @@ resources:
   - traefik-forward-auth-middleware.yaml
   - basic-auth-secret.yaml
   - basic-auth-middleware.yaml
+  - traefik-forward-auth-pdb.yaml
