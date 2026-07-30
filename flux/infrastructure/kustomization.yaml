@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - auth.yaml
   - cert-manager.yaml
+  - coredns-pdb.yaml
   - cilium.yaml
   - cilium-ui.yaml
   - cloudflared.yaml
