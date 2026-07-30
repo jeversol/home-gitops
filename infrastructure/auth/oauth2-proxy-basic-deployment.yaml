@@ -41,6 +41,10 @@ spec:
             - --skip-provider-button=true
             - --http-address=0.0.0.0:4180
             - --htpasswd-file=/etc/oauth2-proxy/htpasswd/users
+            # API surfaces must fail with 401, not redirect to Auth0
+            - --api-route=^/loki/api/
+            - --api-route=^/prometheus/api/
+            - --api-route=^/api/
           env:
             - name: OAUTH2_PROXY_CLIENT_ID
               valueFrom:
