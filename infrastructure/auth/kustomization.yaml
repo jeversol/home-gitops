@@ -9,3 +9,10 @@ resources:
   - basic-auth-secret.yaml
   - basic-auth-middleware.yaml
   - traefik-forward-auth-pdb.yaml
+  - oauth2-proxy-secret.yaml
+  - oauth2-proxy-deployment.yaml
+  - oauth2-proxy-service.yaml
+  - oauth2-proxy-middleware.yaml
+  - oauth2-proxy-pdb.yaml
+  - oauth2-proxy-certificate.yaml
+  - oauth2-proxy-ingressroute.yaml
