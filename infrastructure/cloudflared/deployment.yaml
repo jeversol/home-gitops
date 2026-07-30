@@ -6,7 +6,7 @@ metadata:
   labels:
     app: cloudflare-tunnel
 spec:
-  replicas: 1
+  replicas: 2
   revisionHistoryLimit: 3
   selector:
     matchLabels:
@@ -16,6 +16,13 @@ spec:
       labels:
         app: cloudflare-tunnel
     spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: cloudflare-tunnel
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
