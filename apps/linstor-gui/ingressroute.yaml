@@ -16,7 +16,7 @@ spec:
         - name: linstor-controller
           port: 3370
       middlewares:
-        - name: traefik-forward-auth
-          namespace: traefik
+        - name: oauth2-proxy
+          namespace: auth
   tls:
     secretName: linstor-tls

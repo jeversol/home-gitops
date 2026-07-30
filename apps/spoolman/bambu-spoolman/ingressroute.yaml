@@ -18,7 +18,7 @@ spec:
         - name: bambu-spoolman
           port: 3000
       middlewares:
-        - name: traefik-forward-auth
-          namespace: traefik
+        - name: oauth2-proxy
+          namespace: auth
   tls:
     secretName: bambu-spoolman-tls

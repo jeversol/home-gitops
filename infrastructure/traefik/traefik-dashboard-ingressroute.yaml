@@ -14,7 +14,7 @@ spec:
         - name: api@internal
           kind: TraefikService
       middlewares:
-        - name: traefik-forward-auth
-          namespace: traefik
+        - name: oauth2-proxy
+          namespace: auth
   tls:
     secretName: traefik-dashboard-tls
