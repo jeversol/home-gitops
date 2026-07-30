@@ -33,7 +33,7 @@ spec:
             - --cookie-domain=.i.recompiled.org
             - --whitelist-domain=.i.recompiled.org
             - --cookie-secure=true
-            - --upstream=static://202
+            - --upstream=static://200
             - --reverse-proxy=true
             - --set-xauthrequest=true
             - --skip-provider-button=true
