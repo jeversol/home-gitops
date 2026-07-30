@@ -1,0 +1,90 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauth2-proxy-basic
+  namespace: auth
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: oauth2-proxy-basic
+  template:
+    metadata:
+      labels:
+        app: oauth2-proxy-basic
+    spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: oauth2-proxy-basic
+      containers:
+        - name: oauth2-proxy
+          image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.3
+          args:
+            - --provider=oidc
+            - --oidc-issuer-url=https://auth.recompiled.org/
+            - --redirect-url=https://oauth.i.recompiled.org/oauth2/callback
+            - --email-domain=recompiled.org
+            - --cookie-domain=.i.recompiled.org
+            - --whitelist-domain=.i.recompiled.org
+            - --cookie-secure=true
+            - --upstream=static://200
+            - --reverse-proxy=true
+            - --trusted-proxy-ip=10.244.0.0/16
+            - --trusted-proxy-ip=fd00:10:244::/48
+            - --set-xauthrequest=true
+            - --skip-provider-button=true
+            - --http-address=0.0.0.0:4180
+            - --htpasswd-file=/etc/oauth2-proxy/htpasswd/users
+          env:
+            - name: OAUTH2_PROXY_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-proxy
+                  key: client-id
+            - name: OAUTH2_PROXY_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-proxy
+                  key: client-secret
+            - name: OAUTH2_PROXY_COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: oauth2-proxy
+                  key: cookie-secret
+          volumeMounts:
+            - name: htpasswd
+              mountPath: /etc/oauth2-proxy/htpasswd
+              readOnly: true
+          ports:
+            - containerPort: 4180
+              name: http
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 4180
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 4180
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: htpasswd
+          secret:
+            secretName: oauth2-proxy-htpasswd
