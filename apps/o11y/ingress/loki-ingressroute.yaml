@@ -17,7 +17,7 @@ spec:
         - name: loki
           port: 3100
       middlewares:
-        - name: basic-auth
-          namespace: traefik
+        - name: oauth2-proxy-basic
+          namespace: auth
   tls:
     secretName: loki-tls

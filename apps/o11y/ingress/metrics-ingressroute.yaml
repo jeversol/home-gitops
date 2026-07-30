@@ -17,7 +17,7 @@ spec:
         - name: mimir-gateway
           port: 8080
       middlewares:
-        - name: basic-auth
-          namespace: traefik
+        - name: oauth2-proxy-basic
+          namespace: auth
   tls:
     secretName: metrics-tls
