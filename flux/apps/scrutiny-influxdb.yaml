@@ -35,6 +35,8 @@ spec:
   values:
     nameOverride: influxdb
     fullnameOverride: influxdb
+    pdb:
+      create: false
     persistence:
       enabled: true
       storageClass: "linstor-r3"
