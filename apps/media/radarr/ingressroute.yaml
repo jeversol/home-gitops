@@ -40,7 +40,7 @@ spec:
         - name: radarr
           port: 7878
       middlewares:
-        - name: traefik-forward-auth
-          namespace: traefik
+        - name: oauth2-proxy
+          namespace: auth
   tls:
     secretName: radarr-tls

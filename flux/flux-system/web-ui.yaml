@@ -31,8 +31,8 @@ spec:
         - name: flux-operator
           port: 9080
       middlewares:
-        - name: traefik-forward-auth
-          namespace: traefik
+        - name: oauth2-proxy
+          namespace: auth
   tls:
     secretName: flux-web-ui-tls
 ---
