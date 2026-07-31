@@ -39,6 +39,7 @@ spec:
             - --trusted-proxy-ip=fd00:10:244::/48
             - --set-xauthrequest=true
             - --skip-provider-button=true
+            - --skip-claims-from-profile-url=true
             - --http-address=0.0.0.0:4180
             - --htpasswd-file=/etc/oauth2-proxy/htpasswd/users
             # API surfaces must fail with 401, not redirect to Auth0
