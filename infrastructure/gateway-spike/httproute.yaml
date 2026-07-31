@@ -38,6 +38,10 @@ spec:
               name: oauth2-proxy
               namespace: auth
               port: 4180
+            http:
+              allowedResponseHeaders:
+                - X-Auth-Request-User
+                - X-Auth-Request-Email
       backendRefs:
         - name: hubble-ui
           port: 80
