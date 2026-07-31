@@ -24,6 +24,7 @@ spec:
           image: registry.k8s.io/external-dns/external-dns:v0.21.0
           args:
             - --source=traefik-proxy
+            - --source=gateway-httproute
             - --domain-filter=recompiled.org
             - --provider=cloudflare
             - --cloudflare-dns-records-per-page=5000
