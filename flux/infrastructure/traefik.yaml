@@ -25,7 +25,7 @@ spec:
   install:
     crds: Create
   upgrade:
-    crds: CreateReplace
+    crds: Skip
   interval: 30m
   releaseName: traefik
   driftDetection:
