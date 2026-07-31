@@ -12,6 +12,7 @@ resources:
   - etcd-backup.yaml
   - external-dns.yaml
   - flux-webhook.yaml
+  - gateway-api.yaml
   - harry-botter.yaml
   - intel-gpu-plugin.yaml
   - metrics-server.yaml
