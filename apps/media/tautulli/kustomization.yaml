@@ -7,4 +7,4 @@ resources:
   - statefulset.yaml
   - tls-cert.yaml
   - service.yaml
-  - ingress.yaml
+  - httproute.yaml

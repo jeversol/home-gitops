@@ -9,5 +9,5 @@ resources:
   - spoolman-postgres-scheduled-backup.yaml
   - statefulset.yaml
   - service.yaml
-  - ingressroute.yaml
+  - httproute.yaml
   - certificate.yaml

@@ -8,5 +8,5 @@ resources:
   - scrutiny-service.yaml
   - collector-config.yaml
   - daemonset.yaml
-  - ingressroute.yaml
+  - httproute.yaml
   - tls-cert.yaml

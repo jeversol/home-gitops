@@ -18,4 +18,3 @@ resources:
   - spoolman-vpa.yaml
   - system-daemonsets-vpa.yaml
   - system-deployments-vpa.yaml
-  - traefik-vpa.yaml

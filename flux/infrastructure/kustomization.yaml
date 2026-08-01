@@ -25,8 +25,6 @@ resources:
   - renovate.yaml
   - smartctl-exporter.yaml
   - snapshot-controller.yaml
-  - traefik.yaml
-  - traefik-config.yaml
   - tuppr.yaml
   - volsync.yaml
   - volsync-vars.yaml

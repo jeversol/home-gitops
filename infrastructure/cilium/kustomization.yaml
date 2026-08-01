@@ -3,6 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - hubble-ui-tls-cert.yaml
-  - hubble-ui-ingressroute.yaml
+  - hubble-ui-httproute.yaml
   - cilium-loadbalancer-pool.yaml
   - cilium-l2-announcements.yaml

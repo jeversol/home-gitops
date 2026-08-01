@@ -1,32 +1,18 @@
 ---
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: flux-web-ui-tls
-  namespace: flux-system
-spec:
-  commonName: flux.i.recompiled.org
-  secretName: flux-web-ui-tls
-  dnsNames:
-    - flux.i.recompiled.org
-  issuerRef:
-    kind: ClusterIssuer
-    name: letsencrypt
----
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: flux-web-ui
-  namespace: flux-system
+  name: sonarr
+  namespace: media
   annotations:
     external-dns.alpha.kubernetes.io/expose: "true"
 spec:
   parentRefs:
     - name: ingress
       namespace: gateway
-      sectionName: flux
+      sectionName: sonarr
   hostnames:
-    - flux.i.recompiled.org
+    - sonarr.i.recompiled.org
   rules:
     - matches:
         - path:
@@ -36,6 +22,13 @@ spec:
         - name: oauth2-proxy
           namespace: auth
           port: 4180
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      backendRefs:
+        - name: sonarr
+          port: 8989
     - matches:
         - path:
             type: PathPrefix
@@ -57,17 +50,5 @@ spec:
                 - X-Auth-Request-User
                 - X-Auth-Request-Email
       backendRefs:
-        - name: flux-operator
-          port: 9080
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: flux-web-admin
-subjects:
-  - kind: Group
-    name: flux-web-admin
-roleRef:
-  kind: ClusterRole
-  name: flux-web-admin
-  apiGroup: rbac.authorization.k8s.io
+        - name: sonarr
+          port: 8989

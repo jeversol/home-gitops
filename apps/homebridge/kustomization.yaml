@@ -5,5 +5,5 @@ resources:
   - namespace.yaml
   - statefulset.yaml
   - service.yaml
-  - ingressroute.yaml
+  - httproute.yaml
   - tls-cert.yaml

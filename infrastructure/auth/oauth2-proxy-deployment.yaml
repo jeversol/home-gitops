@@ -28,7 +28,7 @@ spec:
           args:
             - --provider=oidc
             - --oidc-issuer-url=https://auth.recompiled.org/
-            - --redirect-url=https://oauth.i.recompiled.org/oauth2/callback
+            - --redirect-url=/oauth2/callback
             - --email-domain=recompiled.org
             - --cookie-domain=.i.recompiled.org
             - --whitelist-domain=.i.recompiled.org
