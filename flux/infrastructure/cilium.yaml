@@ -41,6 +41,8 @@ spec:
       exclusive: true
       install: true
     enableIPv4Masquerade: true
+    envoy:
+      xdsMode: split
     gatewayAPI:
       enabled: true
     hubble:
