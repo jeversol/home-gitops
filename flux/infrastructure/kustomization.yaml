@@ -13,7 +13,6 @@ resources:
   - external-dns.yaml
   - flux-webhook.yaml
   - gateway-api.yaml
-  - gateway-spike.yaml
   - harry-botter.yaml
   - intel-gpu-plugin.yaml
   - metrics-server.yaml
