@@ -9,8 +9,9 @@ resources:
   - oauth2-proxy-pdb.yaml
   - oauth2-proxy-certificate.yaml
   - oauth2-proxy-ingressroute.yaml
-  - oauth2-proxy-htpasswd-secret.yaml
-  - oauth2-proxy-basic-deployment.yaml
-  - oauth2-proxy-basic-service.yaml
-  - oauth2-proxy-basic-middleware.yaml
-  - oauth2-proxy-basic-pdb.yaml
+  - basic-auth-htpasswd-secret.yaml
+  - basic-auth-configmap.yaml
+  - basic-auth-deployment.yaml
+  - basic-auth-service.yaml
+  - basic-auth-middleware.yaml
+  - basic-auth-pdb.yaml

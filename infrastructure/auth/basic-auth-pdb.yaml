@@ -2,10 +2,10 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: oauth2-proxy-basic
+  name: basic-auth
   namespace: auth
 spec:
   maxUnavailable: 1
   selector:
     matchLabels:
-      app: oauth2-proxy-basic
+      app: basic-auth

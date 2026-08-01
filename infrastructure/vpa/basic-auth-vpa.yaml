@@ -2,12 +2,12 @@
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: oauth2-proxy-basic
+  name: basic-auth
   namespace: auth
 spec:
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: oauth2-proxy-basic
+    name: basic-auth
   updatePolicy:
     updateMode: "Off"  # Recommendation-only mode

@@ -2,12 +2,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: oauth2-proxy-basic
+  name: basic-auth
   namespace: auth
 spec:
   selector:
-    app: oauth2-proxy-basic
+    app: basic-auth
   ports:
     - name: http
-      port: 4180
-      targetPort: 4180
+      port: 80
+      targetPort: 8080

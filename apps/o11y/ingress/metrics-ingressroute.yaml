@@ -17,7 +17,7 @@ spec:
         - name: mimir-gateway
           port: 8080
       middlewares:
-        - name: oauth2-proxy-basic
+        - name: basic-auth
           namespace: auth
   tls:
     secretName: metrics-tls
