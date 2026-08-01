@@ -19,6 +19,6 @@ data:
         location / {
             auth_basic           "Restricted";
             auth_basic_user_file /etc/nginx/htpasswd/users;
-            return 200;
+            empty_gif;
         }
     }
