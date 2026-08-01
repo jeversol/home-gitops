@@ -24,7 +24,7 @@ spec:
               app: basic-auth
       containers:
         - name: nginx
-          image: nginxinc/nginx-unprivileged:1.29
+          image: nginxinc/nginx-unprivileged:1.31
           ports:
             - containerPort: 8080
               name: http
