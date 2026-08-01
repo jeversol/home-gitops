@@ -1,0 +1,228 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gateway
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: ingress
+  namespace: gateway
+  annotations:
+    external-dns.alpha.kubernetes.io/expose: "true"
+    external-dns.alpha.kubernetes.io/target: ingress.i.recompiled.org
+spec:
+  gatewayClassName: cilium
+  addresses:
+    - type: IPAddress
+      value: 192.168.1.243
+  listeners:
+    - name: bambu-spoolman
+      protocol: HTTPS
+      port: 443
+      hostname: bambu-spoolman.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: bambu-spoolman-tls
+            namespace: spoolman
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: flux
+      protocol: HTTPS
+      port: 443
+      hostname: flux.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: flux-web-ui-tls
+            namespace: flux-system
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: grafana
+      protocol: HTTPS
+      port: 443
+      hostname: grafana.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: grafana-tls
+            namespace: o11y
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: homebridge
+      protocol: HTTPS
+      port: 443
+      hostname: homebridge.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: homebridge-tls
+            namespace: homebridge
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: hubble
+      protocol: HTTPS
+      port: 443
+      hostname: hubble.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: hubble-ui-tls
+            namespace: kube-system
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: linstor
+      protocol: HTTPS
+      port: 443
+      hostname: linstor.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: linstor-tls
+            namespace: piraeus-datastore
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: loki
+      protocol: HTTPS
+      port: 443
+      hostname: loki.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: loki-tls
+            namespace: o11y
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: metrics
+      protocol: HTTPS
+      port: 443
+      hostname: metrics.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: metrics-tls
+            namespace: o11y
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: oauth
+      protocol: HTTPS
+      port: 443
+      hostname: oauth.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: oauth-tls
+            namespace: auth
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: overseerr
+      protocol: HTTPS
+      port: 443
+      hostname: overseerr.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: overseerr-tls
+            namespace: media
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: prowlarr
+      protocol: HTTPS
+      port: 443
+      hostname: prowlarr.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: prowlarr-tls
+            namespace: media
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: radarr
+      protocol: HTTPS
+      port: 443
+      hostname: radarr.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: radarr-tls
+            namespace: media
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: scrutiny
+      protocol: HTTPS
+      port: 443
+      hostname: scrutiny.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: scrutiny-tls-cert
+            namespace: o11y
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: sonarr
+      protocol: HTTPS
+      port: 443
+      hostname: sonarr.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: sonarr-tls
+            namespace: media
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: spoolman
+      protocol: HTTPS
+      port: 443
+      hostname: spoolman.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: spoolman-tls
+            namespace: spoolman
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: tautulli
+      protocol: HTTPS
+      port: 443
+      hostname: tautulli.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: tautulli-tls
+            namespace: media
+      allowedRoutes:
+        namespaces:
+          from: All

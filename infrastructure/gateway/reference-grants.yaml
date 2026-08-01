@@ -1,0 +1,186 @@
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: gateway-tls
+  namespace: spoolman
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: gateway
+  to:
+    - group: ""
+      kind: Secret
+      name: bambu-spoolman-tls
+    - group: ""
+      kind: Secret
+      name: spoolman-tls
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: gateway-tls
+  namespace: flux-system
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: gateway
+  to:
+    - group: ""
+      kind: Secret
+      name: flux-web-ui-tls
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: gateway-tls
+  namespace: o11y
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: gateway
+  to:
+    - group: ""
+      kind: Secret
+      name: grafana-tls
+    - group: ""
+      kind: Secret
+      name: loki-tls
+    - group: ""
+      kind: Secret
+      name: metrics-tls
+    - group: ""
+      kind: Secret
+      name: scrutiny-tls-cert
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: gateway-tls
+  namespace: homebridge
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: gateway
+  to:
+    - group: ""
+      kind: Secret
+      name: homebridge-tls
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: gateway-tls
+  namespace: kube-system
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: gateway
+  to:
+    - group: ""
+      kind: Secret
+      name: hubble-ui-tls
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: gateway-tls
+  namespace: piraeus-datastore
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: gateway
+  to:
+    - group: ""
+      kind: Secret
+      name: linstor-tls
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: gateway-tls
+  namespace: auth
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: gateway
+  to:
+    - group: ""
+      kind: Secret
+      name: oauth-tls
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: gateway-tls
+  namespace: media
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      namespace: gateway
+  to:
+    - group: ""
+      kind: Secret
+      name: overseerr-tls
+    - group: ""
+      kind: Secret
+      name: prowlarr-tls
+    - group: ""
+      kind: Secret
+      name: radarr-tls
+    - group: ""
+      kind: Secret
+      name: sonarr-tls
+    - group: ""
+      kind: Secret
+      name: tautulli-tls
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: oauth2-proxy-from-routes
+  namespace: auth
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: spoolman
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: flux-system
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: kube-system
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: piraeus-datastore
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: media
+  to:
+    - group: ""
+      kind: Service
+      name: oauth2-proxy
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: basic-auth-from-o11y
+  namespace: auth
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: o11y
+  to:
+    - group: ""
+      kind: Service
+      name: basic-auth
