@@ -578,17 +578,23 @@ spec:
             forward_to = [prometheus.relabel.etcd_final.receiver]
           }
 
+          // Talos runs etcd as a host service, not a static pod, so there is no
+          // pod to discover -- target this node's InternalIP directly
           discovery.relabel "etcd" {
-            targets = discovery.kubernetes.pods.targets
+            targets = discovery.kubernetes.nodes.targets
             rule {
-              source_labels = ["__meta_kubernetes_pod_label_component"]
-              regex         = "etcd"
+              source_labels = ["__meta_kubernetes_node_name"]
+              regex         = env("HOSTNAME")
               action        = "keep"
             }
             rule {
-              source_labels = ["__meta_kubernetes_pod_ip"]
+              source_labels = ["__meta_kubernetes_node_address_InternalIP"]
               target_label  = "__address__"
               replacement   = "$1:2381"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_node_name"]
+              target_label  = "node"
             }
           }
 
@@ -596,6 +602,94 @@ spec:
             forward_to = [prometheus.remote_write.mimir.receiver]
             rule {
               replacement  = "etcd"
+              target_label = "job"
+            }
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape kube-scheduler (Requires bind-address: 0.0.0.0 in Talos config)
+          // Serves a self-signed cert, so verification is skipped
+          prometheus.scrape "kube_scheduler" {
+            targets           = discovery.relabel.kube_scheduler.output
+            scheme            = "https"
+            bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            tls_config {
+              insecure_skip_verify = true
+            }
+            forward_to = [prometheus.relabel.kube_scheduler_final.receiver]
+          }
+
+          discovery.relabel "kube_scheduler" {
+            targets = discovery.kubernetes.pods.targets
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_component"]
+              regex         = "kube-scheduler"
+              action        = "keep"
+            }
+            // Only scrape the static pod on this Alloy's own node
+            rule {
+              source_labels = ["__meta_kubernetes_pod_node_name"]
+              regex         = env("HOSTNAME")
+              action        = "keep"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_ip"]
+              target_label  = "__address__"
+              replacement   = "$1:10259"
+            }
+          }
+
+          prometheus.relabel "kube_scheduler_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+            rule {
+              replacement  = "kube-scheduler"
+              target_label = "job"
+            }
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
+          // Scrape kube-controller-manager (Requires bind-address: 0.0.0.0 in Talos config)
+          // Serves a self-signed cert, so verification is skipped
+          prometheus.scrape "kube_controller_manager" {
+            targets           = discovery.relabel.kube_controller_manager.output
+            scheme            = "https"
+            bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            tls_config {
+              insecure_skip_verify = true
+            }
+            forward_to = [prometheus.relabel.kube_controller_manager_final.receiver]
+          }
+
+          discovery.relabel "kube_controller_manager" {
+            targets = discovery.kubernetes.pods.targets
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_component"]
+              regex         = "kube-controller-manager"
+              action        = "keep"
+            }
+            // Only scrape the static pod on this Alloy's own node
+            rule {
+              source_labels = ["__meta_kubernetes_pod_node_name"]
+              regex         = env("HOSTNAME")
+              action        = "keep"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_ip"]
+              target_label  = "__address__"
+              replacement   = "$1:10257"
+            }
+          }
+
+          prometheus.relabel "kube_controller_manager_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+            rule {
+              replacement  = "kube-controller-manager"
               target_label = "job"
             }
             rule {

@@ -8,6 +8,9 @@ machine:
     image: ghcr.io/siderolabs/kubelet:v1.36.3
     defaultRuntimeSeccompProfileEnabled: true
     disableManifestsDirectory: true
+    extraConfig:
+      shutdownGracePeriod: 90s
+      shutdownGracePeriodCriticalPods: 60s
   network: {}
   install:
     disk: /dev/sda
@@ -87,6 +90,7 @@ cluster:
   controllerManager:
     image: registry.k8s.io/kube-controller-manager:v1.36.3
     extraArgs:
+      bind-address: 0.0.0.0
       cluster-cidr: 10.244.0.0/16,fd00:10:244::/48
       service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/112
       terminated-pod-gc-threshold: "10"
@@ -94,6 +98,8 @@ cluster:
     disabled: true
   scheduler:
     image: registry.k8s.io/kube-scheduler:v1.36.3
+    extraArgs:
+      bind-address: 0.0.0.0
   etcd:
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381
