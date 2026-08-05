@@ -24,8 +24,7 @@ The infrastructure implements:
 - Infrastructure
   - [FluxCD](https://fluxcd.io/) via [Flux Operator](https://github.com/controlplaneio-fluxcd/flux-operator) - GitOps continuous delivery, with a web UI
   - [SOPS with age](https://getsops.io) - Secret encryption/decryption
-  - [Cilium](https://cilium.io/) - CNI, network policy, load balancing for bare metal, and Hubble network observability UI
-  - [Traefik](https://doc.traefik.io/traefik/) - Reverse proxy and ingress controller
+  - [Cilium](https://cilium.io/) - CNI, network policy, bare-metal load balancing, Gateway API ingress, and Hubble network observability UI
   - [cert-manager](https://cert-manager.io) - Automatic TLS certificate management
   - [harry-botter](https://github.com/jeversol/harry-botter) - Kubernetes secret expiry monitoring with GitHub issue alerts
   - [Piraeus/LINSTOR](https://github.com/piraeusdatastore/piraeus-operator) - Distributed block storage (DRBD-backed), with a LINSTOR GUI
@@ -43,7 +42,7 @@ The infrastructure implements:
   - [metrics-server](https://github.com/kubernetes-sigs/metrics-server) - Cluster resource metrics API
   - [etcd-backup](https://etcd.io) - Automated etcd backups to S3-compatible storage
   - [flux-webhook](https://fluxcd.io/flux/components/notification/receivers/) - GitHub webhook receiver for Flux
-  - [traefik-forward-auth](https://github.com/thomseddon/traefik-forward-auth) - OAuth authentication middleware
+  - [oauth2-proxy](https://oauth2-proxy.github.io/oauth2-proxy/) - OAuth authentication proxy for protected routes
   - [Renovate](https://docs.renovatebot.com/) - Automated dependency updates with webhook integration
 - Observability
   - [Grafana](https://grafana.com/) - Visualization and dashboards with Auth0 integration
@@ -64,4 +63,3 @@ The infrastructure implements:
     - [Radarr](https://radarr.video/) - Movie automation
     - [Prowlarr](https://prowlarr.com/) - Indexer manager
     - [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr) - Web scraping helper for media automation
-

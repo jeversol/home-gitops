@@ -1,0 +1,33 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: http-to-https
+  namespace: gateway
+spec:
+  parentRefs:
+    - name: ingress
+      sectionName: http
+  hostnames:
+    - bambu-spoolman.i.recompiled.org
+    - flux.i.recompiled.org
+    - grafana.i.recompiled.org
+    - homebridge.i.recompiled.org
+    - hubble.i.recompiled.org
+    - linstor.i.recompiled.org
+    - loki.i.recompiled.org
+    - metrics.i.recompiled.org
+    - oauth.i.recompiled.org
+    - overseerr.i.recompiled.org
+    - prowlarr.i.recompiled.org
+    - radarr.i.recompiled.org
+    - scrutiny.i.recompiled.org
+    - sonarr.i.recompiled.org
+    - spoolman.i.recompiled.org
+    - tautulli.i.recompiled.org
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
