@@ -16,19 +16,14 @@ data:
             return 200 "ok\n";
         }
 
-        # auth_basic runs in the access phase, try_files in the content phase,
-        # so credentials are always checked first. A bare `return` here would
-        # run in the earlier rewrite phase and skip auth entirely.
         location / {
             auth_basic           "Restricted";
             auth_basic_user_file /etc/nginx/htpasswd/users;
             try_files /dev/null @ok;
         }
 
-        # 204 keeps the response bodyless and method-agnostic; empty_gif sent a
-        # 43-byte body with Content-Length and rejected anything but GET/HEAD.
         location @ok {
             internal;
-            return 204;
+            return 200;
         }
     }

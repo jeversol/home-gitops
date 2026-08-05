@@ -26,7 +26,9 @@ spec:
               name: basic-auth
               namespace: auth
               port: 80
-            http: {}
+            http:
+              allowedResponseHeaders:
+                - x-basic-auth-ok
       backendRefs:
         - name: loki
           port: 3100
