@@ -10,7 +10,12 @@
   extends: [
     'config:recommended',
     ':enablePreCommit',
+    ':disableRateLimiting',
+    'helpers:pinGitHubActionDigestsToSemver',
     'mergeConfidence:all-badges',
+    'github>home-operations/renovate-presets//config/dependencyDashboard.json5#5.0.0',
+    'github>home-operations/renovate-presets//managers/cnpg.json5#5.0.0',
+    'github>home-operations/renovate-presets//policies/zer0ver.json5#5.0.0',
   ],
   automerge: false,
   timezone: 'America/Indiana/Indianapolis',
@@ -34,7 +39,7 @@
     {
       matchManagers: ['github-actions'],
       automerge: true,
-      matchUpdateTypes: ['patch', 'minor'],
+      matchUpdateTypes: ['patch', 'minor', 'digest'],
       schedule: ['* 0-4 * * 1'],
       assignees: [],
     },
@@ -51,15 +56,6 @@
       matchDatasources: ['repology', 'pypi'],
       automerge: true,
       assignees: [],
-    },
-    // kubernetes-client/python 36.0.0 regression: load_incluster_config() sets
-    // api_key['authorization'] but auth_settings() expects api_key['BearerToken'],
-    // causing all in-cluster API calls to 401. Remove once 36.x.x is patched.
-    // Upstream issues: kubernetes-client/python#2584, #2591, #2592
-    {
-      matchPackageNames: ['kubernetes'],
-      matchDatasources: ['pypi'],
-      allowedVersions: '!=36.0.0',
     },
     {
       matchDatasources: ['docker'],
@@ -113,19 +109,6 @@
         executionMode: 'branch'
       }
     },
-    // IMPORTANT: Kubernetes Component Version Management
-    // The kubernetes-components group tracks k8s versions in:
-    //   - tools/cluster/base-controlplane.yaml (component images for manual apply-config)
-    //   - infrastructure/tuppr/kubernetes-upgrade.yaml (tuppr KubernetesUpgrade target)
-    //   - tools/cluster-multitool/Dockerfile (kubectl binary)
-    // The allowedVersions constraint is tied to the Talos support matrix.
-    //
-    // When upgrading Talos to a new minor version:
-    // 1. Check support matrix: https://docs.siderolabs.com/talos/getting-started/support-matrix/
-    // 2. Update allowedVersions below to match supported k8s versions
-    //    Example: Talos 1.11.x supports k8s 1.34.x only -> '/^v1\\.34\\./'
-    //    Example: Talos 1.12.x might support k8s 1.34.x and 1.35.x -> '/^v1\\.(34|35)\\./'
-    // 3. Current: Talos 1.13.x supports Kubernetes 1.31.x, 1.32.x, 1.33.x, 1.34.x, 1.35.x, 1.36.x
     {
       matchPackageNames: [
         'ghcr.io/siderolabs/kubelet',
@@ -134,9 +117,13 @@
         'registry.k8s.io/kube-scheduler',
       ],
       groupName: 'kubernetes-components',
-      allowedVersions: '/^v1\.(31|32|33|34|35|36)\./',
       automerge: false,
       assignees: ['jeversol'],
+    },
+    {
+      matchPackageNames: ['ghcr.io/cloudnative-pg/postgresql'],
+      matchUpdateTypes: ['major'],
+      dependencyDashboardApproval: true,
     },
     {
       matchPackageNames: ['kubernetes-sigs/node-feature-discovery'],
