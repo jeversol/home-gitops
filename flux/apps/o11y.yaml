@@ -4,9 +4,12 @@ metadata:
   name: o11y
   namespace: flux-system
 spec:
-  interval: 1h
+  interval: 15m
+  retryInterval: 1m
+  timeout: 5m
   path: ./apps/o11y
   prune: true
+  wait: true
   sourceRef:
     kind: GitRepository
     name: flux-system
