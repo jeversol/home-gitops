@@ -43,11 +43,11 @@ spec:
                       name: etcd-backup-minio-secret
                       key: BUCKET_NAME
               volumeMounts:
-                - name: talos-config
-                  mountPath: /etc/talos
-                  readOnly: true
                 - name: backup-script
                   mountPath: /scripts
+                  readOnly: true
+                - name: talos-secrets
+                  mountPath: /var/run/secrets/talos.dev
                   readOnly: true
               resources:
                 requests:
@@ -56,10 +56,19 @@ spec:
                 limits:
                   memory: 256Mi
           volumes:
-            - name: talos-config
-              secret:
-                secretName: talos-etcd-backup-config
             - name: backup-script
               configMap:
                 name: etcd-backup-script
                 defaultMode: 0755
+            - name: talos-secrets
+              secret:
+                secretName: etcd-backup-talos-secrets
+---
+apiVersion: talos.dev/v1alpha1
+kind: ServiceAccount
+metadata:
+  name: etcd-backup-talos-secrets
+  namespace: etcd-backup
+spec:
+  roles:
+    - os:etcd:backup

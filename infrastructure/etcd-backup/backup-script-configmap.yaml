@@ -31,9 +31,8 @@ data:
     fi
     echo "✅ S3 connection successful"
 
-    # Create etcd snapshot using restricted credentials
+    # Create etcd snapshot using the injected Talos service account
     echo "Creating etcd snapshot..."
-    export TALOSCONFIG=/etc/talos/talosconfig
     echo "Running talosctl..."
     if talosctl etcd snapshot "${BACKUP_FILE}" --nodes "${TALOS_NODE}"; then
         BACKUP_SIZE=$(du -h "${BACKUP_FILE}" | cut -f1)
