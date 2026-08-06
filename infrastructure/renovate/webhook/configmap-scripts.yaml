@@ -60,10 +60,16 @@ data:
 
         TITLE=$(printf '%s' "$PAYLOAD" | jq -r '.issue.title // empty')
         log "issue title=$TITLE"
-        if [ "$TITLE" != "Dependency Dashboard" ]; then
-          log "ignored issue title $TITLE"
-          exit 0
-        fi
+        # Renovate's Dashboard preset currently uses "Renovate Dashboard 🤖";
+        # retain the legacy title so a preset/title change does not disable
+        # checkbox-triggered runs during a transition.
+        case "$TITLE" in
+          "Dependency Dashboard"|"Renovate Dashboard 🤖") ;;
+          *)
+            log "ignored issue title $TITLE"
+            exit 0
+            ;;
+        esac
 
         NEW_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.issue.body // ""')
         OLD_BODY_TEXT=$(printf '%s' "$PAYLOAD" | jq -r '.changes.body.from // ""')
