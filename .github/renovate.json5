@@ -146,6 +146,11 @@
       matchManagers: ['kubernetes'],
       enabled: false,
     },
+    {
+      description: 'Show current and new versions in pull request titles',
+      matchUpdateTypes: ['major', 'minor', 'patch'],
+      commitMessageExtra: '({{currentVersion}} ➔ {{newVersion}})',
+    },
   ],
   customManagers: [
     {
