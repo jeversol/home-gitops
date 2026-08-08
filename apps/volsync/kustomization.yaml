@@ -21,7 +21,5 @@ resources:
   - influxdb-replicationsource.yaml
   - grafana-secret.yaml
   - grafana-replicationsource.yaml
-  - spoolman-secret.yaml
-  - spoolman-replicationsource.yaml
   - bambu-spoolman-config-secret.yaml
   - bambu-spoolman-config-replicationsource.yaml

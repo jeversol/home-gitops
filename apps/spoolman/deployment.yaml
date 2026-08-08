@@ -1,12 +1,11 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: spoolman
   namespace: spoolman
   labels:
     app: spoolman
 spec:
-  serviceName: spoolman
   replicas: 1
   revisionHistoryLimit: 3
   selector:
@@ -18,8 +17,6 @@ spec:
         app: spoolman
     spec:
       automountServiceAccountToken: false
-      securityContext:
-        fsGroup: 1000
       containers:
         - name: spoolman
           image: ghcr.io/donkie/spoolman:0.26.1
@@ -51,9 +48,6 @@ spec:
                 secretKeyRef:
                   name: spoolman-postgres-credentials
                   key: password
-          volumeMounts:
-            - name: data
-              mountPath: /data
           resources:
             requests:
               cpu: 100m
@@ -85,12 +79,3 @@ spec:
             periodSeconds: 60
             timeoutSeconds: 5
             failureThreshold: 3
-  volumeClaimTemplates:
-    - metadata:
-        name: data
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        storageClassName: linstor-r3
-        resources:
-          requests:
-            storage: 2Gi
