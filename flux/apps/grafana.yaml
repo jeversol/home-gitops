@@ -51,6 +51,8 @@ spec:
     grafana.ini:
       server:
         root_url: https://grafana.i.recompiled.org
+      security:
+        allow_embedding: true
       auth.generic_oauth:
         name: Auth0
         enabled: true
