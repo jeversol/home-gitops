@@ -1162,6 +1162,64 @@ spec:
             }
           }
 
+          // Scrape DRBD Reactor metrics from LINSTOR satellite Pods
+          prometheus.scrape "drbd_reactor" {
+            targets    = discovery.relabel.drbd_reactor.output
+            forward_to = [prometheus.relabel.drbd_reactor_final.receiver]
+          }
+
+          discovery.relabel "drbd_reactor" {
+            targets = discovery.kubernetes.pods.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              regex         = "piraeus-datastore"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_component"]
+              regex         = "linstor-satellite"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_container_name", "__meta_kubernetes_pod_container_port_name"]
+              separator     = ";"
+              regex         = "drbd-reactor;prometheus"
+              action        = "keep"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_node_name"]
+              target_label  = "node"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              target_label  = "namespace"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_name"]
+              target_label  = "pod"
+            }
+          }
+
+          prometheus.relabel "drbd_reactor_final" {
+            forward_to = [prometheus.remote_write.mimir.receiver]
+
+            rule {
+              replacement  = "drbd-reactor"
+              target_label = "job"
+            }
+
+            rule {
+              replacement  = "talos"
+              target_label = "cluster"
+            }
+          }
+
       mounts:
         varlog: true
         extra:
