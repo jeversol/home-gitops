@@ -18,17 +18,6 @@ spec:
         - path:
             type: PathPrefix
             value: /
-      filters:
-        - type: ExternalAuth
-          externalAuth:
-            protocol: HTTP
-            backendRef:
-              name: basic-auth
-              namespace: auth
-              port: 80
-            http:
-              allowedResponseHeaders:
-                - x-basic-auth-ok
       backendRefs:
         - name: mimir-gateway
           port: 8080

@@ -11,7 +11,6 @@ resources:
   - media-vpa.yaml
   - node-feature-discovery-vpa.yaml
   - oauth2-proxy-vpa.yaml
-  - basic-auth-vpa.yaml
   - o11y-vpa.yaml
   - renovate-vpa.yaml
   - scrutiny-vpa.yaml
