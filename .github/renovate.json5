@@ -10,7 +10,6 @@
   extends: [
     'config:recommended',
     ':enablePreCommit',
-    ':disableRateLimiting',
     'helpers:pinGitHubActionDigestsToSemver',
     'mergeConfidence:all-badges',
     'github>home-operations/renovate-presets//config/dependencyDashboard.json5#6.0.0',
@@ -18,6 +17,7 @@
     'github>home-operations/renovate-presets//policies/zer0ver.json5#6.0.0',
   ],
   automerge: false,
+  prConcurrentLimit: 5,
   timezone: 'America/Indiana/Indianapolis',
   assignees: ['jeversol'],
   packageRules: [
@@ -48,12 +48,11 @@
       matchDatasources: ['docker', 'helm'],
       automerge: true,
       assignees: [],
-      matchPackageNames: ['!kube-prometheus-stack'],
     },
     {
       matchFileNames: ['tools/cluster-multitool/Dockerfile'],
       matchUpdateTypes: ['patch'],
-      matchDatasources: ['repology', 'pypi'],
+      matchDatasources: ['pypi'],
       automerge: true,
       assignees: [],
     },
@@ -76,38 +75,15 @@
       groupName: 'scrutiny',
     },
     {
-      matchPackageNames: ['kube-prometheus-stack'],
-      matchDatasources: ['helm'],
-      matchUpdateTypes: ['patch', 'minor'],
-      automerge: true,
-      assignees: [],
-    },
-    {
-      matchPackageNames: ['longhorn'],
-      matchDatasources: ['helm'],
-      changelogUrl: 'https://github.com/longhorn/longhorn/releases',
-    },
-    {
-      matchPackageNames: ['cilium'],
-      matchDatasources: ['helm'],
-    },
-    {
       matchPackageNames: ['csi-driver-nfs'],
       matchDatasources: ['helm'],
       changelogUrl: 'https://github.com/kubernetes-csi/csi-driver-nfs/releases',
     },
     {
-      matchPackageNames: ['siderolabs/talos', 'ghcr.io/siderolabs/talosctl', 'ghcr.io/siderolabs/installer'],
+      matchPackageNames: ['siderolabs/talos'],
       groupName: 'talos',
       automerge: false,
       assignees: ['jeversol'],
-      postUpgradeTasks: {
-        commands: [
-          './.renovate/update-k8s-constraints.sh {{{newMajor}}}.{{{newMinor}}}'
-        ],
-        fileFilters: ['.github/renovate.json5'],
-        executionMode: 'branch'
-      }
     },
     {
       matchPackageNames: [
@@ -117,6 +93,7 @@
         'registry.k8s.io/kube-scheduler',
       ],
       groupName: 'kubernetes-components',
+      versioning: 'semver',
       automerge: false,
       assignees: ['jeversol'],
     },
@@ -138,10 +115,6 @@
       overrideDatasource: 'github-releases',
     },
     {
-      matchPackageNames: ['kubernetes-sigs/external-dns'],
-      overrideDatasource: 'github-releases',
-    },
-    {
       matchPackageNames: ['factory.talos.dev/metal-installer-secureboot/**'],
       matchManagers: ['kubernetes'],
       enabled: false,
@@ -155,7 +128,7 @@
   customManagers: [
     {
       customType: 'regex',
-      managerFilePatterns: ['**/*.{yaml,yml}'],
+      managerFilePatterns: ['infrastructure/tuppr/*-upgrade.yaml'],
       matchStrings: [
         '#\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+depName=(?<depName>.*?)\\s*\\n\\s+version:\\s*v?(?<currentValue>[\\d.]+)',
       ],
@@ -178,15 +151,6 @@
       datasourceTemplate: 'github-releases',
       depNameTemplate: 'fluxcd/flux2',
       extractVersionTemplate: '^v(?<version>\\d+\\.\\d+)',
-    },
-    {
-      customType: 'regex',
-      managerFilePatterns: ['/tools/cluster/base-controlplane\\.yaml/'],
-      matchStrings: [
-        '\\s+image:\\s+(?<depName>(?:ghcr\\.io|registry\\.k8s\\.io)/[^:]+):v(?<currentValue>\\d+\\.\\d+\\.\\d+)',
-      ],
-      datasourceTemplate: 'docker',
-      versioningTemplate: 'semver',
     },
     {
       customType: 'regex',

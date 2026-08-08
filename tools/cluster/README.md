@@ -113,42 +113,13 @@ Kubernetes component versions are tracked in `base-controlplane.yaml` and automa
 - **kubelet:** `ghcr.io/siderolabs/kubelet`
 - **apiserver:** `registry.k8s.io/kube-apiserver`
 - **controller-manager:** `registry.k8s.io/kube-controller-manager`
-- **proxy:** `registry.k8s.io/kube-proxy`
 - **scheduler:** `registry.k8s.io/kube-scheduler`
 
-Renovate will create PRs for new Kubernetes versions with these constraints:
-- **Minimum age:** 7 days after release (gives community time to find issues)
-- **Allowed versions:** Constrained to versions supported by current Talos (see below)
-
-### Talos Version Compatibility
-
-Talos and Kubernetes versions must be compatible. The current constraints are:
-
-- **Talos 1.11.x** supports **Kubernetes 1.34.x only**
-- See support matrix: https://docs.siderolabs.com/talos/getting-started/support-matrix/
-
-The `allowedVersions` constraint in `.github/renovate.json5` prevents Renovate from creating PRs for unsupported Kubernetes versions.
+Renovate groups these component updates with the Kubernetes version used by tuppr and the cluster multitool. Talos and Kubernetes upgrades are then orchestrated by tuppr.
 
 ### Upgrading Talos
 
-When upgrading Talos to a new minor version (e.g., 1.11.x → 1.12.x):
-
-1. **Check the support matrix** for the new Talos version:
-   - https://docs.siderolabs.com/talos/getting-started/support-matrix/
-   - Identify which Kubernetes versions are supported
-
-2. **Update Renovate constraints** in `.github/renovate.json5`:
-   ```json5
-   {
-     groupName: 'kubernetes-components',
-     // Update this line based on support matrix:
-     allowedVersions: '/^v1\\.(34|35)\\./',  // Example: if 1.12.x supports both 1.34 and 1.35
-   }
-   ```
-
-3. **Upgrade Talos** on all nodes by bumping `spec.talos.version` in `infrastructure/tuppr/talos-upgrade.yaml` and letting tuppr handle the rolling upgrade via GitOps
-
-4. **Upgrade Kubernetes** (if desired) by merging Renovate PRs for new k8s versions
+Merge the Renovate Talos update after reviewing its release notes. The version in `infrastructure/tuppr/talos-upgrade.yaml` directs tuppr to perform the rolling upgrade through GitOps.
 
 ## Common Scenarios
 
@@ -156,11 +127,9 @@ When upgrading Talos to a new minor version (e.g., 1.11.x → 1.12.x):
 
 When Renovate creates a PR to update Kubernetes versions in `base-controlplane.yaml`:
 
-1. Review the PR to ensure all 5 components are being updated together
-2. Verify the version is supported by your current Talos version
-3. Merge the PR
-4. Apply the configuration to all nodes (see "Apply to All Nodes" above)
-5. Monitor the system-upgrade-controller or manually verify the updates
+1. Review the grouped PR to ensure all four enabled components and the tuppr target are updated together
+2. Merge the PR
+3. Monitor the tuppr-managed rollout
 
 ### Changing Node Configuration
 

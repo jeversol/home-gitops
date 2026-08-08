@@ -3,52 +3,10 @@
 This directory contains automation workflows for the home-gitops repository.
 
 ## Table of Contents
-- [sync-talos-k8s-versions.yml](#sync-talos-k8s-versionsyml) - Auto-update Kubernetes constraints based on Talos version
 - [docker-build.yml](#docker-buildyml) - Build and push cluster-multitool Docker image
 - [validate.yml](#validateyml) - Validate GitOps manifests on PRs
 - [gitguardian.yaml](#gitguardianyaml) - Scan for secrets in commits
 - [ghcr-prune-cluster-multitool.yml](#ghcr-prune-cluster-multitoolyml) - Clean up old container images
-
----
-
-## sync-talos-k8s-versions.yml
-
-**Purpose:** Automatically updates the Kubernetes version constraints in Renovate configuration based on the Talos support matrix.
-
-### Triggers
-
-1. **On Push to Main**
-   - Monitors: `tools/cluster/base-controlplane.yaml`
-   - When a Talos upgrade PR is merged, automatically updates k8s constraints
-
-2. **Weekly Schedule**
-   - Runs: Every Monday at noon UTC
-   - Catches any drift or manual changes
-
-3. **Manual Dispatch**
-   - Go to: Actions → Sync Talos-Kubernetes Version Constraints → Run workflow
-   - Useful for testing or forcing an update
-
-### What Gets Updated
-
-**File:** `.github/renovate.json5`
-
-**Before:**
-```json5
-{
-  groupName: 'kubernetes-components',
-  allowedVersions: '/^v1\\.34\\./',  // ← Updated
-  // 3. Current: Talos 1.11.x supports Kubernetes 1.34.x  // ← Updated
-}
-```
-
-**After (when Talos 1.12.0 is detected):**
-```json5
-{
-  groupName: 'kubernetes-components',
-  allowedVersions: '/^v1\\.(34|35)\\./',  // ← Updated
-  // 3. Current: Talos 1.12.x supports Kubernetes 1.34.x, 1.35.x  // ← Updated
-}
 
 ---
 
