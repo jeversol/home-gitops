@@ -112,8 +112,8 @@
       overrideDatasource: 'github-releases',
     },
     {
-      matchPackageNames: ['factory.talos.dev/metal-installer-secureboot/**'],
-      matchManagers: ['kubernetes'],
+      matchDatasources: ['docker'],
+      matchPackageNames: ['/^factory\\.talos\\.dev\\//'],
       enabled: false,
     },
     {
