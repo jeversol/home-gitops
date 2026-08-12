@@ -6,6 +6,7 @@ resources:
   - loki.yaml
   - mimir.yaml
   - kube-state-metrics.yaml
+  - kopiur.yaml
   - alloy.yaml
   - grafana.yaml
   - scrutiny-influxdb.yaml

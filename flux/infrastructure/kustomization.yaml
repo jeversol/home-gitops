@@ -16,6 +16,7 @@ resources:
   - gateway.yaml
   - harry-botter.yaml
   - intel-gpu-plugin.yaml
+  - kopiur.yaml
   - metrics-server.yaml
   - nfs-csi-driver.yaml
   - nfs-csi.yaml

@@ -1,0 +1,65 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: kopiur
+  namespace: flux-system
+spec:
+  interval: 30m
+  url: oci://ghcr.io/home-operations/charts/kopiur
+  ref:
+    tag: "0.9.1"
+  layerSelector:
+    mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
+    operation: copy
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kopiur
+  namespace: flux-system
+spec:
+  interval: 30m
+  releaseName: kopiur
+  targetNamespace: kopiur-system
+  driftDetection:
+    mode: enabled
+  chartRef:
+    kind: OCIRepository
+    name: kopiur
+    namespace: flux-system
+  install:
+    createNamespace: true
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
+  values:
+    installScope: cluster
+    features:
+      credentialProjection:
+        enabled: true
+    monitoring:
+      prometheusRule:
+        enabled: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: kopiur-config
+  namespace: flux-system
+spec:
+  interval: 30m
+  path: ./infrastructure/kopiur
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: true
+  timeout: 5m
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age

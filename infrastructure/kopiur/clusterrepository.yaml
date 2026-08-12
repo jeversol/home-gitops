@@ -1,0 +1,26 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: ClusterRepository
+metadata:
+  name: home-cluster
+spec:
+  backend:
+    s3:
+      bucket: kopia
+      prefix: home-cluster/
+      endpoint: nas.i.recompiled.org:3900
+      region: us-east-1
+      auth:
+        secretRef:
+          name: home-cluster-kopia
+          namespace: kopiur-system
+  encryption:
+    passwordSecretRef:
+      name: home-cluster-kopia
+      namespace: kopiur-system
+      key: KOPIA_PASSWORD
+  create:
+    enabled: true
+  allowedNamespaces:
+    all: true
+  credentialProjection:
+    allowed: true
