@@ -54,11 +54,6 @@
       assignees: [],
     },
     {
-      matchPackageNames: ['ghcr.io/jeversol/bambu-spoolman'],
-      automerge: true,
-      assignees: [],
-    },
-    {
       matchDatasources: ['docker'],
       matchPackageNames: ['homebridge/homebridge'],
       versioning: 'regex:^(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$',
