@@ -35,19 +35,15 @@ spec:
     remediation:
       retries: 3
   values:
-    # Deploy in monolithic mode (single pod)
     deploymentMode: Monolithic
 
     loki:
-      # Disable multi-tenancy
       auth_enabled: false
 
-      # Common config for monolithic mode
       commonConfig:
-        replication_factor: 1
+        replication_factor: 3
         path_prefix: /var/loki
 
-      # Loki configuration
       schemaConfig:
         configs:
           - from: "2024-01-01"
@@ -58,11 +54,9 @@ spec:
               prefix: loki_index_
               period: 24h
 
-      # Ingester configuration
       ingester:
         chunk_encoding: snappy
 
-      # Query limits
       querier:
         max_concurrent: 4
 
@@ -87,16 +81,13 @@ spec:
           active_index_directory: /var/loki/index
           cache_location: /var/loki/cache
 
-      # Retention configuration (30 days)
       limits_config:
         retention_period: 720h
         reject_old_samples_max_age: 720h
 
-      # Pattern ingester for log pattern detection
       pattern_ingester:
         enabled: true
 
-      # Compactor configuration - REQUIRED for retention to work
       compactor:
         working_directory: /var/loki/compactor
         compaction_interval: 10m
@@ -108,22 +99,19 @@ spec:
     ruler:
       enabled: false
 
-    # Disable loki-canary
     lokiCanary:
       enabled: false
 
-    # Single binary deployment settings
     singleBinary:
-      replicas: 1
+      replicas: 3
       sidecar: false
-      # Inject S3 credentials from secret
       extraEnvFrom:
         - secretRef:
             name: loki-s3-credentials
       persistence:
         enabled: true
         storageClass: linstor-r3
-        size: 10Gi
+        size: 5Gi
       resources:
         requests:
           cpu: 100m
@@ -131,7 +119,6 @@ spec:
         limits:
           memory: 2Gi
 
-    # Zero out other deployment modes
     backend:
       replicas: 0
     read:
@@ -139,20 +126,16 @@ spec:
     write:
       replicas: 0
 
-    # Disable test pods
     test:
       enabled: false
 
-    # Disable caches for true monolithic mode
     chunksCache:
       enabled: false
     resultsCache:
       enabled: false
 
-    # Disable MinIO (using external S3)
     minio:
       enabled: false
 
-    # Disable gateway (unnecessary for monolithic mode)
     gateway:
       enabled: false
