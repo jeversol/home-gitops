@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: bambu-spoolman
-          image: ghcr.io/jeversol/bambu-spoolman:personal
+          image: ghcr.io/jeversol/bambu-spoolman:personal@sha256:85b24105c85fab4f9eef7027618fea047e892a55e7605d0c5274c70c47d33953
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
