@@ -36,7 +36,7 @@ spec:
       retries: 3
   values:
     # Deploy in monolithic mode (single pod)
-    deploymentMode: SingleBinary
+    deploymentMode: Monolithic
 
     loki:
       # Disable multi-tenancy
@@ -72,13 +72,6 @@ spec:
           chunks: loki
           ruler: loki
           admin: loki
-        s3:
-          endpoint: nas.i.recompiled.org:3900
-          region: us-east-1
-          secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
-          accessKeyId: ${AWS_ACCESS_KEY_ID}
-          s3ForcePathStyle: true
-          insecure: false
         use_thanos_objstore: true
         object_store:
           type: s3
@@ -97,6 +90,7 @@ spec:
       # Retention configuration (30 days)
       limits_config:
         retention_period: 720h
+        reject_old_samples_max_age: 720h
 
       # Pattern ingester for log pattern detection
       pattern_ingester:
@@ -112,8 +106,7 @@ spec:
         delete_request_store: s3
 
     ruler:
-      enabled: true
-      replicas: 0
+      enabled: false
 
     # Disable loki-canary
     lokiCanary:
@@ -122,9 +115,7 @@ spec:
     # Single binary deployment settings
     singleBinary:
       replicas: 1
-      # Enable environment variable expansion in config
-      extraArgs:
-        - -config.expand-env=true
+      sidecar: false
       # Inject S3 credentials from secret
       extraEnvFrom:
         - secretRef:
@@ -151,13 +142,6 @@ spec:
     # Disable test pods
     test:
       enabled: false
-
-    # Disable monitoring (we already have prometheus)
-    monitoring:
-      selfMonitoring:
-        enabled: false
-        grafanaAgent:
-          installOperator: false
 
     # Disable caches for true monolithic mode
     chunksCache:
