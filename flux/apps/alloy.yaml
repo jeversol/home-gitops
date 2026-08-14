@@ -39,18 +39,17 @@ spec:
           // Discover Kubernetes pods
           discovery.kubernetes "pods" {
             role = "pod"
+
+            // Each DaemonSet replica only reads log files from its own node
+            selectors {
+              role  = "pod"
+              field = "spec.nodeName=" + sys.env("HOSTNAME")
+            }
           }
 
           // Relabel to add metadata
           discovery.relabel "pod_logs" {
             targets = discovery.kubernetes.pods.targets
-
-            // Only keep running pods
-            rule {
-              source_labels = ["__meta_kubernetes_pod_phase"]
-              regex         = "Pending|Succeeded|Failed|Completed"
-              action        = "drop"
-            }
 
             // Drop pods from kube-public
             rule {
@@ -92,29 +91,61 @@ spec:
               target_label  = "container"
             }
 
+            // Preserve the stream labels previously added by loki.source.kubernetes
+            rule {
+              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_name", "__meta_kubernetes_pod_container_name"]
+              separator     = ";"
+              regex         = "(.*);(.*);(.*)"
+              target_label  = "instance"
+              replacement   = "$1/$2:$3"
+            }
+
+            rule {
+              target_label = "job"
+              replacement  = "loki.source.kubernetes.pods"
+            }
+
             // Add node name label
             rule {
               source_labels = ["__meta_kubernetes_pod_node_name"]
               target_label  = "node"
             }
 
-            // Set the path to the pod logs
+            // Match this container's CRI log files on the local node
             rule {
-              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_name"]
+              source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
               separator     = "/"
               target_label  = "__path__"
               replacement   = "/var/log/pods/*$1*/*.log"
             }
           }
 
-          // Collect logs from Kubernetes pods
-          loki.source.kubernetes "pods" {
+          // Read node-local CRI log files so collection does not depend on kubelet networking
+          loki.source.file "pods" {
             targets    = discovery.relabel.pod_logs.output
             forward_to = [loki.process.pod_logs.receiver]
+
+            file_match {
+              enabled           = true
+              ignore_older_than = "720h"
+            }
           }
 
           // Process logs to add cluster label and filter noise
           loki.process "pod_logs" {
+            stage.cri {}
+
+            // Keep stale files from causing Loki to reject otherwise valid batches
+            stage.drop {
+              older_than          = "719h"
+              drop_counter_reason = "outside_retention"
+            }
+
+            // Avoid creating a separate Loki stream for each local file path
+            stage.label_drop {
+              values = ["filename"]
+            }
+
             stage.static_labels {
               values = {
                 cluster = "talos",
@@ -174,17 +205,17 @@ spec:
             forward_to = [prometheus.remote_write.mimir.receiver]
 
             rule {
-              replacement  = env("HOSTNAME")
+              replacement  = sys.env("HOSTNAME")
               target_label = "instance"
             }
 
             rule {
-              replacement  = env("HOSTNAME")
+              replacement  = sys.env("HOSTNAME")
               target_label = "node"
             }
 
             rule {
-              replacement  = env("HOSTNAME")
+              replacement  = sys.env("HOSTNAME")
               target_label = "nodename"
             }
 
@@ -584,7 +615,7 @@ spec:
             targets = discovery.kubernetes.nodes.targets
             rule {
               source_labels = ["__meta_kubernetes_node_name"]
-              regex         = env("HOSTNAME")
+              regex         = sys.env("HOSTNAME")
               action        = "keep"
             }
             rule {
@@ -632,7 +663,7 @@ spec:
             // Only scrape the static pod on this Alloy's own node
             rule {
               source_labels = ["__meta_kubernetes_pod_node_name"]
-              regex         = env("HOSTNAME")
+              regex         = sys.env("HOSTNAME")
               action        = "keep"
             }
             rule {
@@ -676,7 +707,7 @@ spec:
             // Only scrape the static pod on this Alloy's own node
             rule {
               source_labels = ["__meta_kubernetes_pod_node_name"]
-              regex         = env("HOSTNAME")
+              regex         = sys.env("HOSTNAME")
               action        = "keep"
             }
             rule {
