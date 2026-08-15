@@ -62,4 +62,5 @@ The infrastructure implements:
     - [Sonarr](https://sonarr.tv/) - TV show automation
     - [Radarr](https://radarr.video/) - Movie automation
     - [Prowlarr](https://prowlarr.com/) - Indexer manager
+    - [Bindery](https://github.com/vavallee/bindery) - Ebook and audiobook automation
     - [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr) - Web scraping helper for media automation

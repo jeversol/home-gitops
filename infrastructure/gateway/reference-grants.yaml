@@ -132,6 +132,9 @@ spec:
       name: audiobookshelf-tls
     - group: ""
       kind: Secret
+      name: bindery-tls
+    - group: ""
+      kind: Secret
       name: overseerr-tls
     - group: ""
       kind: Secret

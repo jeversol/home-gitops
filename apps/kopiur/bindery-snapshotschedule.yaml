@@ -1,0 +1,14 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: bindery-nightly
+  namespace: media
+spec:
+  policyRef:
+    name: bindery
+  schedule:
+    cron: "40 4 * * *"
+    timezone: UTC
+    jitter: 10m
+    runOnCreate: false
+    concurrencyPolicy: Forbid

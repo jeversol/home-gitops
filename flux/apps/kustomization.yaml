@@ -15,6 +15,7 @@ resources:
   - linstor-gui.yaml
   - media.yaml
   - media-audiobookshelf.yaml
+  - media-bindery.yaml
   - media-overseerr.yaml
   - media-plex.yaml
   - media-prowlarr.yaml

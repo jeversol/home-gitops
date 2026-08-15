@@ -50,6 +50,19 @@ spec:
       allowedRoutes:
         namespaces:
           from: All
+    - name: bindery
+      protocol: HTTPS
+      port: 443
+      hostname: bindery.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: bindery-tls
+            namespace: media
+      allowedRoutes:
+        namespaces:
+          from: All
     - name: flux
       protocol: HTTPS
       port: 443

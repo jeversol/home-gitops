@@ -1,0 +1,57 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: bindery
+  namespace: media
+  annotations:
+    external-dns.alpha.kubernetes.io/expose: "true"
+spec:
+  parentRefs:
+    - name: ingress
+      namespace: gateway
+      sectionName: bindery
+  hostnames:
+    - bindery.i.recompiled.org
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /oauth2
+      backendRefs:
+        - name: oauth2-proxy
+          namespace: auth
+          port: 4180
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+        - path:
+            type: PathPrefix
+            value: /opds
+      backendRefs:
+        - name: bindery
+          port: 8787
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ExternalAuth
+          externalAuth:
+            protocol: HTTP
+            backendRef:
+              name: oauth2-proxy
+              namespace: auth
+              port: 4180
+            http:
+              allowedHeaders:
+                - Cookie
+                - Accept
+                - X-Forwarded-For
+              allowedResponseHeaders:
+                - X-Auth-Request-User
+                - X-Auth-Request-Email
+      backendRefs:
+        - name: bindery
+          port: 8787
