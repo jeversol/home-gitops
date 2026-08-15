@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: audiobookshelf-tls
+  namespace: media
+spec:
+  commonName: abs.i.recompiled.org
+  secretName: audiobookshelf-tls
+  dnsNames:
+    - abs.i.recompiled.org
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt

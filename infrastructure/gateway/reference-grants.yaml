@@ -129,6 +129,9 @@ spec:
   to:
     - group: ""
       kind: Secret
+      name: audiobookshelf-tls
+    - group: ""
+      kind: Secret
       name: overseerr-tls
     - group: ""
       kind: Secret

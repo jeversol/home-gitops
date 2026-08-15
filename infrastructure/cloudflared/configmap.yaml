@@ -6,6 +6,8 @@ metadata:
 data:
   config.yaml: |
     ingress:
+      - hostname: abs.recompiled.org
+        service: http://audiobookshelf.media.svc.cluster.local:13378
       - hostname: media-requests.recompiled.org
         service: http://overseerr.media.svc.cluster.local:5055
       - hostname: flux-webhook.recompiled.org

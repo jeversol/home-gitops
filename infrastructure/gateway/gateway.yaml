@@ -24,6 +24,19 @@ spec:
       allowedRoutes:
         namespaces:
           from: Same
+    - name: audiobookshelf
+      protocol: HTTPS
+      port: 443
+      hostname: abs.i.recompiled.org
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: audiobookshelf-tls
+            namespace: media
+      allowedRoutes:
+        namespaces:
+          from: All
     - name: bambu-spoolman
       protocol: HTTPS
       port: 443
