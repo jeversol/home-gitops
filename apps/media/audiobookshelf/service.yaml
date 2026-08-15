@@ -4,7 +4,7 @@ metadata:
   name: audiobookshelf
   namespace: media
   labels:
-    app: audiobookshelf
+    app.kubernetes.io/name: audiobookshelf
 spec:
   type: ClusterIP
   ports:
@@ -13,4 +13,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: audiobookshelf
+    app.kubernetes.io/name: audiobookshelf
