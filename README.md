@@ -58,7 +58,7 @@ The infrastructure implements:
   - [Spoolman](https://github.com/Donkie/Spoolman) - 3D printing filament inventory management, with automatic Bambu printer filament tracking
   - **Media Services**
     - [Plex](https://www.plex.tv/) - Media server
-    - [Overseerr](https://overseerr.dev/) - Media request management
+    - [Seerr](https://seerr.dev/) - Media request management
     - [Sonarr](https://sonarr.tv/) - TV show automation
     - [Radarr](https://radarr.video/) - Movie automation
     - [Prowlarr](https://prowlarr.com/) - Indexer manager

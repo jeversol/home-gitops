@@ -19,12 +19,13 @@ spec:
     spec:
       automountServiceAccountToken: false
       securityContext:
-        fsGroup: 65537
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
       containers:
-        - name: overseerr
-          image: sctx/overseerr:1.35.0
+        - name: seerr
+          image: ghcr.io/seerr-team/seerr:v3.4.1
           imagePullPolicy: Always
           ports:
             - containerPort: 5055
@@ -47,11 +48,11 @@ spec:
             capabilities:
               drop:
                 - ALL
-              add:
-                - SETUID
-                - SETGID
-                - CHOWN
+            privileged: false
             readOnlyRootFilesystem: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
           livenessProbe:
             httpGet:
               path: /

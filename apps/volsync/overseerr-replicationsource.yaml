@@ -16,4 +16,6 @@ spec:
       daily: 7
       weekly: 4
     moverSecurityContext:
-      fsGroup: 65537
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
