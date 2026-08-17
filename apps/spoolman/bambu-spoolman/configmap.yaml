@@ -5,5 +5,6 @@ metadata:
   namespace: spoolman
 data:
   SPOOLMAN_URL: http://spoolman.spoolman.svc.cluster.local:8000
+  SPOOLMAN_RFID_FIELD_KEY: rfid_tag
   SPOOLMAN_VERIFY: "false"
   BAMBU_SPOOLMAN_CONFIG: /config
