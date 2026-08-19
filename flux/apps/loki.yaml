@@ -105,6 +105,15 @@ spec:
     singleBinary:
       replicas: 3
       sidecar: false
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/component: single-binary
+                  app.kubernetes.io/instance: loki
+                  app.kubernetes.io/name: loki
+              topologyKey: kubernetes.io/hostname
       extraEnvFrom:
         - secretRef:
             name: loki-s3-credentials
@@ -112,6 +121,9 @@ spec:
         enabled: true
         storageClass: linstor-r3
         size: 5Gi
+      podDisruptionBudget:
+        enabled: true
+        minAvailable: 2
       resources:
         requests:
           cpu: 100m
