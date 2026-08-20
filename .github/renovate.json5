@@ -95,6 +95,12 @@
       assignees: ['jeversol'],
     },
     {
+      description: 'The kubectl pruner tag is managed as part of the Kubernetes release',
+      matchFileNames: ['apps/spoolman/backup-pruner.yaml'],
+      matchPackageNames: ['registry.k8s.io/kubectl'],
+      enabled: false,
+    },
+    {
       matchPackageNames: ['ghcr.io/cloudnative-pg/postgresql'],
       matchUpdateTypes: ['major'],
       dependencyDashboardApproval: true,
@@ -134,6 +140,16 @@
       matchStrings: [
         '#\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+depName=(?<depName>.*?)\\s*\\n\\s+version:\\s*v?(?<currentValue>[\\d.]+)',
       ],
+      versioningTemplate: 'semver',
+    },
+    {
+      customType: 'regex',
+      managerFilePatterns: ['apps/spoolman/backup-pruner.yaml'],
+      matchStrings: [
+        'image:\\s+registry\\.k8s\\.io/kubectl:v(?<currentValue>[\\d.]+)',
+      ],
+      datasourceTemplate: 'docker',
+      depNameTemplate: 'ghcr.io/siderolabs/kubelet',
       versioningTemplate: 'semver',
     },
     {

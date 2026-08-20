@@ -1,0 +1,99 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cnpg-backup-pruner
+  namespace: spoolman
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cnpg-backup-pruner
+  namespace: spoolman
+rules:
+  - apiGroups:
+      - postgresql.cnpg.io
+    resources:
+      - backups
+    verbs:
+      - get
+      - list
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cnpg-backup-pruner
+  namespace: spoolman
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cnpg-backup-pruner
+subjects:
+  - kind: ServiceAccount
+    name: cnpg-backup-pruner
+    namespace: spoolman
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cnpg-backup-pruner
+  namespace: spoolman
+spec:
+  schedule: "15 4 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400
+      template:
+        spec:
+          serviceAccountName: cnpg-backup-pruner
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: pruner
+              image: registry.k8s.io/kubectl:v1.36.3
+              command:
+                - /bin/sh
+                - -ceu
+                - |
+                  cutoff_epoch="$(date -u -d '30 days ago' +%s)"
+
+                  kubectl get backups.postgresql.cnpg.io \
+                    --namespace spoolman \
+                    --output go-template='{{range .items}}{{.metadata.name}}{{"\t"}}{{.status.phase}}{{"\t"}}{{.status.stoppedAt}}{{"\n"}}{{end}}' |
+                  while IFS="$(printf '\t')" read -r backup_name phase stopped_at; do
+                    case "${phase}" in
+                      completed|failed) ;;
+                      *) continue ;;
+                    esac
+
+                    case "${stopped_at}" in
+                      ""|"<no value>") continue ;;
+                    esac
+
+                    stopped_epoch="$(date -u -d "${stopped_at}" +%s)"
+                    if [ "${stopped_epoch}" -lt "${cutoff_epoch}" ]; then
+                      echo "Deleting ${phase} backup ${backup_name}, stopped at ${stopped_at}"
+                      kubectl delete backup.postgresql.cnpg.io \
+                        --namespace spoolman \
+                        "${backup_name}"
+                    fi
+                  done
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 64Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                readOnlyRootFilesystem: true

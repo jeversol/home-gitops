@@ -8,9 +8,20 @@ spec:
   interval: 30m
   path: ./infrastructure/cloudnative-pg
   prune: true
+  wait: true
+  timeout: 10m
   sourceRef:
     kind: GitRepository
     name: flux-system
+  healthChecks:
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: cloudnative-pg
+      namespace: flux-system
+    - apiVersion: helm.toolkit.fluxcd.io/v2
+      kind: HelmRelease
+      name: cnpg-plugin-barman-cloud
+      namespace: flux-system
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
@@ -49,6 +60,8 @@ spec:
   interval: 30m
   releaseName: cloudnative-pg
   targetNamespace: cloudnative-pg
+  driftDetection:
+    mode: enabled
   chartRef:
     kind: OCIRepository
     name: cloudnative-pg
@@ -61,10 +74,8 @@ spec:
     remediation:
       retries: 3
   values:
-    # Enable monitoring
     monitoring:
-      enabled: true
-    # Resource limits for the operator
+      podMonitorEnabled: true
     resources:
       requests:
         cpu: 100m
@@ -81,12 +92,16 @@ spec:
   interval: 30m
   releaseName: cnpg-plugin-barman-cloud
   targetNamespace: cloudnative-pg
+  driftDetection:
+    mode: enabled
   chartRef:
     kind: OCIRepository
     name: plugin-barman-cloud
     namespace: flux-system
   dependsOn:
     - name: cloudnative-pg
+      namespace: flux-system
+    - name: cert-manager
       namespace: flux-system
   install:
     createNamespace: false

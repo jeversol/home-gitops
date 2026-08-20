@@ -7,6 +7,8 @@ spec:
   interval: 1h
   path: ./apps/spoolman
   prune: true
+  dependsOn:
+    - name: cloudnative-pg-config
   sourceRef:
     kind: GitRepository
     name: flux-system
