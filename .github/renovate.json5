@@ -8,10 +8,10 @@
     ignorePaths: ['**/kustomization.{yaml,yml}', 'flux/flux-system/gotk*.{yaml,yml}'],
   },
   extends: [
-    'github>home-operations/renovate-presets#7.0.0',
+    'github>home-operations/renovate-presets#8.0.0',
     ':enablePreCommit',
     'mergeConfidence:all-badges',
-    'github>home-operations/renovate-presets//apps/cnpg.json5#7.0.0',
+    'github>home-operations/renovate-presets//apps/cnpg.json5#8.0.0',
   ],
   automerge: false,
   prConcurrentLimit: 5,
