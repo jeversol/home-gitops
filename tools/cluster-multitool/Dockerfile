@@ -7,13 +7,13 @@ RUN apk add --no-cache \
     build-base \
     libffi-dev
 
-# renovate: datasource=pypi depName=kubernetes versioning=pep440
+# renovate: datasource=pypi depName=kubernetes
 ENV PYPI_KUBERNETES_VERSION="36.0.3"
-# renovate: datasource=pypi depName=PyJWT versioning=pep440
+# renovate: datasource=pypi depName=PyJWT
 ENV PYPI_PYJWT_VERSION="2.13.0"
-# renovate: datasource=pypi depName=requests versioning=pep440
+# renovate: datasource=pypi depName=requests
 ENV PYPI_REQUESTS_VERSION="2.34.2"
-# renovate: datasource=pypi depName=s3cmd versioning=pep440
+# renovate: datasource=pypi depName=s3cmd
 ENV PYPI_S3CMD_VERSION="2.4.0"
 
 RUN python3 -m pip install --no-cache-dir --prefix=/opt/deps \
@@ -25,9 +25,9 @@ RUN python3 -m pip install --no-cache-dir --prefix=/opt/deps \
 FROM alpine:3.24.1
 
 # Build environment variables for versions
-# renovate: datasource=docker depName=registry.k8s.io/kube-apiserver versioning=semver
+# renovate: datasource=docker depName=registry.k8s.io/kube-apiserver
 ENV KUBERNETES_VERSION="v1.36.3"
-# renovate: datasource=github-tags depName=siderolabs/talos versioning=semver
+# renovate: datasource=github-tags depName=siderolabs/talos
 ENV TALOS_VERSION="v1.13.8"
 
 RUN apk add --upgrade --no-cache \

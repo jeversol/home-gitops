@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: renovate
     app.kubernetes.io/part-of: renovate
 data:
-  LOG_LEVEL: debug
+  LOG_LEVEL: info
   RENOVATE_ENDPOINT: https://api.github.com
   RENOVATE_PLATFORM: github
   RENOVATE_REPOSITORIES: |

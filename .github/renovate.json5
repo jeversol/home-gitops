@@ -1,12 +1,5 @@
 {
-  flux: {
-    enabled: true,
-    managerFilePatterns: ['flux/**/*.{yaml,yml}'],
-  },
-  kubernetes: {
-    managerFilePatterns: ['**/*.{yaml,yml}'],
-    ignorePaths: ['**/kustomization.{yaml,yml}', 'flux/flux-system/gotk*.{yaml,yml}'],
-  },
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
   extends: [
     'github>home-operations/renovate-presets#7.0.0',
     ':enablePreCommit',
@@ -57,7 +50,6 @@
       matchDatasources: ['docker'],
       matchPackageNames: ['homebridge/homebridge'],
       versioning: 'regex:^(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$',
-      allowedVersions: '/^\\d{4}-\\d{2}-\\d{2}$/',
     },
     {
       matchPackageNames: ['ghcr.io/analogj/scrutiny'],
@@ -88,6 +80,7 @@
         'registry.k8s.io/kube-apiserver',
         'registry.k8s.io/kube-controller-manager',
         'registry.k8s.io/kube-scheduler',
+        'registry.k8s.io/kubectl',
       ],
       groupName: 'kubernetes-components',
       versioning: 'semver',
@@ -95,9 +88,12 @@
       assignees: ['jeversol'],
     },
     {
-      description: 'The kubectl pruner tag is managed as part of the Kubernetes release',
-      matchFileNames: ['apps/spoolman/backup-pruner.yaml'],
-      matchPackageNames: ['registry.k8s.io/kubectl'],
+      description: 'Avoid Kubernetes-manager extraction from generated and Kustomize files',
+      matchManagers: ['kubernetes'],
+      matchFileNames: [
+        '**/kustomization.{yaml,yml}',
+        'flux/flux-system/gotk*.{yaml,yml}',
+      ],
       enabled: false,
     },
     {
@@ -127,42 +123,11 @@
       matchPackageNames: ['/^factory\\.talos\\.dev\\//'],
       enabled: false,
     },
-    {
-      description: 'Show current and new versions in pull request titles',
-      matchUpdateTypes: ['major', 'minor', 'patch'],
-      commitMessageExtra: '({{currentVersion}} ➔ {{newVersion}})',
-    },
   ],
   customManagers: [
     {
       customType: 'regex',
-      managerFilePatterns: ['infrastructure/tuppr/*-upgrade.yaml'],
-      matchStrings: [
-        '#\\s*renovate:\\s*datasource=(?<datasource>.*?)\\s+depName=(?<depName>.*?)\\s*\\n\\s+version:\\s*v?(?<currentValue>[\\d.]+)',
-      ],
-      versioningTemplate: 'semver',
-    },
-    {
-      customType: 'regex',
-      managerFilePatterns: ['apps/spoolman/backup-pruner.yaml'],
-      matchStrings: [
-        'image:\\s+registry\\.k8s\\.io/kubectl:v(?<currentValue>[\\d.]+)',
-      ],
-      datasourceTemplate: 'docker',
-      depNameTemplate: 'ghcr.io/siderolabs/kubelet',
-      versioningTemplate: 'semver',
-    },
-    {
-      customType: 'regex',
-      managerFilePatterns: ['/tools/cluster-multitool/Dockerfile/'],
-      matchStrings: [
-        '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sENV .*?_VERSION=\"(?<currentValue>.*)\"\\s',
-      ],
-      versioningTemplate: '{{#if versioning}}{{{versioning}}}{{else}}semver{{/if}}',
-    },
-    {
-      customType: 'regex',
-      managerFilePatterns: ['^flux/flux-system/flux-instance\\.yaml$'],
+      managerFilePatterns: ['/^flux\\/flux-system\\/flux-instance\\.yaml$/'],
       matchStrings: [
         'version:\\s+"(?<currentValue>\\d+\\.\\d+)\\.x"',
       ],
