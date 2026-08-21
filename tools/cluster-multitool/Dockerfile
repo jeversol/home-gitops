@@ -28,7 +28,7 @@ FROM alpine:3.24.1
 # renovate: datasource=docker depName=registry.k8s.io/kube-apiserver
 ENV KUBERNETES_VERSION="v1.36.3"
 # renovate: datasource=github-tags depName=siderolabs/talos
-ENV TALOS_VERSION="v1.13.8"
+ENV TALOS_VERSION="v1.13.9"
 
 RUN apk add --upgrade --no-cache \
     python3 \
