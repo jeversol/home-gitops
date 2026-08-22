@@ -28,6 +28,7 @@ spec:
             - --provider=cloudflare
             - --cloudflare-dns-records-per-page=5000
             - --policy=sync
+            - --annotation-prefix=external-dns.alpha.kubernetes.io/
             - --annotation-filter=external-dns.alpha.kubernetes.io/expose=true
             - --managed-record-types=CNAME
             - --interval=2m
