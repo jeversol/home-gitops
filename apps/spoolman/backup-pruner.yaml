@@ -46,6 +46,7 @@ spec:
   failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
+      activeDeadlineSeconds: 300
       ttlSecondsAfterFinished: 86400
       template:
         spec:
@@ -53,16 +54,18 @@ spec:
           restartPolicy: Never
           securityContext:
             runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
             seccompProfile:
               type: RuntimeDefault
           containers:
             - name: pruner
-              image: registry.k8s.io/kubectl:v1.36.4
+              image: ghcr.io/jeversol/cluster-multitool:latest
               command:
                 - /bin/sh
                 - -ceu
                 - |
-                  cutoff_epoch="$(date -u -d '30 days ago' +%s)"
+                  cutoff_epoch="$(( $(date -u +%s) - 30 * 24 * 60 * 60 ))"
 
                   kubectl get backups.postgresql.cnpg.io \
                     --namespace spoolman \
@@ -77,7 +80,7 @@ spec:
                       ""|"<no value>") continue ;;
                     esac
 
-                    stopped_epoch="$(date -u -d "${stopped_at}" +%s)"
+                    stopped_epoch="$(date -u -D '%Y-%m-%dT%H:%M:%SZ' -d "${stopped_at}" +%s)"
                     if [ "${stopped_epoch}" -lt "${cutoff_epoch}" ]; then
                       echo "Deleting ${phase} backup ${backup_name}, stopped at ${stopped_at}"
                       kubectl delete backup.postgresql.cnpg.io \
