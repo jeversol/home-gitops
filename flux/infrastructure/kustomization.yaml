@@ -27,7 +27,5 @@ resources:
   - smartctl-exporter.yaml
   - snapshot-controller.yaml
   - tuppr.yaml
-  - volsync.yaml
-  - volsync-vars.yaml
   - vpa.yaml
   - vpa-resources.yaml

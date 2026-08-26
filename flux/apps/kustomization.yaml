@@ -24,4 +24,3 @@ resources:
   - media-tautulli.yaml
   - spoolman.yaml
   - spoolman-bambu.yaml
-  - volsync.yaml

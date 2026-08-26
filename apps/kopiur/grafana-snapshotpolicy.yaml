@@ -1,0 +1,40 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotPolicy
+metadata:
+  name: grafana
+  namespace: o11y
+spec:
+  repository:
+    kind: ClusterRepository
+    name: home-cluster
+  sources:
+    - pvc:
+        name: kube-prometheus-stack-grafana
+  copyMethod: Clone
+  staging:
+    storageClassName: linstor-r1
+  retention:
+    keepDaily: 7
+    keepWeekly: 4
+  compression:
+    compressor: zstd
+  verification:
+    quick:
+      schedule:
+        cron: "0 8 * * 0"
+        timezone: UTC
+    verifyFilesPercent: 5
+    successExpr: stats.files > 0 && stats.errors == 0
+  mover:
+    securityContext:
+      runAsUser: 472
+      runAsGroup: 472
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+  credentialProjection:
+    enabled: true

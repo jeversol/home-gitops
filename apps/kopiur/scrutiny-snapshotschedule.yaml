@@ -1,0 +1,14 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: scrutiny-nightly
+  namespace: o11y
+spec:
+  policyRef:
+    name: scrutiny
+  schedule:
+    cron: "0 6 * * *"
+    timezone: UTC
+    jitter: 10m
+    runOnCreate: false
+    concurrencyPolicy: Forbid

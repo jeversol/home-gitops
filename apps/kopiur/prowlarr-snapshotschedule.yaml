@@ -1,0 +1,14 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: prowlarr-nightly
+  namespace: media
+spec:
+  policyRef:
+    name: prowlarr
+  schedule:
+    cron: "30 4 * * *"
+    timezone: UTC
+    jitter: 10m
+    runOnCreate: false
+    concurrencyPolicy: Forbid

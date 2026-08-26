@@ -1,0 +1,14 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: influxdb-nightly
+  namespace: o11y
+spec:
+  policyRef:
+    name: influxdb
+  schedule:
+    cron: "30 6 * * *"
+    timezone: UTC
+    jitter: 10m
+    runOnCreate: false
+    concurrencyPolicy: Forbid

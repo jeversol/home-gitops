@@ -1,0 +1,14 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: homebridge-nightly
+  namespace: homebridge
+spec:
+  policyRef:
+    name: homebridge
+  schedule:
+    cron: "30 5 * * *"
+    timezone: UTC
+    jitter: 10m
+    runOnCreate: false
+    concurrencyPolicy: Forbid

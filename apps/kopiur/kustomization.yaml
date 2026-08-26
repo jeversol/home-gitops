@@ -2,9 +2,27 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
+  - bambu-spoolman-config-snapshotpolicy.yaml
+  - bambu-spoolman-config-snapshotschedule.yaml
   - bindery-snapshotpolicy.yaml
   - bindery-snapshotschedule.yaml
+  - grafana-snapshotpolicy.yaml
+  - grafana-snapshotschedule.yaml
+  - homebridge-snapshotpolicy.yaml
+  - homebridge-snapshotschedule.yaml
+  - influxdb-snapshotpolicy.yaml
+  - influxdb-snapshotschedule.yaml
+  - overseerr-snapshotpolicy.yaml
+  - overseerr-snapshotschedule.yaml
   - plex-snapshotpolicy.yaml
   - plex-snapshotschedule.yaml
+  - prowlarr-snapshotpolicy.yaml
+  - prowlarr-snapshotschedule.yaml
+  - radarr-snapshotpolicy.yaml
+  - radarr-snapshotschedule.yaml
+  - scrutiny-snapshotpolicy.yaml
+  - scrutiny-snapshotschedule.yaml
+  - sonarr-snapshotpolicy.yaml
+  - sonarr-snapshotschedule.yaml
   - tautulli-snapshotpolicy.yaml
   - tautulli-snapshotschedule.yaml

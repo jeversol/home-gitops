@@ -1,0 +1,14 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: sonarr-nightly
+  namespace: media
+spec:
+  policyRef:
+    name: sonarr
+  schedule:
+    cron: "0 3 * * *"
+    timezone: UTC
+    jitter: 10m
+    runOnCreate: false
+    concurrencyPolicy: Forbid

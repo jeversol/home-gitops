@@ -1,0 +1,14 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: grafana-nightly
+  namespace: o11y
+spec:
+  policyRef:
+    name: grafana
+  schedule:
+    cron: "0 7 * * *"
+    timezone: UTC
+    jitter: 10m
+    runOnCreate: false
+    concurrencyPolicy: Forbid

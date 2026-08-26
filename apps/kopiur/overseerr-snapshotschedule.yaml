@@ -1,0 +1,14 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: overseerr-nightly
+  namespace: media
+spec:
+  policyRef:
+    name: overseerr
+  schedule:
+    cron: "0 5 * * *"
+    timezone: UTC
+    jitter: 10m
+    runOnCreate: false
+    concurrencyPolicy: Forbid

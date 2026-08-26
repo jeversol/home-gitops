@@ -1,0 +1,14 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotSchedule
+metadata:
+  name: bambu-spoolman-config-nightly
+  namespace: spoolman
+spec:
+  policyRef:
+    name: bambu-spoolman-config
+  schedule:
+    cron: "0 8 * * *"
+    timezone: UTC
+    jitter: 10m
+    runOnCreate: false
+    concurrencyPolicy: Forbid

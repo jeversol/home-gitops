@@ -1,0 +1,41 @@
+apiVersion: kopiur.home-operations.com/v1alpha1
+kind: SnapshotPolicy
+metadata:
+  name: bambu-spoolman-config
+  namespace: spoolman
+spec:
+  repository:
+    kind: ClusterRepository
+    name: home-cluster
+  sources:
+    - pvc:
+        name: bambu-spoolman-config
+  copyMethod: Clone
+  staging:
+    storageClassName: linstor-r1
+  retention:
+    keepDaily: 7
+    keepWeekly: 4
+  compression:
+    compressor: zstd
+  verification:
+    quick:
+      schedule:
+        cron: "0 9 * * 0"
+        timezone: UTC
+    verifyFilesPercent: 5
+    successExpr: stats.files > 0 && stats.errors == 0
+  mover:
+    securityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      runAsNonRoot: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    privilegedMode: true
+  credentialProjection:
+    enabled: true
