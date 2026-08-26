@@ -16,6 +16,5 @@ spec:
     - name: kopiur-config
     - name: media
     - name: homebridge
-    - name: scrutiny-influxdb
-    - name: grafana
+    - name: o11y
     - name: spoolman-bambu
