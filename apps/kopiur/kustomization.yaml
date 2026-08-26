@@ -4,5 +4,7 @@ kind: Kustomization
 resources:
   - bindery-snapshotpolicy.yaml
   - bindery-snapshotschedule.yaml
+  - plex-snapshotpolicy.yaml
+  - plex-snapshotschedule.yaml
   - tautulli-snapshotpolicy.yaml
   - tautulli-snapshotschedule.yaml

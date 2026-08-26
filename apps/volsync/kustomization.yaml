@@ -7,8 +7,6 @@ resources:
   - tautulli-replicationsource.yaml
   - radarr-secret.yaml
   - radarr-replicationsource.yaml
-  - plex-secret.yaml
-  - plex-replicationsource.yaml
   - prowlarr-secret.yaml
   - prowlarr-replicationsource.yaml
   - overseerr-secret.yaml
