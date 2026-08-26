@@ -29,7 +29,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: bindery
-          image: ghcr.io/vavallee/bindery:v1.32.2
+          image: ghcr.io/vavallee/bindery:v1.33.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8787
