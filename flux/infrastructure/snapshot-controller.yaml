@@ -1,33 +1,3 @@
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: GitRepository
-metadata:
-  name: external-snapshotter
-  namespace: flux-system
-spec:
-  interval: 30m
-  timeout: 2m
-  url: https://github.com/kubernetes-csi/external-snapshotter
-  ref:
-    tag: v8.6.0
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: snapshot-controller-crds
-  namespace: flux-system
-spec:
-  interval: 30m
-  path: ./client/config/crd
-  prune: true
-  commonMetadata:
-    annotations:
-      kustomize.toolkit.fluxcd.io/prune: disabled
-  sourceRef:
-    kind: GitRepository
-    name: external-snapshotter
-  wait: true
-  timeout: 5m
----
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -35,12 +5,10 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
-  path: ./deploy/kubernetes/snapshot-controller
+  path: ./infrastructure/snapshot-controller
   prune: true
   sourceRef:
     kind: GitRepository
-    name: external-snapshotter
-  dependsOn:
-    - name: snapshot-controller-crds
+    name: flux-system
   wait: true
   timeout: 5m
