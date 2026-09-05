@@ -3,7 +3,7 @@
 This directory contains automation workflows for the home-gitops repository.
 
 ## Table of Contents
-- [docker-build.yml](#docker-buildyml) - Build and push cluster-multitool Docker image
+- [docker-build.yml](#docker-buildyml) - Build and push repository Docker images
 - [validate.yml](#validateyml) - Validate GitOps manifests on PRs
 - [gitguardian.yaml](#gitguardianyaml) - Scan for secrets in commits
 - [ghcr-prune-cluster-multitool.yml](#ghcr-prune-cluster-multitoolyml) - Clean up old container images
@@ -12,11 +12,11 @@ This directory contains automation workflows for the home-gitops repository.
 
 ## docker-build.yml
 
-**Purpose:** Builds and pushes the cluster-multitool Docker image to GHCR when the Dockerfile changes.
+**Purpose:** Builds and pushes the cluster-multitool and Renovate webhook Docker images to GHCR when their sources change.
 
-**Triggers:** Push to main (when `tools/cluster-multitool/Dockerfile` changes)
+**Triggers:** Push to main when an image source or this workflow changes.
 
-**What it does:** Builds the cluster-multitool image (debugging tools for Kubernetes) and pushes it to `ghcr.io/jeversol/cluster-multitool:latest`. Tool versions in the Dockerfile are managed by Renovate.
+**What it does:** Builds the cluster-multitool image and the purpose-built Renovate webhook receiver, then pushes them to GHCR. Tool versions in the Dockerfiles are managed by Renovate.
 
 ---
 

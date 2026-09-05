@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: renovate
 resources:
   - serviceaccount.yaml
-  - configmap-scripts.yaml
   - networkpolicy.yaml
   - service.yaml
   - deployment.yaml

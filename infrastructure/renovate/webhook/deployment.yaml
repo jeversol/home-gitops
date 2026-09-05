@@ -28,11 +28,11 @@ spec:
           type: RuntimeDefault
       containers:
         - name: webhook
-          image: docker.io/ncarlier/webhookd:1.22.0-distrib
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/jeversol/renovate-webhook:latest
+          imagePullPolicy: Always
           env:
-            - name: WHD_ALLOWED_UPSTREAM_HEADERS
-              value: "x-hub-signature-256,x-github-event,x-github-delivery"
+            - name: MAX_WEBHOOK_BODY_BYTES
+              value: "4194304"
             - name: GITHUB_SECRET
               valueFrom:
                 secretKeyRef:
@@ -67,29 +67,19 @@ spec:
               protocol: TCP
           resources:
             requests:
-              cpu: 25m
-              memory: 512Mi
+              cpu: 10m
+              memory: 64Mi
             limits:
-              memory: 2Gi
-          volumeMounts:
-            - name: scripts
-              mountPath: /scripts
-              readOnly: true
+              memory: 128Mi
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /healthz
               port: http
             initialDelaySeconds: 10
             periodSeconds: 30
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /healthz
               port: http
             initialDelaySeconds: 5
             periodSeconds: 15
-      volumes:
-        - name: scripts
-          configMap:
-            name: renovate-webhook-scripts
-            defaultMode: 0755
-            items:
-              - key: renovate-dependency-dashboard.sh
-                path: hooks/renovate-dependency-dashboard.sh
