@@ -17,10 +17,23 @@ spec:
       labels:
         app: bambu-spoolman
     spec:
+      securityContext:
+        fsGroup: 10001
+        fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: bambu-spoolman
           image: ghcr.io/jeversol/bambu-spoolman:latest
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+              add:
+                - CHOWN
+                - SETGID
+                - SETUID
           ports:
             - containerPort: 3000
               name: http
@@ -50,7 +63,16 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /config
+            - name: tmp
+              mountPath: /tmp
+            - name: frontend-cache
+              mountPath: /app/frontend/.next/cache
       volumes:
         - name: config
           persistentVolumeClaim:
             claimName: bambu-spoolman-config
+        - name: tmp
+          emptyDir:
+            medium: Memory
+        - name: frontend-cache
+          emptyDir: {}
