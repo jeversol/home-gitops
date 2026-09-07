@@ -27,15 +27,14 @@ spec:
     successExpr: stats.files > 0 && stats.errors == 0
   mover:
     securityContext:
-      runAsUser: 0
-      runAsGroup: 0
-      runAsNonRoot: false
+      runAsUser: 10001
+      runAsGroup: 10001
+      runAsNonRoot: true
       allowPrivilegeEscalation: false
       capabilities:
         drop:
           - ALL
       seccompProfile:
         type: RuntimeDefault
-    privilegedMode: true
   credentialProjection:
     enabled: true
