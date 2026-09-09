@@ -3,113 +3,132 @@ debug: false
 persist: true
 machine:
   type: controlplane
-  certSANs: []
-  kubelet:
-    image: ghcr.io/siderolabs/kubelet:v1.36.4
-    defaultRuntimeSeccompProfileEnabled: true
-    disableManifestsDirectory: true
-    extraConfig:
-      shutdownGracePeriod: 90s
-      shutdownGracePeriodCriticalPods: 60s
-  network: {}
-  install:
-    disk: /dev/sda
-    image: factory.talos.dev/metal-installer-secureboot/2a8f860e85d68f135547fc38658c80da66a43f019fa47dcf943191534a88bcc7:v1.14.0
-    wipe: false
-  registries: {}
   features:
-    rbac: true
-    stableHostname: true
-    apidCheckExtKeyUsage: true
     diskQuotaSupport: true
-    kubePrism:
-      enabled: true
-      port: 7445
-    hostDNS:
-      enabled: true
-      forwardKubeDNSToHost: true
-    kubernetesTalosAPIAccess:
-      enabled: true
-      allowedRoles:
-        - os:admin
-        - os:etcd:backup
-      allowedKubernetesNamespaces:
-        - system-upgrade
-        - etcd-backup
-  nodeLabels:
-    node.kubernetes.io/exclude-from-external-load-balancers: ""
 cluster:
-  network:
-    cni:
-      name: none
-    dnsDomain: cluster.local
-    podSubnets:
-      - 10.244.0.0/16
-      - fd00:10:244::/48
-    serviceSubnets:
-      - 10.96.0.0/12
-      - fd00:10:96::/112
-  apiServer:
-    image: registry.k8s.io/kube-apiserver:v1.36.4
-    certSANs:
-      - 192.168.1.235
-      - 192.168.1.221
-      - 192.168.1.222
-      - 192.168.1.223
-      - k8s-node1.i.recompiled.org
-      - k8s-node2.i.recompiled.org
-      - k8s-node3.i.recompiled.org
-      - talos.i.recompiled.org
-    disablePodSecurityPolicy: true
-    extraArgs:
-      service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/108
-    resources:
-      requests:
-        cpu: 350m
-        memory: 512Mi
-    admissionControl:
-      - name: PodSecurity
-        configuration:
-          apiVersion: pod-security.admission.config.k8s.io/v1alpha1
-          defaults:
-            audit: restricted
-            audit-version: latest
-            enforce: baseline
-            enforce-version: latest
-            warn: restricted
-            warn-version: latest
-          exemptions:
-            namespaces:
-              - kube-system
-            runtimeClasses: []
-            usernames: []
-          kind: PodSecurityConfiguration
-    auditPolicy:
-      apiVersion: audit.k8s.io/v1
-      kind: Policy
-      rules:
-        - level: Metadata
-  controllerManager:
-    image: registry.k8s.io/kube-controller-manager:v1.36.4
-    extraArgs:
-      bind-address: 0.0.0.0
-      cluster-cidr: 10.244.0.0/16,fd00:10:244::/48
-      service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/112
-      terminated-pod-gc-threshold: "10"
-  proxy:
-    disabled: true
-  scheduler:
-    image: registry.k8s.io/kube-scheduler:v1.36.4
-    extraArgs:
-      bind-address: 0.0.0.0
   etcd:
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381
-  discovery:
-    enabled: true
-    registries:
-      kubernetes:
-        disabled: true
-      service: {}
-  extraManifests: []
-  inlineManifests: []
+---
+apiVersion: v1alpha1
+kind: DiscoveryServiceConfig
+name: default
+endpoint: https://discovery.talos.dev/
+---
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+installer:
+  image: factory.talos.dev/metal-installer-secureboot/2a8f860e85d68f135547fc38658c80da66a43f019fa47dcf943191534a88bcc7:v1.14.0
+provisioning:
+  diskSelector:
+    match: disk.dev_path == "/dev/sda"
+  wipe: false
+---
+apiVersion: v1alpha1
+kind: ResolverConfig
+hostDNS:
+  enabled: true
+  forwardKubeDNSToHost: true
+---
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+labels:
+  node.kubernetes.io/exclude-from-external-load-balancers: ""
+taints: {}
+---
+apiVersion: v1alpha1
+kind: KubeletConfig
+image: ghcr.io/siderolabs/kubelet:v1.36.4
+config:
+  shutdownGracePeriod: 90s
+  shutdownGracePeriodCriticalPods: 60s
+defaultRuntimeSeccompProfileEnabled: true
+---
+apiVersion: v1alpha1
+kind: KubeNetworkConfig
+dnsDomain: cluster.local
+podSubnets:
+  - 10.244.0.0/16
+  - fd00:10:244::/48
+serviceSubnets:
+  - 10.96.0.0/12
+  - fd00:10:96::/112
+---
+apiVersion: v1alpha1
+kind: KubePrismConfig
+port: 7445
+---
+apiVersion: v1alpha1
+kind: KubeTalosAPIAccessConfig
+allowedRoles:
+  - os:admin
+  - os:etcd:backup
+allowedKubernetesNamespaces:
+  - system-upgrade
+  - etcd-backup
+---
+apiVersion: v1alpha1
+kind: KubeAPIServerConfig
+image: registry.k8s.io/kube-apiserver:v1.36.4
+certExtraSANs:
+  - 192.168.1.235
+  - 192.168.1.221
+  - 192.168.1.222
+  - 192.168.1.223
+  - k8s-node1.i.recompiled.org
+  - k8s-node2.i.recompiled.org
+  - k8s-node3.i.recompiled.org
+  - talos.i.recompiled.org
+extraArgs:
+  service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/108
+resources:
+  requests:
+    cpu: 350m
+    memory: 512Mi
+---
+apiVersion: v1alpha1
+kind: KubeAdmissionControlConfig
+name: PodSecurity
+configuration:
+  apiVersion: pod-security.admission.config.k8s.io/v1alpha1
+  defaults:
+    audit: restricted
+    audit-version: latest
+    enforce: baseline
+    enforce-version: latest
+    warn: restricted
+    warn-version: latest
+  exemptions:
+    namespaces:
+      - kube-system
+    runtimeClasses: []
+    usernames: []
+  kind: PodSecurityConfiguration
+---
+apiVersion: v1alpha1
+kind: KubeAuditPolicyConfig
+configuration:
+  apiVersion: audit.k8s.io/v1
+  kind: Policy
+  rules:
+    - level: Metadata
+---
+apiVersion: v1alpha1
+kind: KubeControllerManagerConfig
+image: registry.k8s.io/kube-controller-manager:v1.36.4
+extraArgs:
+  bind-address: 0.0.0.0
+  cluster-cidr: 10.244.0.0/16,fd00:10:244::/48
+  service-cluster-ip-range: 10.96.0.0/12,fd00:10:96::/112
+  terminated-pod-gc-threshold: "10"
+---
+apiVersion: v1alpha1
+kind: KubeSchedulerConfig
+image: registry.k8s.io/kube-scheduler:v1.36.4
+extraArgs:
+  bind-address: 0.0.0.0
+---
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false
+image: registry.k8s.io/kube-proxy:v1.36.4
