@@ -38,7 +38,7 @@ taints: {}
 ---
 apiVersion: v1alpha1
 kind: KubeletConfig
-image: ghcr.io/siderolabs/kubelet:v1.36.4
+image: ghcr.io/siderolabs/kubelet:v1.37.0
 config:
   shutdownGracePeriod: 90s
   shutdownGracePeriodCriticalPods: 60s
@@ -69,7 +69,7 @@ allowedKubernetesNamespaces:
 ---
 apiVersion: v1alpha1
 kind: KubeAPIServerConfig
-image: registry.k8s.io/kube-apiserver:v1.36.4
+image: registry.k8s.io/kube-apiserver:v1.37.0
 certExtraSANs:
   - 192.168.1.235
   - 192.168.1.221
@@ -115,7 +115,7 @@ configuration:
 ---
 apiVersion: v1alpha1
 kind: KubeControllerManagerConfig
-image: registry.k8s.io/kube-controller-manager:v1.36.4
+image: registry.k8s.io/kube-controller-manager:v1.37.0
 extraArgs:
   bind-address: 0.0.0.0
   cluster-cidr: 10.244.0.0/16,fd00:10:244::/48
@@ -124,7 +124,7 @@ extraArgs:
 ---
 apiVersion: v1alpha1
 kind: KubeSchedulerConfig
-image: registry.k8s.io/kube-scheduler:v1.36.4
+image: registry.k8s.io/kube-scheduler:v1.37.0
 extraArgs:
   bind-address: 0.0.0.0
 ---
