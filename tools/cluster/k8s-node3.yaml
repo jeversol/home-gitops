@@ -1,31 +1,54 @@
-machine:
-  network:
-    hostname: k8s-node3
-    interfaces:
-      - deviceSelector:
-          driver: r8152
-        addresses:
-        - 192.168.1.223/24
-        dhcp: false
-        dhcpOptions:
-          ipv6: true
-        vip:
-          ip: 192.168.1.235
-        routes:
-          - network: 0.0.0.0/0
-            gateway: 192.168.1.1
-  kernel:
-    modules:
-      - name: drbd
-        parameters:
-          - usermode_helper=disabled
-      - name: drbd_transport_tcp
-      - name: dm-thin-pool
-  install:
-    disk: /dev/nvme0n1
-    wipe: false
-cluster:
-  allowSchedulingOnControlPlanes: true
+apiVersion: v1alpha1
+kind: HostnameConfig
+hostname: k8s-node3
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: lan0
+selector:
+  match: link.driver == "r8152"
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: lan0
+addresses:
+  - address: 192.168.1.223/24
+routes:
+  - gateway: 192.168.1.1
+---
+apiVersion: v1alpha1
+kind: DHCPv6Config
+name: lan0
+---
+apiVersion: v1alpha1
+kind: Layer2VIPConfig
+name: 192.168.1.235
+link: lan0
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: drbd
+parameters:
+  - usermode_helper=disabled
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: drbd_transport_tcp
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: tls
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: dm-thin-pool
+---
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+provisioning:
+  diskSelector:
+    match: disk.dev_path == "/dev/nvme0n1"
+  wipe: false
 ---
 apiVersion: v1alpha1
 kind: VolumeConfig
