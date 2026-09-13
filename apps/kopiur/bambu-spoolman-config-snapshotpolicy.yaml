@@ -18,13 +18,6 @@ spec:
     keepWeekly: 4
   compression:
     compressor: zstd
-  verification:
-    quick:
-      schedule:
-        cron: "0 9 * * 0"
-        timezone: UTC
-    verifyFilesPercent: 5
-    successExpr: stats.files > 0 && stats.errors == 0
   mover:
     securityContext:
       runAsUser: 10001
