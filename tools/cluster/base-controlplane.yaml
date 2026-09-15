@@ -18,7 +18,7 @@ endpoint: https://discovery.talos.dev/
 apiVersion: v1alpha1
 kind: UnattendedInstallConfig
 installer:
-  image: factory.talos.dev/metal-installer-secureboot/2a8f860e85d68f135547fc38658c80da66a43f019fa47dcf943191534a88bcc7:v1.14.0
+  image: factory.talos.dev/metal-installer-secureboot/2a8f860e85d68f135547fc38658c80da66a43f019fa47dcf943191534a88bcc7:v1.14.1
 provisioning:
   diskSelector:
     match: disk.dev_path == "/dev/sda"
