@@ -2,6 +2,9 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
+  - hubble-selfsigned-issuer.yaml
+  - hubble-ca-certificate.yaml
+  - hubble-ca-issuer.yaml
   - hubble-ui-tls-cert.yaml
   - hubble-ui-httproute.yaml
   - cilium-loadbalancer-pool.yaml

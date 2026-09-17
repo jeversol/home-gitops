@@ -1,0 +1,8 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: hubble-ca
+  namespace: kube-system
+spec:
+  ca:
+    secretName: hubble-ca

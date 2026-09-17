@@ -47,6 +47,15 @@ spec:
       enabled: true
     hubble:
       enabled: true
+      tls:
+        auto:
+          enabled: true
+          method: certmanager
+          certValidityDuration: 90
+          certManagerIssuerRef:
+            group: cert-manager.io
+            kind: Issuer
+            name: hubble-ca
       relay:
         enabled: true
       ui:
