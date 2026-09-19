@@ -1,0 +1,18 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: forgejo-postgres
+  namespace: forgejo
+spec:
+  description: PostgreSQL cluster for Forgejo
+  instances: 2
+  storage:
+    size: 2Gi
+    storageClass: linstor-r3
+  monitoring:
+    enablePodMonitor: true
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: cnpg-forgejo-store
