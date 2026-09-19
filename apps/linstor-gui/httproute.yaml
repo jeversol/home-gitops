@@ -4,6 +4,8 @@ kind: ListenerSet
 metadata:
   name: linstor-gui
   namespace: piraeus-datastore
+  annotations:
+    external-dns.alpha.kubernetes.io/expose: "true"
 spec:
   parentRef:
     name: ingress

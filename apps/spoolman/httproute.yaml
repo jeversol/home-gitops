@@ -4,6 +4,8 @@ kind: ListenerSet
 metadata:
   name: spoolman
   namespace: spoolman
+  annotations:
+    external-dns.alpha.kubernetes.io/expose: "true"
 spec:
   parentRef:
     name: ingress
