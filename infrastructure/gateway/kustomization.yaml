@@ -3,4 +3,3 @@ kind: Kustomization
 resources:
   - gateway.yaml
   - http-redirect.yaml
-  - reference-grants.yaml

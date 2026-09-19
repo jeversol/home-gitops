@@ -1,0 +1,27 @@
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: ReferenceGrant
+metadata:
+  name: oauth2-proxy-from-routes
+  namespace: auth
+spec:
+  from:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: spoolman
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: flux-system
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: kube-system
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: piraeus-datastore
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      namespace: media
+  to:
+    - group: ""
+      kind: Service
+      name: oauth2-proxy

@@ -5,6 +5,7 @@ resources:
   - oauth2-proxy-secret.yaml
   - oauth2-proxy-deployment.yaml
   - oauth2-proxy-service.yaml
+  - oauth2-proxy-reference-grant.yaml
   - oauth2-proxy-pdb.yaml
   - oauth2-proxy-certificate.yaml
   - oauth2-proxy-httproute.yaml
