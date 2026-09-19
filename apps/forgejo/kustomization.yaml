@@ -3,5 +3,12 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - cnpg-secrets.yaml
+  - secrets.yaml
   - cnpg-barman-objectstore.yaml
   - cnpg-cluster.yaml
+  - cnpg-database.yaml
+  - storage.yaml
+  - service.yaml
+  - httproute.yaml
+  - tls-cert.yaml
+  - deployment.yaml

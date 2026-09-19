@@ -1,0 +1,14 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: forgejo-tls
+  namespace: forgejo
+spec:
+  commonName: forgejo.i.recompiled.org
+  dnsNames:
+    - forgejo.i.recompiled.org
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+  secretName: forgejo-tls
