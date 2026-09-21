@@ -1,0 +1,694 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Requested, usable, used, and free space for PVCs backed by LINSTOR storage classes. Unmounted claims have no kubelet filesystem statistics and show N/A for those columns.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Sum of the requested storage for every matching PVC, including unmounted claims.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.2.2",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(max by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\"}) and on (namespace, persistentvolumeclaim) max by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"}))",
+          "instant": true,
+          "legendFormat": "Requested",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Total requested",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Sum of filesystem capacity reported by kubelet. Unmounted claims are not included.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.2.2",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_capacity_bytes{namespace=~\"$namespace\"}) and on (namespace, persistentvolumeclaim) max by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"}))",
+          "instant": true,
+          "legendFormat": "Usable",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Mounted usable capacity",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Total used filesystem space reported for mounted LINSTOR PVCs.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.2.2",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_used_bytes{namespace=~\"$namespace\"}) and on (namespace, persistentvolumeclaim) max by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"}))",
+          "instant": true,
+          "legendFormat": "Used",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Total used",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Overall used space divided by usable capacity for mounted LINSTOR PVCs.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.8
+              },
+              {
+                "color": "red",
+                "value": 0.9
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.2.2",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "sum(max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_used_bytes{namespace=~\"$namespace\"}) and on (namespace, persistentvolumeclaim) max by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"})) / sum(max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_capacity_bytes{namespace=~\"$namespace\"}) and on (namespace, persistentvolumeclaim) max by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"}))",
+          "instant": true,
+          "legendFormat": "Utilization",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Overall utilization",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "All LINSTOR PVCs. Requested size comes from Kubernetes; usable, used, free, and utilization come from kubelet and are available only while a claim is mounted.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "filterable": true,
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/^(Requested|Usable|Used|Free)$/"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Utilization"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              },
+              {
+                "id": "min",
+                "value": 0
+              },
+              {
+                "id": "max",
+                "value": 1
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "blue",
+                      "value": null
+                    },
+                    {
+                      "color": "green",
+                      "value": 0.2
+                    },
+                    {
+                      "color": "orange",
+                      "value": 0.8
+                    },
+                    {
+                      "color": "red",
+                      "value": 0.9
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "gradient",
+                  "type": "gauge"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 13,
+        "w": 24,
+        "x": 0,
+        "y": 4
+      },
+      "id": 5,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Utilization"
+          }
+        ]
+      },
+      "pluginVersion": "13.2.2",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "label_join(max by (namespace, persistentvolumeclaim, storageclass) (kube_persistentvolumeclaim_resource_requests_storage_bytes{namespace=~\"$namespace\"} * on (namespace, persistentvolumeclaim) group_left(storageclass) kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"}), \"claim\", \"/\", \"namespace\", \"persistentvolumeclaim\")",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "Requested",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "expr": "label_join(max by (namespace, persistentvolumeclaim, storageclass) (kubelet_volume_stats_capacity_bytes{namespace=~\"$namespace\"} * on (namespace, persistentvolumeclaim) group_left(storageclass) kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"}), \"claim\", \"/\", \"namespace\", \"persistentvolumeclaim\")",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "Usable",
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "editorMode": "code",
+          "expr": "label_join(max by (namespace, persistentvolumeclaim, storageclass) (kubelet_volume_stats_used_bytes{namespace=~\"$namespace\"} * on (namespace, persistentvolumeclaim) group_left(storageclass) kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"}), \"claim\", \"/\", \"namespace\", \"persistentvolumeclaim\")",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "Used",
+          "range": false,
+          "refId": "C"
+        },
+        {
+          "editorMode": "code",
+          "expr": "label_join(max by (namespace, persistentvolumeclaim, storageclass) (kubelet_volume_stats_available_bytes{namespace=~\"$namespace\"} * on (namespace, persistentvolumeclaim) group_left(storageclass) kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"}), \"claim\", \"/\", \"namespace\", \"persistentvolumeclaim\")",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "Free",
+          "range": false,
+          "refId": "D"
+        },
+        {
+          "editorMode": "code",
+          "expr": "label_join((max by (namespace, persistentvolumeclaim, storageclass) (kubelet_volume_stats_used_bytes{namespace=~\"$namespace\"} * on (namespace, persistentvolumeclaim) group_left(storageclass) kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"})) / (max by (namespace, persistentvolumeclaim, storageclass) (kubelet_volume_stats_capacity_bytes{namespace=~\"$namespace\"} * on (namespace, persistentvolumeclaim) group_left(storageclass) kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"})), \"claim\", \"/\", \"namespace\", \"persistentvolumeclaim\")",
+          "format": "table",
+          "instant": true,
+          "legendFormat": "Utilization",
+          "range": false,
+          "refId": "E"
+        }
+      ],
+      "title": "PVC capacity and utilization",
+      "transformations": [
+        {
+          "id": "joinByField",
+          "options": {
+            "byField": "claim",
+            "mode": "outer"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true,
+              "Time 1": true,
+              "Time 2": true,
+              "Time 3": true,
+              "Time 4": true,
+              "namespace": true,
+              "namespace 1": true,
+              "namespace 2": true,
+              "namespace 3": true,
+              "namespace 4": true,
+              "persistentvolumeclaim": true,
+              "persistentvolumeclaim 1": true,
+              "persistentvolumeclaim 2": true,
+              "persistentvolumeclaim 3": true,
+              "persistentvolumeclaim 4": true,
+              "storageclass 1": true,
+              "storageclass 2": true,
+              "storageclass 3": true,
+              "storageclass 4": true
+            },
+            "indexByName": {
+              "claim": 0,
+              "storageclass": 1,
+              "Value #A": 2,
+              "Value #B": 3,
+              "Value #C": 4,
+              "Value #D": 5,
+              "Value #E": 6
+            },
+            "renameByName": {
+              "Value #A": "Requested",
+              "Value #B": "Usable",
+              "Value #C": "Used",
+              "Value #D": "Free",
+              "Value #E": "Utilization",
+              "claim": "PVC",
+              "storageclass": "Storage class"
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Filesystem utilization over time. Blue is below 20% (potentially oversized), orange is at least 80%, and red is at least 90%.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 8,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "area"
+            }
+          },
+          "decimals": 1,
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 0.2
+              },
+              {
+                "color": "orange",
+                "value": 0.8
+              },
+              {
+                "color": "red",
+                "value": 0.9
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Last *",
+          "sortDesc": true,
+          "width": 420
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "pluginVersion": "13.2.2",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "(max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_used_bytes{namespace=~\"$namespace\"}) / max by (namespace, persistentvolumeclaim) (kubelet_volume_stats_capacity_bytes{namespace=~\"$namespace\"})) and on (namespace, persistentvolumeclaim) max by (namespace, persistentvolumeclaim) (kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"})",
+          "instant": false,
+          "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Utilization history",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "1m",
+  "schemaVersion": 42,
+  "tags": [
+    "kubernetes",
+    "linstor",
+    "storage"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "label": "Data source",
+        "multi": false,
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "definition": "label_values(kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"}, namespace)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Namespace",
+        "multi": true,
+        "name": "namespace",
+        "options": [],
+        "query": {
+          "query": "label_values(kube_persistentvolumeclaim_info{storageclass=~\"linstor-.*\"}, namespace)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-7d",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "LINSTOR PVC Capacity",
+  "uid": "linstor-pvc-capacity",
+  "version": 1
+}
