@@ -98,6 +98,8 @@ spec:
 
     ingester:
       replicas: 1
+      podAnnotations:
+        descheduler.alpha.kubernetes.io/prefer-no-eviction: "true"
       persistentVolume:
         enabled: true
         storageClass: linstor-r3

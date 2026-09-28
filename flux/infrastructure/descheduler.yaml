@@ -45,6 +45,7 @@ spec:
             - name: DefaultEvictor
               args:
                 nodeFit: true
+                noEvictionPolicy: Mandatory
                 podProtections:
                   defaultDisabled:
                     - PodsWithLocalStorage
