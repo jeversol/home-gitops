@@ -12,10 +12,6 @@ spec:
     name: cnpg-global
     major: 18
 
-  nodeMaintenanceWindow:
-    inProgress: false
-    reusePVC: true
-
   storage:
     size: 2Gi
     storageClass: linstor-r3
@@ -25,9 +21,6 @@ spec:
       isWALArchiver: true
       parameters:
         barmanObjectName: spoolman-postgres-store
-
-  monitoring:
-    enablePodMonitor: true
 
   bootstrap:
     recovery:

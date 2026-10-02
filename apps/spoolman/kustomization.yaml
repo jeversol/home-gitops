@@ -6,6 +6,7 @@ resources:
   - spoolman-postgres-backup-secret.yaml
   - postgres-objectstore.yaml
   - postgres-cluster.yaml
+  - spoolman-postgres-podmonitor.yaml
   - spoolman-postgres-scheduled-backup.yaml
   - backup-pruner.yaml
   - deployment.yaml
