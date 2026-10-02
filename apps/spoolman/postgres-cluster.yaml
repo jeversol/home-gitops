@@ -5,6 +5,7 @@ metadata:
   namespace: spoolman
 spec:
   instances: 1
+  enablePDB: false
   imageCatalogRef:
     apiGroup: postgresql.cnpg.io
     kind: ClusterImageCatalog
