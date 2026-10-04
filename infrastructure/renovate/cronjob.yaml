@@ -81,10 +81,10 @@ spec:
                   value: /tmp/renovate
               resources:
                 requests:
-                  cpu: 100m
-                  memory: 512Mi
+                  cpu: 1
+                  memory: 1536Mi
                 limits:
-                  memory: 2Gi
+                  memory: 3Gi
               securityContext:
                 runAsUser: 0
                 runAsGroup: 0
