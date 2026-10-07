@@ -47,6 +47,12 @@
       assignees: [],
     },
     {
+      description: 'Distinguish the Python client from Kubernetes itself',
+      matchDatasources: ['pypi'],
+      matchPackageNames: ['kubernetes'],
+      commitMessageTopic: 'dependency Python Kubernetes client',
+    },
+    {
       matchDatasources: ['docker'],
       matchPackageNames: ['homebridge/homebridge'],
       versioning: 'regex:^(?<major>\\d{4})-(?<minor>\\d{2})-(?<patch>\\d{2})$',
