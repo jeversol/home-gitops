@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-dns-unifi
+  namespace: external-dns
+spec:
+  # Set to 1 when ready to enable local DNS reconciliation.
+  replicas: 0
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: external-dns-unifi
+  template:
+    metadata:
+      labels:
+        app: external-dns-unifi
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "7979"
+        prometheus.io/path: "/metrics"
+    spec:
+      serviceAccountName: external-dns-unifi
+      hostAliases:
+        - ip: 192.168.1.1
+          hostnames:
+            - unifi.i.recompiled.org
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: external-dns
+          image: registry.k8s.io/external-dns/external-dns:v0.23.0
+          args:
+            - --source=gateway-httproute
+            - --gateway-listener-sets
+            - --domain-filter=i.recompiled.org
+            - --provider=webhook
+            - --webhook-provider-url=http://127.0.0.1:8888
+            - --webhook-provider-read-timeout=60s
+            - --webhook-provider-write-timeout=60s
+            - --policy=upsert-only
+            - --annotation-prefix=external-dns.alpha.kubernetes.io/
+            - --annotation-filter=external-dns.alpha.kubernetes.io/expose=true
+            - --managed-record-types=CNAME
+            - --registry=txt
+            - --txt-owner-id=home-gitops-unifi
+            - --txt-prefix=k8s-unifi-%{record_type}-
+            - --interval=2m
+            - --log-level=info
+          ports:
+            - name: metrics
+              containerPort: 7979
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 25m
+            limits:
+              memory: 128Mi
+        - name: unifi-webhook
+          image: ghcr.io/home-operations/external-dns-unifi-webhook:0.10.13
+          env:
+            - name: UNIFI_HOST
+              value: https://unifi.i.recompiled.org
+            - name: UNIFI_SITE
+              value: default
+            - name: UNIFI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: unifi-api-key
+                  key: api-key
+            - name: UNIFI_SKIP_TLS_VERIFY
+              value: "false"
+            - name: SERVER_HOST
+              value: 127.0.0.1
+            - name: HEALTH_SERVER_ADDR
+              value: :8080
+          ports:
+            - name: webhook-health
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: webhook-health
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: webhook-health
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 10m
+            limits:
+              memory: 128Mi

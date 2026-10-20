@@ -5,3 +5,6 @@ resources:
   - serviceaccount.yaml
   - cloudflare-secret.yaml
   - deployment.yaml
+  - unifi-serviceaccount.yaml
+  - unifi-api-key-secret.yaml
+  - unifi-deployment.yaml
