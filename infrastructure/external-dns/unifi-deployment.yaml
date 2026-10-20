@@ -64,8 +64,11 @@ spec:
               cpu: 25m
             limits:
               memory: 128Mi
+      initContainers:
+        # Start the webhook before ExternalDNS attempts provider negotiation.
         - name: unifi-webhook
           image: ghcr.io/home-operations/external-dns-unifi-webhook:0.10.13
+          restartPolicy: Always
           env:
             - name: UNIFI_HOST
               value: https://unifi.i.recompiled.org
@@ -85,6 +88,13 @@ spec:
           ports:
             - name: webhook-health
               containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /readyz
+              port: webhook-health
+            periodSeconds: 2
+            timeoutSeconds: 5
+            failureThreshold: 60
           livenessProbe:
             httpGet:
               path: /healthz
