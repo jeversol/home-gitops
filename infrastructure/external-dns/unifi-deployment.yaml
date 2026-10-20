@@ -4,8 +4,7 @@ metadata:
   name: external-dns-unifi
   namespace: external-dns
 spec:
-  # Set to 1 when ready to enable local DNS reconciliation.
-  replicas: 0
+  replicas: 1
   strategy:
     type: Recreate
   selector:
