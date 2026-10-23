@@ -7,6 +7,8 @@ resources:
   - cnpg-barman-objectstore.yaml
   - cnpg-cluster.yaml
   - cnpg-database.yaml
+  - cnpg-scheduled-backup.yaml
+  - cnpg-backup-pruner.yaml
   - storage.yaml
   - service.yaml
   - httproute.yaml

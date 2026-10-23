@@ -1,0 +1,103 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cnpg-backup-pruner
+  namespace: forgejo
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cnpg-backup-pruner
+  namespace: forgejo
+rules:
+  - apiGroups:
+      - postgresql.cnpg.io
+    resources:
+      - backups
+    verbs:
+      - get
+      - list
+      - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cnpg-backup-pruner
+  namespace: forgejo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cnpg-backup-pruner
+subjects:
+  - kind: ServiceAccount
+    name: cnpg-backup-pruner
+    namespace: forgejo
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cnpg-backup-pruner
+  namespace: forgejo
+spec:
+  schedule: "30 4 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 300
+      ttlSecondsAfterFinished: 86400
+      template:
+        spec:
+          serviceAccountName: cnpg-backup-pruner
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: pruner
+              image: ghcr.io/jeversol/cluster-multitool:latest
+              command:
+                - /bin/sh
+                - -ceu
+                - |
+                  cutoff_epoch="$(( $(date -u +%s) - 30 * 24 * 60 * 60 ))"
+
+                  kubectl get backups.postgresql.cnpg.io \
+                    --namespace forgejo \
+                    --output go-template='{{range .items}}{{.metadata.name}}{{"\t"}}{{.status.phase}}{{"\t"}}{{.metadata.creationTimestamp}}{{"\t"}}{{.status.stoppedAt}}{{"\n"}}{{end}}' |
+                  while IFS="$(printf '\t')" read -r backup_name phase created_at stopped_at; do
+                    case "${phase}" in
+                      completed|failed) ;;
+                      *) continue ;;
+                    esac
+
+                    # Backups that fail before starting never get a stoppedAt.
+                    case "${stopped_at}" in
+                      ""|"<no value>") stopped_at="${created_at}" ;;
+                    esac
+
+                    stopped_epoch="$(date -u -D '%Y-%m-%dT%H:%M:%SZ' -d "${stopped_at}" +%s)"
+                    if [ "${stopped_epoch}" -lt "${cutoff_epoch}" ]; then
+                      echo "Deleting ${phase} backup ${backup_name}, stopped at ${stopped_at}"
+                      kubectl delete backup.postgresql.cnpg.io \
+                        --namespace forgejo \
+                        "${backup_name}"
+                    fi
+                  done
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 64Mi
+              securityContext:
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                readOnlyRootFilesystem: true
