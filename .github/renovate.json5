@@ -151,7 +151,7 @@
       customType: 'regex',
       managerFilePatterns: ['/tools/cluster/base-controlplane\\.yaml/'],
       matchStrings: [
-        'image:\\s+factory\\.talos\\.dev/metal-installer-secureboot/[a-f0-9]+:v(?<currentValue>\\d+\\.\\d+\\.\\d+)',
+        'image:\\s+factory\\.talos\\.dev/metal-installer-secureboot/[a-f0-9]+:(?<currentValue>v\\d+\\.\\d+\\.\\d+)',
       ],
       datasourceTemplate: 'github-tags',
       depNameTemplate: 'siderolabs/talos',
