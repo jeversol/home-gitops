@@ -69,15 +69,16 @@ spec:
 
                   kubectl get backups.postgresql.cnpg.io \
                     --namespace spoolman \
-                    --output go-template='{{range .items}}{{.metadata.name}}{{"\t"}}{{.status.phase}}{{"\t"}}{{.status.stoppedAt}}{{"\n"}}{{end}}' |
-                  while IFS="$(printf '\t')" read -r backup_name phase stopped_at; do
+                    --output go-template='{{range .items}}{{.metadata.name}}{{"\t"}}{{.status.phase}}{{"\t"}}{{.metadata.creationTimestamp}}{{"\t"}}{{.status.stoppedAt}}{{"\n"}}{{end}}' |
+                  while IFS="$(printf '\t')" read -r backup_name phase created_at stopped_at; do
                     case "${phase}" in
                       completed|failed) ;;
                       *) continue ;;
                     esac
 
+                    # Backups that fail before starting never get a stoppedAt.
                     case "${stopped_at}" in
-                      ""|"<no value>") continue ;;
+                      ""|"<no value>") stopped_at="${created_at}" ;;
                     esac
 
                     stopped_epoch="$(date -u -D '%Y-%m-%dT%H:%M:%SZ' -d "${stopped_at}" +%s)"
