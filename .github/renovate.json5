@@ -70,6 +70,12 @@
       groupName: 'scrutiny',
     },
     {
+      description: 'Hold Sonarr on v4 until dependent tooling supports v5 (home-operations/containers#2002)',
+      matchDatasources: ['docker'],
+      matchPackageNames: ['ghcr.io/home-operations/sonarr'],
+      allowedVersions: '/^4\\./',
+    },
+    {
       matchPackageNames: ['csi-driver-nfs'],
       matchDatasources: ['helm'],
       changelogUrl: 'https://github.com/kubernetes-csi/csi-driver-nfs/releases',
