@@ -5,5 +5,6 @@ resources:
   - scrutiny/
   - ingress/
   - grafana-auth0-secret.yaml
+  - grafana-mcp-secret.yaml
   - loki-s3-secret.yaml
   - mimir-s3-secret.yaml

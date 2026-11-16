@@ -9,6 +9,7 @@ resources:
   - kopiur.yaml
   - alloy.yaml
   - grafana.yaml
+  - grafana-mcp.yaml
   - scrutiny-influxdb.yaml
   - helmrepo-influxdata.yaml
   - homebridge.yaml

@@ -5,5 +5,7 @@ resources:
   - metrics-tls-cert.yaml
   - grafana-httproute.yaml
   - grafana-tls-cert.yaml
+  - grafana-mcp-httproute.yaml
+  - grafana-mcp-tls-cert.yaml
   - loki-httproute.yaml
   - loki-tls-cert.yaml
