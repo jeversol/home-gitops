@@ -31,3 +31,4 @@ CLAUDE.md
 
 # Ignore talos automation secrets and build artifacts
 .basic-auth-credentials.txt
+.env
