@@ -6,14 +6,13 @@ metadata:
 data:
   harry-botter.py: |
 
-    import os
     import jwt
     import requests
     from datetime import datetime, date, UTC
-    from kubernetes import client, config
 
-    EXPIRY_ANNOTATION = "recompiled.org/expiry-date"
-    NOTE_ANNOTATION = "recompiled.org/expiry-note"
+    METRICS_URL = "http://mimir-gateway.o11y.svc.cluster.local:8080/prometheus/api/v1/query"
+    EXPIRY_LABEL = "annotation_recompiled_org_expiry_date"
+    NOTE_LABEL = "annotation_recompiled_org_expiry_note"
     DAYS_WARNING = 7
     GITHUB_REPO = "jeversol/home-gitops"
     APP_ID = 1360871
@@ -79,19 +78,21 @@ data:
         resp.raise_for_status()
         return resp.json()
 
-    def main():
-        print("Loading Kubernetes config...")
-        config.load_incluster_config()
-        v1 = client.CoreV1Api()
-        
-        print("Testing Kubernetes API access...")
-        try:
-            namespaces = v1.list_namespace()
-            print(f"Successfully listed {len(namespaces.items)} namespaces")
-        except Exception as e:
-            print(f"Failed to list namespaces: {e}")
-            raise
+    def secret_metrics():
+        response = requests.get(METRICS_URL, params={
+            "query": 'kube_secret_annotations{cluster="talos",job="kube-state-metrics"}'
+        }, timeout=30)
+        response.raise_for_status()
+        payload = response.json()
+        if payload["status"] != "success" or payload["data"]["resultType"] != "vector":
+            raise RuntimeError("Mimir failed to return Secret annotation metrics")
+        samples = payload["data"]["result"]
+        if not samples:
+            raise RuntimeError("Secret annotation metrics are unavailable")
+        return [sample["metric"] for sample in samples]
 
+    def main():
+        secrets = secret_metrics()
         print("Loading GitHub App private key...")
         private_key = load_private_key()
         print("Generating GitHub App JWT...")
@@ -101,57 +102,51 @@ data:
         session = requests.Session()
         session.timeout = 30
 
-        print("Listing secrets from Kubernetes API...")
-        secrets = v1.list_secret_for_all_namespaces().items
-
-        for secret in secrets:
-            metadata = secret.metadata
-            annotations = metadata.annotations or {}
-
-            expiry_raw = annotations.get(EXPIRY_ANNOTATION)
-            note = annotations.get(NOTE_ANNOTATION)
-
+        for labels in secrets:
+            expiry_raw = labels.get(EXPIRY_LABEL)
+            note = labels.get(NOTE_LABEL)
             if not expiry_raw or not note:
-                print(f"Skipping {metadata.namespace}/{metadata.name}: missing expiry or note annotation")
                 continue
 
+            namespace = labels["namespace"]
+            name = labels["secret"]
             expiry_date = parse_date(expiry_raw)
             if not expiry_date:
-                print(f"Skipping {metadata.namespace}/{metadata.name}: invalid expiry date '{expiry_raw}'")
+                print(f"Skipping {namespace}/{name}: invalid expiry date '{expiry_raw}'")
                 continue
 
             if not should_warn(expiry_date):
-                print(f"{metadata.namespace}/{metadata.name}: expires on {expiry_date} (not within window), skipping")
+                print(f"{namespace}/{name}: expires on {expiry_date} (not within window), skipping")
                 continue
 
             today = date.today()
             already_expired = expiry_date < today
             if already_expired:
-                issue_title = f"chore(secrets): {metadata.namespace}/{metadata.name} has expired"
+                issue_title = f"chore(secrets): {namespace}/{name} has expired"
             else:
-                issue_title = f"chore(secrets): {metadata.namespace}/{metadata.name} expires soon"
+                issue_title = f"chore(secrets): {namespace}/{name} expires soon"
             existing_issue = find_existing_issue(session, GITHUB_REPO, gh_token, issue_title)
 
             if existing_issue:
-                print(f"{metadata.namespace}/{metadata.name}: issue already exists — #{existing_issue['number']}")
+                print(f"{namespace}/{name}: issue already exists — #{existing_issue['number']}")
                 continue
 
             if already_expired:
                 issue_body = (
-                    f"The Kubernetes Secret `{metadata.name}` in namespace `{metadata.namespace}` expired on {expiry_date}.\n"
+                    f"The Kubernetes Secret `{name}` in namespace `{namespace}` expired on {expiry_date}.\n"
                     f"\n**Note**: {note}\n\nThis secret is past its expiry date and should be rotated immediately."
                 )
             else:
                 issue_body = (
-                    f"The Kubernetes Secret `{metadata.name}` in namespace `{metadata.namespace}` is set to expire on {expiry_date}.\n"
+                    f"The Kubernetes Secret `{name}` in namespace `{namespace}` is set to expire on {expiry_date}.\n"
                     f"\n**Note**: {note}\n\nPlease rotate the secret before it expires."
                 )
 
             try:
                 issue = create_issue(session, GITHUB_REPO, gh_token, issue_title, issue_body)
-                print(f"{metadata.namespace}/{metadata.name}: GitHub issue created — #{issue['number']}")
+                print(f"{namespace}/{name}: GitHub issue created — #{issue['number']}")
             except Exception as e:
-                print(f"{metadata.namespace}/{metadata.name}: Failed to create GitHub issue — {str(e)}")
+                print(f"{namespace}/{name}: Failed to create GitHub issue — {str(e)}")
 
     if __name__ == "__main__":
         main()

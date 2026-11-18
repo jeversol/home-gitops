@@ -14,7 +14,7 @@ spec:
       backoffLimit: 2
       template:
         spec:
-          automountServiceAccountToken: true
+          automountServiceAccountToken: false
           containers:
             - name: watcher
               image: ghcr.io/jeversol/cluster-multitool:latest

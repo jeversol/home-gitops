@@ -36,6 +36,8 @@ spec:
     mode: enabled
   values:
     replicas: 1
+    metricAnnotationsAllowList:
+      - secrets=[recompiled.org/expiry-date,recompiled.org/expiry-note]
 
     resources:
       requests:
