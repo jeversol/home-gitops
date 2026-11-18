@@ -76,9 +76,11 @@
       allowedVersions: '/^4\\./',
     },
     {
-      matchPackageNames: ['csi-driver-nfs'],
-      matchDatasources: ['helm'],
-      changelogUrl: 'https://github.com/kubernetes-csi/csi-driver-nfs/releases',
+      description: 'Track NFS CSI release tags and commits with the regex manager',
+      matchManagers: ['flux'],
+      matchFileNames: ['flux/infrastructure/nfs-csi-driver.yaml'],
+      matchDatasources: ['git-refs'],
+      enabled: false,
     },
     {
       matchPackageNames: ['siderolabs/talos'],
@@ -137,6 +139,13 @@
   customManagers: [
     {
       customType: 'regex',
+      managerFilePatterns: ['flux/infrastructure/nfs-csi-driver.yaml'],
+      matchStrings: ['commit: (?<currentDigest>[a-f0-9]{40}) # (?<currentValue>v[0-9]+[.][0-9]+[.][0-9]+)'],
+      datasourceTemplate: 'github-releases',
+      depNameTemplate: 'kubernetes-csi/csi-driver-nfs',
+    },
+    {
+      customType: 'regex',
       managerFilePatterns: ['infrastructure/**/kustomization.yaml'],
       matchStrings: [
         'https://github[.]com/(?<depName>[\\w.-]+/[\\w.-]+)/[^\\s?]+[?]ref=(?<currentDigest>[a-f0-9]{40})(?:&[^\\s]+)? # (?<currentValue>v[0-9]+[.][0-9]+[.][0-9]+)',
@@ -147,11 +156,11 @@
       customType: 'regex',
       managerFilePatterns: ['/^flux\\/flux-system\\/flux-instance\\.yaml$/'],
       matchStrings: [
-        'version:\\s+"(?<currentValue>\\d+\\.\\d+)\\.x"',
+        'version:\\s+"(?<currentValue>\\d+\\.\\d+\\.\\d+)"',
       ],
       datasourceTemplate: 'github-releases',
       depNameTemplate: 'fluxcd/flux2',
-      extractVersionTemplate: '^v(?<version>\\d+\\.\\d+)',
+      extractVersionTemplate: '^v(?<version>\\d+\\.\\d+\\.\\d+)$',
     },
     {
       customType: 'regex',

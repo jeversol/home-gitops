@@ -14,10 +14,9 @@ spec:
   targetNamespace: kube-system
   chart:
     spec:
-      chart: csi-driver-nfs
-      version: "4.13.6"
+      chart: ./charts/latest/csi-driver-nfs
       sourceRef:
-        kind: HelmRepository
+        kind: GitRepository
         name: csi-driver-nfs
         namespace: flux-system
   install:
@@ -48,10 +47,19 @@ spec:
     kubeletDir: /var/lib/kubelet
 ---
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: GitRepository
 metadata:
   name: csi-driver-nfs
   namespace: flux-system
 spec:
   interval: 24h
-  url: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+  url: https://github.com/kubernetes-csi/csi-driver-nfs
+  ref:
+    commit: ef097104fe8d06ee3f8a81cb04be39f6eba0ff6f # v4.13.6
+  ignore: |
+    /*
+    !/charts/
+    /charts/*
+    !/charts/latest/
+    /charts/latest/*
+    !/charts/latest/csi-driver-nfs/
