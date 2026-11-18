@@ -119,16 +119,14 @@
       changelogUrl: 'https://www.postgresql.org/docs/release/{{newVersion}}/',
     },
     {
-      matchPackageNames: ['kubernetes-sigs/node-feature-discovery'],
-      overrideDatasource: 'github-releases',
-    },
-    {
-      matchPackageNames: ['kubernetes-csi/external-snapshotter'],
-      overrideDatasource: 'github-releases',
-    },
-    {
-      matchPackageNames: ['kubernetes-sigs/gateway-api'],
-      overrideDatasource: 'github-releases',
+      description: 'Track SHA-pinned Kustomize bases with the release-aware regex manager',
+      matchManagers: ['kustomize'],
+      matchPackageNames: [
+        'kubernetes-sigs/node-feature-discovery',
+        'kubernetes-csi/external-snapshotter',
+        'kubernetes-sigs/gateway-api',
+      ],
+      enabled: false,
     },
     {
       matchDatasources: ['docker'],
@@ -137,6 +135,14 @@
     },
   ],
   customManagers: [
+    {
+      customType: 'regex',
+      managerFilePatterns: ['infrastructure/**/kustomization.yaml'],
+      matchStrings: [
+        'https://github[.]com/(?<depName>[\\w.-]+/[\\w.-]+)/[^\\s?]+[?]ref=(?<currentDigest>[a-f0-9]{40})(?:&[^\\s]+)? # (?<currentValue>v[0-9]+[.][0-9]+[.][0-9]+)',
+      ],
+      datasourceTemplate: 'github-releases',
+    },
     {
       customType: 'regex',
       managerFilePatterns: ['/^flux\\/flux-system\\/flux-instance\\.yaml$/'],

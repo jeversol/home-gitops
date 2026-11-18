@@ -2,5 +2,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - https://github.com/kubernetes-csi/external-snapshotter/client/config/crd?ref=v8.7.0&timeout=2m
-  - https://github.com/kubernetes-csi/external-snapshotter/deploy/kubernetes/snapshot-controller?ref=v8.7.0&timeout=2m
+  - https://github.com/kubernetes-csi/external-snapshotter/client/config/crd?ref=9cc6050ab00a0c56d84ba0279e518a00367363e7&timeout=2m # v8.7.0
+  - https://github.com/kubernetes-csi/external-snapshotter/deploy/kubernetes/snapshot-controller?ref=9cc6050ab00a0c56d84ba0279e518a00367363e7&timeout=2m # v8.7.0
