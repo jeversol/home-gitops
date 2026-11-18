@@ -6,7 +6,5 @@ namespace: harry-botter
 resources:
   - configmap.yaml
   - serviceaccount.yaml
-  - role.yaml
-  - rolebinding.yaml
   - github-app-secret.yaml
   - cronjob.yaml
