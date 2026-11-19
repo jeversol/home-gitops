@@ -693,6 +693,26 @@ spec:
             }
           }
 
+          // Only send control-plane scrape credentials to this replica's own control-plane Node.
+          discovery.relabel "local_control_plane" {
+            targets = discovery.kubernetes.nodes.targets
+            rule {
+              source_labels = ["__meta_kubernetes_node_labelpresent_node_role_kubernetes_io_control_plane"]
+              regex         = "true"
+              action        = "keep"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_node_name"]
+              regex         = sys.env("HOSTNAME")
+              action        = "keep"
+            }
+            // Keep the existing endpoint-based instance label when switching to Node discovery.
+            rule {
+              regex  = "instance"
+              action = "labeldrop"
+            }
+          }
+
           // Scrape kube-scheduler (Requires bind-address: 0.0.0.0 in Talos config)
           // Serves a self-signed cert, so verification is skipped
           prometheus.scrape "kube_scheduler" {
@@ -706,20 +726,10 @@ spec:
           }
 
           discovery.relabel "kube_scheduler" {
-            targets = discovery.kubernetes.pods.targets
+            targets = discovery.relabel.local_control_plane.output
             rule {
-              source_labels = ["__meta_kubernetes_pod_label_component"]
-              regex         = "kube-scheduler"
-              action        = "keep"
-            }
-            // Only scrape the static pod on this Alloy's own node
-            rule {
-              source_labels = ["__meta_kubernetes_pod_node_name"]
-              regex         = sys.env("HOSTNAME")
-              action        = "keep"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_ip"]
+              source_labels = ["__address__"]
+              regex         = "(.+):[0-9]+"
               target_label  = "__address__"
               replacement   = "$1:10259"
             }
@@ -750,20 +760,10 @@ spec:
           }
 
           discovery.relabel "kube_controller_manager" {
-            targets = discovery.kubernetes.pods.targets
+            targets = discovery.relabel.local_control_plane.output
             rule {
-              source_labels = ["__meta_kubernetes_pod_label_component"]
-              regex         = "kube-controller-manager"
-              action        = "keep"
-            }
-            // Only scrape the static pod on this Alloy's own node
-            rule {
-              source_labels = ["__meta_kubernetes_pod_node_name"]
-              regex         = sys.env("HOSTNAME")
-              action        = "keep"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_ip"]
+              source_labels = ["__address__"]
+              regex         = "(.+):[0-9]+"
               target_label  = "__address__"
               replacement   = "$1:10257"
             }
