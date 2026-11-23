@@ -7,6 +7,7 @@ resources:
   - configmap.yaml
   - bin-configmap.yaml
   - secret.yaml
+  - docker-hub-secret.yaml
   - redis-deployment.yaml
   - redis-service.yaml
   - cronjob.yaml

@@ -74,6 +74,8 @@ spec:
                     name: renovate-config
                 - secretRef:
                     name: renovate-secret
+                - secretRef:
+                    name: renovate-docker-hub
               env:
                 - name: TZ
                   value: America/Indiana/Indianapolis

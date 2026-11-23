@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/part-of: renovate
 data:
   LOG_LEVEL: debug
+  RENOVATE_CONFIG_FILE: /renovate-bin/docker-hub-config.js
   RENOVATE_ENDPOINT: https://api.github.com
   RENOVATE_PLATFORM: github
   RENOVATE_REPOSITORIES: |
