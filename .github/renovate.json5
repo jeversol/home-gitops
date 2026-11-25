@@ -97,19 +97,11 @@
         'registry.k8s.io/kubectl',
       ],
       groupName: 'kubernetes-components',
+      sourceUrl: 'https://github.com/kubernetes/kubernetes',
+      changelogUrl: 'https://github.com/kubernetes/kubernetes/blob/{{newValue}}/CHANGELOG/CHANGELOG-{{newMajor}}.{{newMinor}}.md',
       versioning: 'semver',
       automerge: false,
       assignees: ['jeversol'],
-    },
-    {
-      matchDatasources: ['docker'],
-      matchPackageNames: [
-        'registry.k8s.io/kube-apiserver',
-        'registry.k8s.io/kube-controller-manager',
-        'registry.k8s.io/kube-scheduler',
-        'registry.k8s.io/kubectl',
-      ],
-      sourceUrl: 'https://github.com/kubernetes/kubernetes',
     },
     {
       description: 'Avoid Kubernetes-manager extraction from generated and Kustomize files',
